@@ -45,9 +45,16 @@ function readRawData(string $dir): array {
         }
 
         list(, $project, $file) = $matches;
-        $stats = parsePerfStats(file_get_contents($pathName));
-        $stats['file'] = $file;
+        $contents = file_get_contents($pathName);
 
+	try {
+            $stats = parsePerfStats($contents);
+        } catch (Exception $e) {
+            echo $contents, "\n";
+            throw $e;
+        }
+
+        $stats['file'] = $file;
         if (!isset($projectData[$project])) {
             $projectData[$project] = [];
         }
@@ -80,7 +87,7 @@ function parsePerfStat(string $str, string $stat): float {
 function parsePerfStats(string $str): array {
     return [
         'command' => parsePerfCommand($str),
-        'task-clock' => parsePerfStat($str, 'msec task-clock'),
+        'task-clock' => parsePerfStat($str, '(?:msec )?task-clock'),
         'context-switches' => parsePerfStat($str, 'context-switches'),
         'cpu-migrations' => parsePerfStat($str, 'cpu-migrations'),
         'page-faults' => parsePerfStat($str, 'page-faults'),
