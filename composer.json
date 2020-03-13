@@ -1,5 +1,6 @@
 {
     "require": {
-        "cpliakas/git-wrapper": "^3.0"
+        "cpliakas/git-wrapper": "^3.0",
+        "symfony/process": "^5.0"
     }
 }
