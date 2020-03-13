@@ -6,11 +6,11 @@ if ($argc < 2) {
     throw new Exception("Expected name");
 }
 
-$name = $argv[1]; // fe30eb626854895c0702de1a4c8c2c80b619e3d4
+$name = $argv[1];
 
 $inDir = __DIR__ . '/llvm-test-suite-build/CTMark';
 $outDir = __DIR__ . '/data/' . $name;
-@mkdir($outDir);
+@mkdir($outDir, 0755, true);
 
 $statsFile = $outDir . '/stats.json';
 $summaryFile = $outDir . '/summary.json';

@@ -3,3 +3,5 @@ llvm-test-suite/
 llvm-project-build/
 llvm-test-suite-build/
 data/
+vendor/
+composer.lock
