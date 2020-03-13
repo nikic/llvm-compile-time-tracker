@@ -4,7 +4,6 @@ if ($argc < 2) {
     throw new Exception("Expected directory as argument");
 }
 
-
 $dir = $argv[1];
 $rawData = readRawData($dir);
 $data = array_map('aggregateData', $rawData);
@@ -45,16 +44,20 @@ function readRawData(string $dir): array {
         }
 
         list(, $project, $file) = $matches;
-        $contents = file_get_contents($pathName);
+        $perfContents = file_get_contents($pathName);
+        $timeContents = file_get_contents(str_replace('.perfstats', '', $pathName));
 
-	try {
-            $stats = parsePerfStats($contents);
+        try {
+            $perfStats = parsePerfStats($perfContents);
+            $timeStats = parseTimeStats($timeContents);
         } catch (Exception $e) {
-            echo $contents, "\n";
+            echo $pathName, ":\n";
+            echo $perfContents, "\n";
+            echo $timeContents, "\n";
             throw $e;
         }
 
-        $stats['file'] = $file;
+        $stats = $perfStats + $timeStats + ['file' => $file];
         if (!isset($projectData[$project])) {
             $projectData[$project] = [];
         }
@@ -63,40 +66,22 @@ function readRawData(string $dir): array {
     return $projectData;
 }
 
-function parsePerfCommand(string $str): string {
-    $pattern = '~Performance counter stats for \'(.*)\':~';
-    if (!preg_match($pattern, $str, $matches)) {
-        throw new Exception('Failed to match command');
-    }
-    return $matches[1];
-}
-
-function parsePerfStat(string $str, string $stat): float {
-    $pattern = "~(\S+)\s+$stat~";
-    if (!preg_match($pattern, $str, $matches)) {
-        throw new Exception("Failed to match stat \"$stat\"");
-    }
-    $numberString = $matches[1];
-    // Remove thousands separators
-    $numberString = str_replace('.', '', $numberString);
-    // Replace decimal separator
-    $numberString = str_replace(',', '.', $numberString);
-    return (float) $numberString;
-}
-
 function parsePerfStats(string $str): array {
+    if (!preg_match_all('~^([0-9.]+);[^;]*;([^;]+);~m', $str, $matches, PREG_SET_ORDER)) {
+        throw new Exception("Failed to match perf stats");
+    }
+
+    $stats = [];
+    foreach ($matches as list(, $value, $stat)) {
+        $stats[$stat] = (float) $value;
+    }
+    return $stats;
+}
+
+function parseTimeStats(string $str): array {
+    list($maxRss, $wallTime) = explode(';', trim($str));
     return [
-        'command' => parsePerfCommand($str),
-        'task-clock' => parsePerfStat($str, '(?:msec )?task-clock'),
-        'context-switches' => parsePerfStat($str, 'context-switches'),
-        'cpu-migrations' => parsePerfStat($str, 'cpu-migrations'),
-        'page-faults' => parsePerfStat($str, 'page-faults'),
-        'cycles' => parsePerfStat($str, 'cycles'),
-        'instructions' => parsePerfStat($str, 'instructions'),
-        'branches' => parsePerfStat($str, 'branches'),
-        'branch-misses' => parsePerfStat($str, 'branch-misses'),
-        'real-time' => parsePerfStat($str, 'seconds time elapsed'),
-        'user-time' => parsePerfStat($str, 'seconds user'),
-        'system-time' => parsePerfStat($str, 'seconds sys'),
+        'max-rss' => (float) $maxRss,
+        'wall-time' => (float) $wallTime,
     ];
 }
