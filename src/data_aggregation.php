@@ -1,19 +1,10 @@
 <?php
 
-if ($argc < 2) {
-    throw new Exception("Expected directory as argument");
-}
-
-$dir = $argv[1];
-$rawData = readRawData($dir);
-$data = array_map('aggregateData', $rawData);
-var_dump($data);
-
 function aggregateData(array $statsList): array {
     $aggStats = [];
     foreach ($statsList as $stats) {
         foreach ($stats as $name => $stat) {
-            if ($name === 'command' || $name === 'file') {
+            if ($name === 'file') {
                 continue;
             }
 
