@@ -9,7 +9,7 @@ if ($argc < 2) {
 $name = $argv[1];
 
 $inDir = __DIR__ . '/llvm-test-suite-build/CTMark';
-$outDir = __DIR__ . '/data/' . $name;
+$outDir = __DIR__ . '/data/experiments/' . $name;
 @mkdir($outDir, 0755, true);
 
 $statsFile = $outDir . '/stats.json';
