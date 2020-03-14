@@ -18,6 +18,7 @@ $branchPatterns = [
 
 $gitWrapper = new GitWrapper();
 $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
+$dataRepo = $gitWrapper->workingCopy(__DIR__ . '/data');
 
 while (true) {
     $repo->fetch('--all');
@@ -45,6 +46,10 @@ while (true) {
     // TODO: Don't call into PHP here.
     $outDir = $hash . '/O3';
     runCommand("php aggregate_data.php $outDir");
+
+    $dataRepo->add('.');
+    $dataRepo->commit('-m', 'Add data');
+    $dataRepo->push('origin', 'master');
 }
 
 function runCommand(string $command) {
@@ -102,7 +107,8 @@ function haveData(string $hash): bool {
 
 function getWorkItem(array $branchCommits): ?string {
     foreach ($branchCommits as $commits) {
-        foreach ($commits as $commit) {
+        // Process newer commits first.
+        foreach (array_reverse($commits) as $commit) {
             $hash = $commit['hash'];
             if (!haveData($hash)) {
                 return $hash;
