@@ -15,7 +15,7 @@ foreach ($branchCommits as $branch => $commits) {
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $summary = getSummary($hash);
-        $row = [formatHash($hash)];
+        $row = [formatCommit($commit)];
         if ($summary) {
             if (!$titles) {
                 $titles = array_merge(['Commit'], array_keys($summary));
@@ -47,7 +47,9 @@ foreach ($branchCommits as $branch => $commits) {
     echo "</table>\n";
 }
 
-function formatHash(string $hash): string {
+function formatCommit(array $commit): string {
+    $hash = $commit['hash'];
     $shortHash = substr($hash, 0, 10);
-    return "<a href=\"https://github.com/llvm/llvm-project/commit/$hash\">$shortHash</a>";
+    $title = h($commit['subject']);
+    return "<a href=\"https://github.com/llvm/llvm-project/commit/$hash\" title=\"$title\">$shortHash</a>";
 }
