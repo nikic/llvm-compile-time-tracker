@@ -18,32 +18,32 @@ $branchPatterns = [
 
 $gitWrapper = new GitWrapper();
 $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
-//$repo->fetch('--all');
-$branches = getRelevantBranches($repo, $branchPatterns);
-$branchCommits = [];
-foreach ($branches as $branch) {
-    $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
-}
-file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
-die;
 
-$prevHead = null;
 while (true) {
-    $repo->fetch('origin');
-    $repo->checkout('origin/master');
-    $head = trim($repo->run('rev-parse', ['HEAD']));
-    if ($head === $prevHead) {
+    $repo->fetch('--all');
+
+    // Redoing all this work might get inefficient at some point...
+    $branches = getRelevantBranches($repo, $branchPatterns);
+    $branchCommits = [];
+    foreach ($branches as $branch) {
+        $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
+    }
+
+    $hash = getWorkItem($branchCommits);
+    if ($hash === null) {
         // Wait before checking for a new commit.
         sleep($sleepInterval);
         continue;
     }
-    $prevHead = $head;
 
+    file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
+
+    $repo->checkout($hash);
     runCommand('./build_llvm_project.sh');
     runCommand('./build_llvm_test_suite.sh');
 
     // TODO: Don't call into PHP here.
-    $outDir = $head . '/O3';
+    $outDir = $hash . '/O3';
     runCommand("php aggregate_data.php $outDir");
 }
 
@@ -93,4 +93,21 @@ function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCom
     }
     $mergeBase = trim($repo->run('merge-base', [$branch, 'origin/master']));
     return getParsedLog($repo, $branch, $mergeBase);
+}
+
+function haveData(string $hash): bool {
+    $experimentsDir = __DIR__ . '/data/experiments';
+    return is_dir($experimentsDir . '/' . $hash);
+}
+
+function getWorkItem(array $branchCommits): ?string {
+    foreach ($branchCommits as $commits) {
+        foreach ($commits as $commit) {
+            $hash = $commit['hash'];
+            if (!haveData($hash)) {
+                return $hash;
+            }
+        }
+    }
+    return null;
 }
