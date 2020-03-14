@@ -8,20 +8,29 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
-$firstCommit = '92f7e8133ae98e1f300bad164c4099b2e609bae7';
 $commitsFile = __DIR__ . '/data/commits.json';
+
+$firstCommit = '92f7e8133ae98e1f300bad164c4099b2e609bae7';
+$branchPatterns = [
+    '~^nikic/perf/.*~',
+    '~^origin/master$~',
+];
 
 $gitWrapper = new GitWrapper();
 $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
-$commitsData = [
-    'origin' => getParsedLog($repo, $firstCommit),
-];
-file_put_contents($commitsFile, json_encode($commitsData, JSON_PRETTY_PRINT));
+//$repo->fetch('--all');
+$branches = getRelevantBranches($repo, $branchPatterns);
+$branchCommits = [];
+foreach ($branches as $branch) {
+    $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
+}
+file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
+die;
 
 $prevHead = null;
 while (true) {
     $repo->fetch('origin');
-    $repo->reset('--hard', 'origin/master');
+    $repo->checkout('origin/master');
     $head = trim($repo->run('rev-parse', ['HEAD']));
     if ($head === $prevHead) {
         // Wait before checking for a new commit.
@@ -49,8 +58,8 @@ function runCommand(string $command) {
     }
 }
 
-function getParsedLog(GitWorkingCopy $repo, string $baseCommit) {
-    $log = $repo->log('--pretty=format:%H;%an;%ae;%cI;%s', '--reverse', "$baseCommit^..");
+function getParsedLog(GitWorkingCopy $repo, string $branch, string $baseCommit) {
+    $log = $repo->log('--pretty=format:%H;%an;%ae;%cI;%s', '--reverse', "$baseCommit^..$branch");
     $lines = explode("\n", $log);
 
     $parsedLog = [];
@@ -65,4 +74,23 @@ function getParsedLog(GitWorkingCopy $repo, string $baseCommit) {
         ];
     }
     return $parsedLog;
+}
+
+function getRelevantBranches(GitWorkingCopy $repo, array $branchPatterns): array {
+    return array_filter($repo->getBranches()->remote(), function($branch) use($branchPatterns) {
+        foreach ($branchPatterns as $pattern) {
+            if (preg_match($pattern, $branch)) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+
+function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCommit): array {
+    if ($branch === 'origin/master') {
+        return getParsedLog($repo, $branch, $firstCommit);
+    }
+    $mergeBase = trim($repo->run('merge-base', [$branch, 'origin/master']));
+    return getParsedLog($repo, $branch, $mergeBase);
 }
