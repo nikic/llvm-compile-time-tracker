@@ -3,4 +3,5 @@ cmake -GNinja -H./llvm-project/llvm -B./llvm-project-build \
     -DLLVM_TARGETS_TO_BUILD="X86" \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_CCACHE_BUILD=true \
-    -DLLVM_USE_LINKER=gold
+    -DLLVM_USE_LINKER=gold \
+    -DLLVM_BINUTILS_INCDIR=/usr/include

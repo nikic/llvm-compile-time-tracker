@@ -1,6 +1,6 @@
 sudo apt update
 sudo apt install -y \
-    ccache composer cmake g++ \
+    binutils-dev ccache composer cmake g++ \
     linux-tools-common linux-tools-generic linux-cloud-tools-generic \
     php-cli php-zip \
     ninja-build tcl

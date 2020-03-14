@@ -10,7 +10,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 
-$firstCommit = '92f7e8133ae98e1f300bad164c4099b2e609bae7';
+$firstCommit = '3860b2a0bd09291a276b0590939961dffe67fbb6';
 $branchPatterns = [
     '~^nikic/perf/.*~',
     '~^origin/master$~',
@@ -30,23 +30,27 @@ while (true) {
         $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
     }
 
-    $hash = getWorkItem($branchCommits);
-    if ($hash === null) {
+    $workItem = getWorkItem($branchCommits);
+    if ($workItem === null) {
         // Wait before checking for a new commit.
         sleep($sleepInterval);
         continue;
     }
 
-    file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
+    list($hash, $configs) = $workItem;
 
     $repo->checkout($hash);
     runCommand('./build_llvm_project.sh');
-    runCommand('./build_llvm_test_suite.sh');
 
-    // TODO: Don't call into PHP here.
-    $outDir = $hash . '/O3';
-    runCommand("php aggregate_data.php $outDir");
+    foreach ($configs as $config) {
+        runCommand("./build_llvm_test_suite.sh $config");
 
+        // TODO: Don't call into PHP here.
+        $outDir = $hash . '/' . $config;
+        runCommand("php aggregate_data.php $outDir");
+    }
+
+    file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
     $dataRepo->add('.');
     $dataRepo->commit('-m', 'Add data');
     $dataRepo->push('origin', 'master');
@@ -100,18 +104,25 @@ function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCom
     return getParsedLog($repo, $branch, $mergeBase);
 }
 
-function haveData(string $hash): bool {
+function haveData(string $hash, string $config): bool {
     $experimentsDir = __DIR__ . '/data/experiments';
-    return is_dir($experimentsDir . '/' . $hash);
+    return is_dir($experimentsDir . '/' . $hash . '/' . $config);
 }
 
-function getWorkItem(array $branchCommits): ?string {
+function getWorkItem(array $branchCommits): ?array {
+    $wantedConfigs = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g'];
     foreach ($branchCommits as $commits) {
         // Process newer commits first.
         foreach (array_reverse($commits) as $commit) {
             $hash = $commit['hash'];
-            if (!haveData($hash)) {
-                return $hash;
+            $configs = [];
+            foreach ($wantedConfigs as $wantedConfig) {
+                if (!haveData($hash, $wantedConfig)) {
+                    $configs[] = $wantedConfig;
+                }
+            }
+            if ($configs) {
+                return [$hash, $configs];
             }
         }
     }
