@@ -13,20 +13,26 @@ foreach ($branchCommits as $branch => $commits) {
     $titles = null;
     $rows = [];
     $lastMetrics = null;
+    $lastHash = null;
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $summary = getSummary($hash, $config);
         $row = [formatCommit($commit)];
         if ($summary) {
             if (!$titles) {
-                $titles = array_merge(['Commit'], array_keys($summary));
+                $titles = array_merge(['Commit'], array_keys($summary), ['geomean']);
             }
             $metrics = array_column($summary, $stat);
+            $metrics = addGeoMean($metrics);
             foreach ($metrics as $i => $value) {
                 $prevValue = $lastMetrics[$i] ?? null;
                 $row[] = formatMetricDiff($value, $prevValue, $stat);
             }
+            if ($lastHash !== null) {
+                $row[] = "<a href=\"compare.php?from=$lastHash&to=$hash&stat=" . h($stat) . "\">C</a>";
+            }
             $lastMetrics = $metrics;
+            $lastHash = $hash;
         }
         $rows[$hash] = $row;
     }

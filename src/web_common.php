@@ -57,6 +57,11 @@ function formatMetricDiff(float $newValue, ?float $oldValue, string $stat): stri
     }
 }
 
+function addGeoMean(array $stats): array {
+    $stats['geomean'] = pow(array_product($stats), 1/count($stats));
+    return $stats;
+}
+
 function h(string $str): string {
     return htmlspecialchars($str);
 }

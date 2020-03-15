@@ -40,7 +40,7 @@ foreach (CONFIGS as $config) {
         $fromAggMetric = aggregateData($fromFiles)[$stat];
         $toAggMetric = aggregateData($toFiles)[$stat];
         echo "<tr>\n";
-        echo "<td>$bench</td>\n";
+        echo "<td style=\"text-align: left\">$bench</td>\n";
         echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
         echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat), "</td>\n";
         echo "</tr>\n";
@@ -54,7 +54,7 @@ foreach (CONFIGS as $config) {
                 $fromMetric = $fromFile[$stat];
                 $toMetric = $toFile[$stat];
                 echo "<tr>\n";
-                echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;$file</td>\n";
+                echo "<td style=\"text-align: left\">&nbsp;&nbsp;&nbsp;&nbsp;$file</td>\n";
                 echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
                 echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat), "</td>\n";
                 echo "</tr>\n";
