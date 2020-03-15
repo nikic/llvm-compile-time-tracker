@@ -1,6 +1,6 @@
 <?php
 
-const DATA_DIR = __DIR__ . '/../data';
+require __DIR__ . '/common.php';
 
 function getSummary(string $hash, string $config): ?array {
     $file = DATA_DIR . "/experiments/$hash/$config/summary.json";

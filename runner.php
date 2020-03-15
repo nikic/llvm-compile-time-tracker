@@ -4,7 +4,8 @@ use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
 use Symfony\Component\Process\Process;
 
-require_once __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/src/common.php';
 
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
@@ -110,13 +111,12 @@ function haveData(string $hash, string $config): bool {
 }
 
 function getWorkItem(array $branchCommits): ?array {
-    $wantedConfigs = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g'];
     foreach ($branchCommits as $commits) {
         // Process newer commits first.
         foreach (array_reverse($commits) as $commit) {
             $hash = $commit['hash'];
             $configs = [];
-            foreach ($wantedConfigs as $wantedConfig) {
+            foreach (CONFIGS as $wantedConfig) {
                 if (!haveData($hash, $wantedConfig)) {
                     $configs[] = $wantedConfig;
                 }
