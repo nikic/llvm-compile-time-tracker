@@ -5,3 +5,4 @@ llvm-test-suite-build/
 data/
 vendor/
 composer.lock
+*.swp
