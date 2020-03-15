@@ -8,6 +8,12 @@ $stat = $_GET['stat'] ?? 'instructions';
 
 printStyle();
 
+echo "<form>\n";
+echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";
+echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
+echo "<input type=\"submit\" value=\"Go\" />\n";
+echo "</form>\n";
+
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 foreach ($branchCommits as $branch => $commits) {
     $titles = null;
@@ -59,4 +65,13 @@ function formatCommit(array $commit): string {
     $shortHash = substr($hash, 0, 10);
     $title = h($commit['subject']);
     return "<a href=\"https://github.com/llvm/llvm-project/commit/$hash\" title=\"$title\">$shortHash</a>";
+}
+
+function printConfigSelect(string $name) {
+    echo "<select name=\"config\">\n";
+    foreach (CONFIGS as $config) {
+        $selected = $name === $config ? " selected" : "";
+        echo "<option$selected>$config</option>\n";
+    }
+    echo "</select>\n";
 }

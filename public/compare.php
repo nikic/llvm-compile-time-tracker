@@ -94,20 +94,3 @@ if (!$details) {
         echo "</table>\n";
     }
 }
-
-function printStatSelect(string $stat) {
-    $opt = function(string $name) use($stat) {
-        $selected = $name === $stat ? " selected" : "";
-        echo "<option$selected>$name</option>\n";
-    };
-    echo "<select name=\"stat\">\n";
-    // Not listed: context-switches, cpu-migrations, page-faults
-    $opt("instructions");
-    $opt("max-rss");
-    $opt("task-clock");
-    $opt("cycles");
-    $opt("branches");
-    $opt("branch-misses");
-    $opt("wall-time");
-    echo "</select>\n";
-}
