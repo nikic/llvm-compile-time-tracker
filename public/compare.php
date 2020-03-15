@@ -6,20 +6,21 @@ require __DIR__ . '/../src/data_aggregation.php';
 $from = $_GET['from'] ?? null;
 $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
+$config = $_GET['config'] ?? 'O3';
 $stat = $_GET['stat'] ?? 'instructions';
 
 if (!is_string($from) || !is_string($to)) {
     die("Missing from/to");
 }
 
-$fromStats = getStats($from);
+$fromStats = getStats($from, $config);
 if (!$fromStats) {
-    die("No data for " . h($fromStats));
+    die("No data for " . h($fromStats) . " in config " . h($config));
 }
 
-$toStats = getStats($to);
+$toStats = getStats($to, $config);
 if (!$toStats) {
-    die("No data for " . h($toStats));
+    die("No data for " . h($toStats) . " in config ". h($config));
 }
 
 printStyle();

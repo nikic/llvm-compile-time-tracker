@@ -3,6 +3,7 @@
 require __DIR__ . '/../src/web_common.php';
 $commitsFile = DATA_DIR . '/commits.json';
 
+$config = $_GET['config'] ?? 'O3';
 $stat = $_GET['stat'] ?? 'instructions';
 
 printStyle();
@@ -14,7 +15,7 @@ foreach ($branchCommits as $branch => $commits) {
     $lastMetrics = null;
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
-        $summary = getSummary($hash);
+        $summary = getSummary($hash, $config);
         $row = [formatCommit($commit)];
         if ($summary) {
             if (!$titles) {

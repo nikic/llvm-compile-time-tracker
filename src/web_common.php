@@ -2,16 +2,16 @@
 
 const DATA_DIR = __DIR__ . '/../data';
 
-function getSummary(string $hash): ?array {
-    $file = DATA_DIR . "/experiments/$hash/O3/summary.json";
+function getSummary(string $hash, string $config): ?array {
+    $file = DATA_DIR . "/experiments/$hash/$config/summary.json";
     if (file_exists($file)) {
         return json_decode(file_get_contents($file), true);
     }
     return null;
 }
 
-function getStats(string $hash): ?array {
-    $file = DATA_DIR . "/experiments/$hash/O3/stats.json";
+function getStats(string $hash, string $config): ?array {
+    $file = DATA_DIR . "/experiments/$hash/$config/stats.json";
     if (file_exists($file)) {
         return json_decode(file_get_contents($file), true);
     }
@@ -53,7 +53,7 @@ function formatMetricDiff(float $newValue, ?float $oldValue, string $stat): stri
         $perc = ($newValue / $oldValue - 1.0) * 100;
         return formatMetric($newValue, $stat) . ' (' . formatPerc($perc) . ')';
     } else {
-        return formatMetric($newValue, $stat);
+        return formatMetric($newValue, $stat) . ' (------)';
     }
 }
 
@@ -66,6 +66,7 @@ function printStyle() {
 <style>
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; }
+td { text-align: right; }
 </style>
 
 STYLE;
