@@ -8,11 +8,17 @@ $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? 'instructions';
 
-if (!is_string($from) || !is_string($to)) {
-    die("Missing from/to");
-}
-
 printStyle();
+
+echo "<form>\n";
+echo "<label>From: <input name=\"from\" value=\"" . h($from ?? '') . "\" /></label>\n";
+echo "<label>To: <input name=\"to\" value=\"" . h($to ?? '') . "\" /></label>\n";
+echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
+echo "<input type=\"submit\" value=\"Compare\" />\n";
+echo "</form>\n";
+if (!is_string($from) || !is_string($to)) {
+    return;
+}
 
 foreach (CONFIGS as $config) {
     $fromStats = getStats($from, $config);
@@ -56,4 +62,21 @@ foreach (CONFIGS as $config) {
         }
     }
     echo "</table>\n";
+}
+
+function printStatSelect(string $stat) {
+    $opt = function(string $name) use($stat) {
+        $selected = $name === $stat ? " selected" : "";
+        echo "<option$selected>$name</option>\n";
+    };
+    echo "<select name=\"stat\">\n";
+    // Not listed: context-switches, cpu-migrations, page-faults
+    $opt("instructions");
+    $opt("max-rss");
+    $opt("task-clock");
+    $opt("cycles");
+    $opt("branches");
+    $opt("branch-misses");
+    $opt("wall-time");
+    echo "</select>\n";
 }
