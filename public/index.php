@@ -13,6 +13,7 @@ echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
+echo "<hr />\n";
 
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $stddevs = getStddevData();
@@ -20,6 +21,7 @@ $stddevs = getStddevData();
 echo "<form action=\"compare_selected.php\">\n";
 echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
 echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
+echo "Or click the \"C\" to compare with previous.\n";
 foreach ($branchCommits as $branch => $commits) {
     $titles = null;
     $rows = [];
