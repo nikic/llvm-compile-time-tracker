@@ -15,6 +15,9 @@ echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
 
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
+echo "<form action=\"compare_selected.php\">\n";
+echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
+echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
 foreach ($branchCommits as $branch => $commits) {
     $titles = null;
     $rows = [];
@@ -23,19 +26,28 @@ foreach ($branchCommits as $branch => $commits) {
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $summary = getSummary($hash, $config);
-        $row = [formatCommit($commit)];
+        $row = [];
+        if ($summary && $lastHash) {
+            $row[] = "<a href=\"compare.php?from=$lastHash&to=$hash&stat=" . h($stat) . "\">C</a>";
+        } else {
+            $row[] = '';
+        }
+        if ($summary) {
+            $row[] = "<input type=\"checkbox\" name=\"commits[]\" value=\"$hash\" style=\"margin: -1px -0.5em\" />";
+        } else {
+            $row[] = '';
+        }
+        $row[] = formatCommit($commit);
+
         if ($summary) {
             if (!$titles) {
-                $titles = array_merge(['Commit'], array_keys($summary), ['geomean']);
+                $titles = array_merge(['', '', 'Commit'], array_keys($summary), ['geomean']);
             }
             $metrics = array_column($summary, $stat);
             $metrics = addGeoMean($metrics);
             foreach ($metrics as $i => $value) {
                 $prevValue = $lastMetrics[$i] ?? null;
                 $row[] = formatMetricDiff($value, $prevValue, $stat);
-            }
-            if ($lastHash !== null) {
-                $row[] = "<a href=\"compare.php?from=$lastHash&to=$hash&stat=" . h($stat) . "\">C</a>";
             }
             $lastMetrics = $metrics;
             $lastHash = $hash;
@@ -59,6 +71,7 @@ foreach ($branchCommits as $branch => $commits) {
     }
     echo "</table>\n";
 }
+echo "</form>\n";
 
 function formatCommit(array $commit): string {
     $hash = $commit['hash'];

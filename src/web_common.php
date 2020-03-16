@@ -70,7 +70,7 @@ function printStyle() {
     echo <<<'STYLE'
 <style>
 * { font-family: monospace; }
-table { border-spacing: 1em .1em; }
+table { border-spacing: 1em .1em; margin: 0 -1em; }
 td { text-align: right; }
 </style>
 
