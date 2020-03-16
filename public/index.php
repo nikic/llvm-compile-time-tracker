@@ -15,6 +15,8 @@ echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
 
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
+$stddevs = getStddevData();
+
 echo "<form action=\"compare_selected.php\">\n";
 echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
 echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
@@ -41,13 +43,13 @@ foreach ($branchCommits as $branch => $commits) {
 
         if ($summary) {
             if (!$titles) {
-                $titles = array_merge(['', '', 'Commit'], array_keys($summary), ['geomean']);
+                $titles = array_merge(['', '', 'Commit'], array_keys($summary));
             }
-            $metrics = array_column($summary, $stat);
-            $metrics = addGeoMean($metrics);
-            foreach ($metrics as $i => $value) {
-                $prevValue = $lastMetrics[$i] ?? null;
-                $row[] = formatMetricDiff($value, $prevValue, $stat);
+            $metrics = array_column_with_keys($summary, $stat);
+            foreach ($metrics as $bench => $value) {
+                $stddev = getStddev($stddevs, $config, $bench, $stat);
+                $prevValue = $lastMetrics[$bench] ?? null;
+                $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
             }
             $lastMetrics = $metrics;
             $lastHash = $hash;

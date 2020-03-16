@@ -20,6 +20,7 @@ if (!is_string($from) || !is_string($to)) {
     return;
 }
 
+$stddevs = getStddevData();
 if (!$details) {
     foreach (CONFIGS as $config) {
         $fromStats = getSummary($from, $config);
@@ -27,8 +28,8 @@ if (!$details) {
         if (!$fromStats || !$toStats) {
             continue;
         }
-        $fromStats = addGeoMean(array_column_with_keys($fromStats, $stat));
-        $toStats = addGeoMean(array_column_with_keys($toStats, $stat));
+        $fromStats = array_column_with_keys($fromStats, $stat);
+        $toStats = array_column_with_keys($toStats, $stat);
 
         echo "<h4>$config:</h4>\n";
         echo "<table>\n";
@@ -40,10 +41,11 @@ if (!$details) {
         echo "</tr>\n";
         foreach ($fromStats as $bench => $fromMetric) {
             $toMetric = $toStats[$bench];
+            $stddev = getStddev($stddevs, $config, $bench, $stat);
             echo "<tr>\n";
             echo "<td style=\"text-align: left\">$bench</td>\n";
             echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
-            echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat), "</td>\n";
+            echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat, $stddev), "</td>\n";
             echo "</tr>\n";
         }
         echo "</table>\n";
@@ -69,10 +71,11 @@ if (!$details) {
             $toFiles = $toStats[$bench];
             $fromAggMetric = aggregateData($fromFiles)[$stat];
             $toAggMetric = aggregateData($toFiles)[$stat];
+            $stddev = getStddev($stddevs, $config, $bench, $stat);
             echo "<tr>\n";
             echo "<td style=\"text-align: left\">$bench</td>\n";
             echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
-            echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat), "</td>\n";
+            echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
             echo "</tr>\n";
             if ($details) {
                 foreach ($fromFiles as $i => $fromFile) {
@@ -86,7 +89,7 @@ if (!$details) {
                     echo "<tr>\n";
                     echo "<td style=\"text-align: left\">&nbsp;&nbsp;&nbsp;&nbsp;$file</td>\n";
                     echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
-                    echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat), "</td>\n";
+                    echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat, $stddev), "</td>\n";
                     echo "</tr>\n";
                 }
             }

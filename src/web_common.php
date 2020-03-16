@@ -10,13 +10,19 @@ function getStats(string $hash, string $config): ?array {
     return null;
 }
 
-function formatPerc(float $value): string {
-    $threshold = 0.5;
+function getStddevData(): array {
+    return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
+}
+
+function getStddev(array $data, string $config, string $bench, string $stat): float {
+    return $data[$config][$bench][$stat];
+}
+
+function formatPerc(float $value, bool $isInteresting): string {
     $str = sprintf('%+.2f%%', $value);
-    if ($value > $threshold) {
-        return "<span style=\"color: red\">$str</span>";
-    } else if ($value < -$threshold) {
-        return "<span style=\"color: green\">$str</span>";
+    if ($isInteresting) {
+        $color = $value > 0 ? "red" : "green";
+        return "<span style=\"color: $color\">$str</span>";
     } else {
         return $str;
     }
@@ -35,23 +41,22 @@ function formatMetric(float $value, string $metric): string {
     case 'max-rss':
         $k = $value / 1024;
         return round($k) . 'KiB';
+    case 'wall-time':
+        return sprintf('%.2f', $value);
     default:
         return (string) $value;
     }
 }
 
-function formatMetricDiff(float $newValue, ?float $oldValue, string $stat): string {
+function formatMetricDiff(float $newValue, ?float $oldValue, string $stat, float $stddev): string {
     if ($oldValue !== null) {
         $perc = ($newValue / $oldValue - 1.0) * 100;
-        return formatMetric($newValue, $stat) . ' (' . formatPerc($perc) . ')';
+        $threshold = 3 * $stddev;
+        $isInteresting = abs($newValue - $oldValue) >= $threshold; 
+        return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $isInteresting) . ')';
     } else {
         return formatMetric($newValue, $stat) . ' (------)';
     }
-}
-
-function addGeoMean(array $stats): array {
-    $stats['geomean'] = pow(array_product($stats), 1/count($stats));
-    return $stats;
 }
 
 function h(string $str): string {

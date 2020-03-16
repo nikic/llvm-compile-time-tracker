@@ -31,11 +31,9 @@ foreach ($commits as $hash) {
         if (!$summary) {
             continue;
         }
+
         foreach ($summary as $bench => $stats) {
             foreach ($stats as $stat => $value) {
-                if (!isset($data[$config][$bench][$stat])) {
-                    $data[$config][$bench][$stat] = [];
-                }
                 $data[$config][$bench][$stat][] = $value;
             }
         }
@@ -44,9 +42,7 @@ foreach ($commits as $hash) {
 
 $stddevs = [];
 foreach ($data as $config => $configData) {
-    $stddevs[$config] = [];
     foreach ($configData as $bench => $benchData) {
-        $stddevs[$config][$bench] = [];
         foreach ($benchData as $stat => $statData) {
             $stddevs[$config][$bench][$stat] = stddev($statData);
         }
