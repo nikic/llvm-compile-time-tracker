@@ -2,14 +2,6 @@
 
 require __DIR__ . '/common.php';
 
-function getSummary(string $hash, string $config): ?array {
-    $file = DATA_DIR . "/experiments/$hash/$config/summary.json";
-    if (file_exists($file)) {
-        return json_decode(file_get_contents($file), true);
-    }
-    return null;
-}
-
 function getStats(string $hash, string $config): ?array {
     $file = DATA_DIR . "/experiments/$hash/$config/stats.json";
     if (file_exists($file)) {
