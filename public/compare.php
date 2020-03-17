@@ -20,6 +20,9 @@ if (!is_string($from) || !is_string($to)) {
     return;
 }
 
+echo "<hr />\n";
+echo "Comparing " . formatHash($from) . " to " . formatHash($to) . ".\n";
+
 $stddevs = getStddevData();
 if (!$details) {
     foreach (CONFIGS as $config) {
@@ -96,4 +99,9 @@ if (!$details) {
         }
         echo "</table>\n";
     }
+}
+
+function formatHash(string $hash): string {
+    return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
+         . h($hash) . "</a>";
 }
