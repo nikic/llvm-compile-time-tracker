@@ -5,6 +5,7 @@ $commitsFile = DATA_DIR . '/commits.json';
 
 $config = $_GET['config'] ?? 'O3';
 $stat = $_GET['stat'] ?? 'instructions';
+$filterBranch = $_GET['branch'] ?? 'all';
 
 printHeader();
 
@@ -23,6 +24,10 @@ echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
 echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
 echo "Or click the \"C\" to compare with previous.\n";
 foreach ($branchCommits as $branch => $commits) {
+    if ($filterBranch !== $branch && $filterBranch !== 'all') {
+        continue;
+    }
+
     $titles = null;
     $rows = [];
     $lastMetrics = null;
