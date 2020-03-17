@@ -13,6 +13,9 @@ echo "<form>\n";
 echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<input type=\"submit\" value=\"Go\" />\n";
+if ($filterBranch !== 'all') {
+    echo "<input type=\"hidden\" name=\"branch\" value=\"" . h($filterBranch) . "\" />\n";
+}
 echo "</form>\n";
 echo "<hr />\n";
 
