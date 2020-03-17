@@ -8,7 +8,7 @@ $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? 'instructions';
 
-printStyle();
+printHeader();
 
 echo "<form>\n";
 echo "<label>From: <input name=\"from\" value=\"" . h($from ?? '') . "\" /></label>\n";

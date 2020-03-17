@@ -7,6 +7,16 @@ $commits = $branchCommits['origin/master'];
 
 $stat = $_GET['stat'] ?? 'instructions';
 
+ob_start("ob_gzhandler");
+
+printHeader();
+
+echo "<form>\n";
+echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
+echo "<input type=\"submit\" value=\"Go\" />\n";
+echo "</form>\n";
+echo "<hr />\n";
+
 echo "<script src=\"//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js\"></script>\n";
 echo "<link rel=\"stylesheet\" href=\"//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css\" />\n";
 echo "<style>
@@ -58,7 +68,7 @@ foreach ($benches as $bench) {
     $encodedStat = json_encode($stat);
     echo <<<HTML
 <div style="float: left; margin: 1em;">
-$bench
+<h4>$bench:</h4>
 <div id="graph-$bench"></div>
 <script>
 g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {

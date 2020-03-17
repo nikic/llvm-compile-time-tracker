@@ -6,7 +6,7 @@ $commitsFile = DATA_DIR . '/commits.json';
 $config = $_GET['config'] ?? 'O3';
 $stat = $_GET['stat'] ?? 'instructions';
 
-printStyle();
+printHeader();
 
 echo "<form>\n";
 echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";

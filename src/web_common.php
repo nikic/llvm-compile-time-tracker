@@ -63,14 +63,20 @@ function h(string $str): string {
     return htmlspecialchars($str);
 }
 
-function printStyle() {
+function printHeader() {
     echo <<<'STYLE'
+<!DOCTYPE html>
 <style>
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; margin: 0 -1em; }
 td { text-align: right; }
 </style>
-
+<nav>
+<a href="index.php">Index</a> |
+<a href="graphs.php">Graphs</a> |
+<a href="compare.php">Compare</a>
+</nav>
+<hr />
 STYLE;
 }
 
