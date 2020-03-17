@@ -51,7 +51,7 @@ function formatMetric(float $value, string $metric): string {
 function formatMetricDiff(float $newValue, ?float $oldValue, string $stat, float $stddev): string {
     if ($oldValue !== null) {
         $perc = ($newValue / $oldValue - 1.0) * 100;
-        $threshold = 3 * $stddev;
+        $threshold = 5 * $stddev;
         $isInteresting = abs($newValue - $oldValue) >= $threshold; 
         return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $isInteresting) . ')';
     } else {
