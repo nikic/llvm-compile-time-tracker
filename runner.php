@@ -13,7 +13,7 @@ $commitsFile = __DIR__ . '/data/commits.json';
 
 $firstCommit = '3860b2a0bd09291a276b0590939961dffe67fbb6';
 $branchPatterns = [
-    '~^nikic/perf/.*~',
+    '~^[^/]+/perf/.*~',
     '~^origin/master$~',
 ];
 
