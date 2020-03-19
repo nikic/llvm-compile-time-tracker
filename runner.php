@@ -41,8 +41,10 @@ while (true) {
         continue;
     }
 
-    list($hash, $configs) = $workItem;
-    logInfo("Building $hash");
+    $hash = $workItem->hash;
+    $configs = $workItem->configs;
+    $reason = $workItem->reason;
+    logInfo("Building $hash. Reason: $reason");
 
     $repo->checkout($hash);
     runCommand('./build_llvm_project.sh');
@@ -62,7 +64,8 @@ while (true) {
 }
 
 function logInfo(string $str) {
-    echo "[", date('Y-m-d H:i:s.v') , "] ", $str, "\n";
+    $date = (new DateTime())->format('Y-m-d H:i:s.v');
+    echo "[$date] $str\n";
 }
 
 function runCommand(string $command) {
@@ -128,20 +131,32 @@ function getMissingConfigs(string $hash): array {
     return $configs;
 }
 
-function getHeadWorkItem(array $commits): ?array {
+class WorkItem {
+    public $hash;
+    public $configs;
+    public $reason;
+
+    public function __construct(string $hash, array $configs, string $reason) {
+        $this->hash = $hash;
+        $this->configs = $configs;
+        $this->reason = $reason;
+    }
+}
+
+function getHeadWorkItem(array $commits): ?WorkItem {
     $head = $commits[count($commits) - 1];
     if ($configs = getMissingConfigs($hash)) {
-        return [$hash, $configs];
+        return new WorkItem($hash, $configs, "New HEAD commit");
     }
     return null;
 }
 
-function getNewestWorkItem(array $commits): ?array {
+function getNewestWorkItem(array $commits): ?WorkItem {
     // Process newer commits first.
     foreach (array_reverse($commits) as $commit) {
         $hash = $commit['hash'];
         if ($configs = getMissingConfigs($hash)) {
-            return [$hash, $configs];
+            return new WorkItem($hash, $configs, "Newest commit");
         }
     }
     return null;
@@ -166,11 +181,11 @@ function getMissingRanges(array $commits): array {
     return $missingRanges;
 }
 
-function getBisectWorkItem(array $missingHashes): array {
+function getBisectWorkItemInRange(array $missingHashes, string $reason): WorkItem {
     $count = count($missingHashes);
     $idx = intdiv($count, 2);
     $hash = $missingHashes[$idx];
-    return [$hash, getMissingConfigs($hash)];
+    return new WorkItem($hash, getMissingConfigs($hash), $reason);
 }
 
 function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
@@ -189,7 +204,7 @@ function isInteresting(array $summary1, array $summary2, string $config, array $
     return false;
 }
 
-function getInterestingWorkItem(array $missingRanges, array $stddevs) {
+function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem {
     foreach ($missingRanges as list($hash1, $hash2, $missingHashes)) {
         foreach (CONFIGS as $config) {
             $summary1 = getSummary($hash1, $config);
@@ -199,31 +214,49 @@ function getInterestingWorkItem(array $missingRanges, array $stddevs) {
             }
 
             if (isInteresting($summary1, $summary2, $config, $stddevs)) {
-                return getBisectWorkItem($missingHashes);
+                return getBisectWorkItemInRange($missingHashes, "Bisecting interesting range");
             }
         }
     }
     return null;
 }
 
-function getWorkItem(array $branchCommits, array $stddevs): ?array {
-    foreach ($branchCommits as $branch => $commits) {
-        // If there's a new commit, always build it first.
-        /*if ($workItem = getHeadWorkItem($commits)) {
-            return $workItem;
-        }*/
+function getBisectWorkItem(array $missingRanges): ?WorkItem {
+    $largestMissingHashes = null;
+    foreach ($missingRanges as list(, , $missingHashes)) {
+        if (!$largestMissingHashes || count($missingHashes) > $largestMissingHashes) {
+            $largestMissingHashes = $missingHashes;
+        }
+    }
+    if ($largestMissingHashes) {
+        return getBisectWorkItemInRange($missingHashes);
+    }
+    return null;
+}
 
+function getWorkItem(array $branchCommits, array $stddevs): ?WorkItem {
+    foreach ($branchCommits as $branch => $commits) {
         if ($branch == 'origin/master') {
             $missingRanges = getMissingRanges($commits);
+            // Bisect ranges where a signficant change occurred,
+            // to pin-point the exact revision.
             if ($workItem = getInterestingWorkItem($missingRanges, $stddevs)) {
                 return $workItem;
             }
-        }
-
-        // For non-master branches, build the newest missing commit.
-        $workItem = getNewestWorkItem($commits);
-        if ($workItem) {
-            return $workItem;
+            // Build new commit.
+            if ($workItem = getHeadWorkItem($commits)) {
+                return $workItem;
+            }
+            // Bisect large ranges, so gaps are smaller.
+            if ($workItem = getBisectWorkItem($missingRanges)) {
+                return $workItem;
+            }
+        } else {
+            // Build the newest missing commit.
+            $workItem = getNewestWorkItem($commits);
+            if ($workItem) {
+                return $workItem;
+            }
         }
     }
     return null;
