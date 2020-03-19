@@ -27,3 +27,11 @@ function getSummary(string $hash, string $config): ?array {
     $summary['geomean'] = array_map('geomean', $statValues);
     return $summary;
 }
+
+function getStddevData(): array {
+    return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
+}
+
+function getStddev(array $data, string $config, string $bench, string $stat): float {
+    return $data[$config][$bench][$stat];
+}

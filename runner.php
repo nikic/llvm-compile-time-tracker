@@ -20,9 +20,11 @@ $branchPatterns = [
 $gitWrapper = new GitWrapper();
 $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
 $dataRepo = $gitWrapper->workingCopy(__DIR__ . '/data');
+$stddevs = getStddevData();
 
 while (true) {
-    $repo->fetch('--all');
+    logInfo("Fetching branches");
+    //$repo->fetch('--all');
 
     // Redoing all this work might get inefficient at some point...
     $branches = getRelevantBranches($repo, $branchPatterns);
@@ -31,7 +33,8 @@ while (true) {
         $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
     }
 
-    $workItem = getWorkItem($branchCommits);
+    logInfo("Finding work item");
+    $workItem = getWorkItem($branchCommits, $stddevs);
     if ($workItem === null) {
         // Wait before checking for a new commit.
         sleep($sleepInterval);
@@ -39,6 +42,7 @@ while (true) {
     }
 
     list($hash, $configs) = $workItem;
+    logInfo("Building $hash");
 
     $repo->checkout($hash);
     runCommand('./build_llvm_project.sh');
@@ -55,6 +59,10 @@ while (true) {
     $dataRepo->add('.');
     $dataRepo->commit('-m', 'Add data');
     $dataRepo->push('origin', 'master');
+}
+
+function logInfo(string $str) {
+    echo "[", date('Y-m-d H:i:s.v') , "] ", $str, "\n";
 }
 
 function runCommand(string $command) {
@@ -110,20 +118,112 @@ function haveData(string $hash, string $config): bool {
     return is_dir($experimentsDir . '/' . $hash . '/' . $config);
 }
 
-function getWorkItem(array $branchCommits): ?array {
-    foreach ($branchCommits as $commits) {
-        // Process newer commits first.
-        foreach (array_reverse($commits) as $commit) {
-            $hash = $commit['hash'];
-            $configs = [];
-            foreach (CONFIGS as $wantedConfig) {
-                if (!haveData($hash, $wantedConfig)) {
-                    $configs[] = $wantedConfig;
-                }
+function getMissingConfigs(string $hash): array {
+    $configs = [];
+    foreach (CONFIGS as $wantedConfig) {
+        if (!haveData($hash, $wantedConfig)) {
+            $configs[] = $wantedConfig;
+        }
+    }
+    return $configs;
+}
+
+function getHeadWorkItem(array $commits): ?array {
+    $head = $commits[count($commits) - 1];
+    if ($configs = getMissingConfigs($hash)) {
+        return [$hash, $configs];
+    }
+    return null;
+}
+
+function getNewestWorkItem(array $commits): ?array {
+    // Process newer commits first.
+    foreach (array_reverse($commits) as $commit) {
+        $hash = $commit['hash'];
+        if ($configs = getMissingConfigs($hash)) {
+            return [$hash, $configs];
+        }
+    }
+    return null;
+}
+
+function getMissingRanges(array $commits): array {
+    $lastPresentHash = null;
+    $missingHashes = [];
+    $missingRanges = [];
+    foreach (array_reverse($commits) as $commit) {
+        $hash = $commit['hash'];
+        if ($configs = getMissingConfigs($hash)) {
+            $missingHashes[] = $hash;
+        } else {
+            if ($missingHashes && $lastPresentHash) {
+                $missingRanges[] = [$lastPresentHash, $hash, $missingHashes];
             }
-            if ($configs) {
-                return [$hash, $configs];
+            $missingHashes = [];
+            $lastPresentHash = $hash;
+        }
+    }
+    return $missingRanges;
+}
+
+function getBisectWorkItem(array $missingHashes): array {
+    $count = count($missingHashes);
+    $idx = intdiv($count, 2);
+    $hash = $missingHashes[$idx];
+    return [$hash, getMissingConfigs($hash)];
+}
+
+function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
+    $stat = 'instructions';
+    $sigma = 4;
+    foreach ($summary1 as $bench => $stats1) {
+        $stats2 = $summary2[$bench];
+        $value1 = $stats1[$stat];
+        $value2 = $stats2[$stat];
+        $diff = abs($value1 - $value2);
+        $stddev = getStddev($stddevs, $config, $bench, $stat);
+        if ($diff >= $sigma * $stddev) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getInterestingWorkItem(array $missingRanges, array $stddevs) {
+    foreach ($missingRanges as list($hash1, $hash2, $missingHashes)) {
+        foreach (CONFIGS as $config) {
+            $summary1 = getSummary($hash1, $config);
+            $summary2 = getSummary($hash2, $config);
+            if (!$summary1 || !$summary2) {
+                continue;
             }
+
+            if (isInteresting($summary1, $summary2, $config, $stddevs)) {
+                return getBisectWorkItem($missingHashes);
+            }
+        }
+    }
+    return null;
+}
+
+function getWorkItem(array $branchCommits, array $stddevs): ?array {
+    foreach ($branchCommits as $branch => $commits) {
+        // If there's a new commit, always build it first.
+        /*if ($workItem = getHeadWorkItem($commits)) {
+            return $workItem;
+        }*/
+
+        if ($branch == 'origin/master') {
+            $missingRanges = getMissingRanges($commits);
+            if ($workItem = getInterestingWorkItem($missingRanges, $stddevs)) {
+                return $workItem;
+            }
+        }
+
+        // For non-master branches, build the newest missing commit.
+        $workItem = getNewestWorkItem($commits);
+        if ($workItem) {
+            return $workItem;
         }
     }
     return null;
