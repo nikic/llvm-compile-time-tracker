@@ -50,6 +50,7 @@ while (true) {
     runCommand('./build_llvm_project.sh');
 
     foreach ($configs as $config) {
+        logInfo("Building $config configuration");
         runCommand("./build_llvm_test_suite.sh $config");
 
         // TODO: Don't call into PHP here.
@@ -65,7 +66,7 @@ while (true) {
 
 function logInfo(string $str) {
     $date = (new DateTime())->format('Y-m-d H:i:s.v');
-    echo "[$date] $str\n";
+    echo "[RUNNER] [$date] $str\n";
 }
 
 function runCommand(string $command) {
@@ -145,6 +146,7 @@ class WorkItem {
 
 function getHeadWorkItem(array $commits): ?WorkItem {
     $head = $commits[count($commits) - 1];
+    $hash = $head['hash'];
     if ($configs = getMissingConfigs($hash)) {
         return new WorkItem($hash, $configs, "New HEAD commit");
     }
@@ -190,7 +192,7 @@ function getBisectWorkItemInRange(array $missingHashes, string $reason): WorkIte
 
 function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
     $stat = 'instructions';
-    $sigma = 4;
+    $sigma = 5;
     foreach ($summary1 as $bench => $stats1) {
         $stats2 = $summary2[$bench];
         $value1 = $stats1[$stat];
