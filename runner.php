@@ -24,7 +24,7 @@ $stddevs = getStddevData();
 
 while (true) {
     logInfo("Fetching branches");
-    //$repo->fetch('--all');
+    $repo->fetch('--all');
 
     // Redoing all this work might get inefficient at some point...
     $branches = getRelevantBranches($repo, $branchPatterns);
@@ -231,7 +231,7 @@ function getBisectWorkItem(array $missingRanges): ?WorkItem {
         }
     }
     if ($largestMissingHashes) {
-        return getBisectWorkItemInRange($missingHashes);
+        return getBisectWorkItemInRange($missingHashes, "Bisecting range");
     }
     return null;
 }
