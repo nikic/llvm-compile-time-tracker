@@ -47,7 +47,15 @@ while (true) {
     logInfo("Building $hash. Reason: $reason");
 
     $repo->checkout($hash);
-    runCommand('./build_llvm_project.sh');
+    try {
+        runCommand('./build_llvm_project.sh');
+    } catch (CommandException $e) {
+        echo $e->getMessage(), "\n";
+        $dir = getDirForHash($hash);
+        @mkdir($dir, 0755, true);
+        file_put_contents($dir . '/error', $e->stderr);
+        continue;
+    }
 
     foreach ($configs as $config) {
         logInfo("Building $config configuration");
@@ -69,6 +77,15 @@ function logInfo(string $str) {
     echo "[RUNNER] [$date] $str\n";
 }
 
+class CommandException {
+    public $stderr;
+
+    public function __construct(string $message, string $stderr) {
+        parent::__construct($message);
+        $this->stderr = $stderr;
+    }
+}
+
 function runCommand(string $command) {
     $process = Process::fromShellCommandline($command);
     $process->setTimeout(null);
@@ -76,7 +93,7 @@ function runCommand(string $command) {
         echo $buffer;
     });
     if ($exitCode !== 0) {
-        throw new Exception("Execution of \"$command\" failed");
+        throw new CommandException("Execution of \"$command\" failed", $process->getErrorOutput());
     }
 }
 
@@ -117,12 +134,23 @@ function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCom
     return getParsedLog($repo, $branch, $mergeBase);
 }
 
+function getDirForHash(string $hash): string {
+    return DATA_DIR . '/experiments/' . $hash;
+}
+
 function haveData(string $hash, string $config): bool {
-    $experimentsDir = __DIR__ . '/data/experiments';
-    return is_dir($experimentsDir . '/' . $hash . '/' . $config);
+    return is_dir(getDirForHash($hash) . '/' . $config);
+}
+
+function haveError(string $hash): bool {
+    return file_exists(getDirForHash($hash) . '/error');
 }
 
 function getMissingConfigs(string $hash): array {
+    if (haveError($hash)) {
+        return [];
+    }
+
     $configs = [];
     foreach (CONFIGS as $wantedConfig) {
         if (!haveData($hash, $wantedConfig)) {
@@ -170,6 +198,10 @@ function getMissingRanges(array $commits): array {
     $missingRanges = [];
     foreach (array_reverse($commits) as $commit) {
         $hash = $commit['hash'];
+        if (haveError($hash)) {
+            continue;
+        }
+
         if ($configs = getMissingConfigs($hash)) {
             $missingHashes[] = $hash;
         } else {
