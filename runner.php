@@ -231,7 +231,7 @@ function getBisectWorkItem(array $missingRanges): ?WorkItem {
         }
     }
     if ($largestMissingHashes) {
-        return getBisectWorkItemInRange($missingHashes, "Bisecting range");
+        return getBisectWorkItemInRange($largestMissingHashes, "Bisecting range");
     }
     return null;
 }
