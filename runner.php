@@ -258,7 +258,7 @@ function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem
 function getBisectWorkItem(array $missingRanges): ?WorkItem {
     $largestMissingHashes = null;
     foreach ($missingRanges as list(, , $missingHashes)) {
-        if (!$largestMissingHashes || count($missingHashes) > $largestMissingHashes) {
+        if (!$largestMissingHashes || count($missingHashes) > count($largestMissingHashes)) {
             $largestMissingHashes = $missingHashes;
         }
     }
