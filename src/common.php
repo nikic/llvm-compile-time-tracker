@@ -4,7 +4,11 @@ const DATA_DIR = __DIR__ . '/../data';
 const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g'];
 
 function array_column_with_keys(array $array, $column): array {
-    return array_combine(array_keys($array), array_column($array, $column));
+    $result = [];
+    foreach ($array as $key => $subArray) {
+        $result[$key] = $subArray[$column] ?? null;
+    }
+    return $result;
 }
 
 function geomean(array $stats): float {
@@ -32,6 +36,6 @@ function getStddevData(): array {
     return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
 }
 
-function getStddev(array $data, string $config, string $bench, string $stat): float {
-    return $data[$config][$bench][$stat];
+function getStddev(array $data, string $config, string $bench, string $stat): ?float {
+    return $data[$config][$bench][$stat] ?? null;
 }
