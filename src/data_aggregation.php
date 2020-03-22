@@ -37,18 +37,25 @@ function readRawData(string $dir): array {
         list(, $project, $file) = $matches;
         $perfContents = file_get_contents($pathName);
         $timeContents = file_get_contents(str_replace('.perfstats', '', $pathName));
+        $sizeContents = null;
+        if (preg_match('~(.+)\.link\.time\.perfstats~', $pathName, $matches)) {
+            $executable = $matches[1];
+            $sizeContents = shell_exec("size $executable");
+        }
 
         try {
             $perfStats = parsePerfStats($perfContents);
             $timeStats = parseTimeStats($timeContents);
+            $sizeStats = $sizeContents !== null ? parseSizeStats($sizeContents) : [];
         } catch (Exception $e) {
             echo $pathName, ":\n";
             echo $perfContents, "\n";
             echo $timeContents, "\n";
+            echo $sizeContents, "\n";
             throw $e;
         }
 
-        $stats = $perfStats + $timeStats + ['file' => $file];
+        $stats = $perfStats + $timeStats + $sizeStats + ['file' => $file];
         if (!isset($projectData[$project])) {
             $projectData[$project] = [];
         }
@@ -74,5 +81,17 @@ function parseTimeStats(string $str): array {
     return [
         'max-rss' => (float) $maxRss,
         'wall-time' => (float) $wallTime,
+    ];
+}
+
+function parseSizeStats(string $str): array {
+    if (!preg_match('~^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)~m', $str, $matches)) {
+        throw new Exception("Failed to match size output");
+    }
+    return [
+        'size-text' => (int) $matches[1],
+        'size-data' => (int) $matches[2],
+        'size-bss' => (int) $matches[3],
+        'size-total' => (int) $matches[4],
     ];
 }
