@@ -223,16 +223,17 @@ function getBisectWorkItemInRange(array $missingHashes, string $reason): WorkIte
 }
 
 function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
-    $stat = 'instructions';
     $sigma = 5;
-    foreach ($summary1 as $bench => $stats1) {
-        $stats2 = $summary2[$bench];
-        $value1 = $stats1[$stat];
-        $value2 = $stats2[$stat];
-        $diff = abs($value1 - $value2);
-        $stddev = getStddev($stddevs, $config, $bench, $stat);
-        if ($diff >= $sigma * $stddev) {
-            return true;
+    foreach (['instructions', 'max-rss'] as $stat) {
+        foreach ($summary1 as $bench => $stats1) {
+            $stats2 = $summary2[$bench];
+            $value1 = $stats1[$stat];
+            $value2 = $stats2[$stat];
+            $diff = abs($value1 - $value2);
+            $stddev = getStddev($stddevs, $config, $bench, $stat);
+            if ($diff >= $sigma * $stddev) {
+                return true;
+            }
         }
     }
     return false;
