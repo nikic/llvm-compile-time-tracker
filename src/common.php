@@ -6,9 +6,15 @@ const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g'];
 function array_column_with_keys(array $array, $column): array {
     $result = [];
     foreach ($array as $key => $subArray) {
-        $result[$key] = $subArray[$column] ?? null;
+        if (isset($subArray[$column])) {
+            $result[$key] = $subArray[$column];
+        }
     }
     return $result;
+}
+
+function array_key_union(array $array1, array $array2): array {
+    return array_keys(array_merge($array1, $array2));
 }
 
 function geomean(array $stats): float {

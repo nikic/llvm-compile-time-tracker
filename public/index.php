@@ -38,24 +38,24 @@ foreach ($branchCommits as $branch => $commits) {
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $summary = getSummary($hash, $config);
+        $metrics = $summary !== null ? array_column_with_keys($summary, $stat) : [];
         $row = [];
-        if ($summary && $lastHash) {
+        if ($metrics && $lastHash) {
             $row[] = "<a href=\"compare.php?from=$lastHash&to=$hash&stat=" . h($stat) . "\">C</a>";
         } else {
             $row[] = '';
         }
-        if ($summary) {
+        if ($metrics) {
             $row[] = "<input type=\"checkbox\" name=\"commits[]\" value=\"$hash\" style=\"margin: -1px -0.5em\" />";
         } else {
             $row[] = '';
         }
         $row[] = formatCommit($commit);
 
-        if ($summary) {
+        if ($metrics) {
             if (!$titles) {
                 $titles = array_merge(['', '', 'Commit'], array_keys($summary));
             }
-            $metrics = array_column_with_keys($summary, $stat);
             foreach ($metrics as $bench => $value) {
                 $stddev = getStddev($stddevs, $config, $bench, $stat);
                 $prevValue = $lastMetrics[$bench] ?? null;

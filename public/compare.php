@@ -42,7 +42,9 @@ if (!$details) {
         echo "<th>New</th>";
         echo "<tr>\n";
         echo "</tr>\n";
-        foreach ($fromStats as $bench => $fromMetric) {
+        $benches = array_key_union($fromStats, $toStats);
+        foreach ($benches as $bench) {
+            $fromMetric = $fromStats[$bench] ?? null;
             $toMetric = $toStats[$bench];
             $stddev = getStddev($stddevs, $config, $bench, $stat);
             echo "<tr>\n";

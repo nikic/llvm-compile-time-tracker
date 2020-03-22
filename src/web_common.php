@@ -35,7 +35,10 @@ function formatMetric(?float $value, string $metric): string {
     case 'task-clock':
         return round($value) . 'ms';
     case 'max-rss':
+    case 'size-total':
     case 'size-text':
+    case 'size-data':
+    case 'size-bss':
         $k = $value / 1024;
         return round($k) . 'KiB';
     case 'wall-time':
@@ -47,9 +50,9 @@ function formatMetric(?float $value, string $metric): string {
 
 function formatMetricDiff(float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
     if ($oldValue !== null) {
+        $perc = ($newValue / $oldValue - 1.0) * 100;
         $isInteresting = false;
         if ($stddev !== null) {
-            $perc = ($newValue / $oldValue - 1.0) * 100;
             $threshold = 5 * $stddev;
             $isInteresting = abs($newValue - $oldValue) >= $threshold;
         }
