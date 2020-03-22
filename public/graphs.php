@@ -48,7 +48,7 @@ foreach ($benches as $bench) {
         $line = $commit['commit_date'];
         foreach (CONFIGS as $config) {
             $summary = getSummary($hash, $config);
-            if ($summary) {
+            if (isset($summary[$bench][$stat])) {
                 $hasAtLeastOneConfig = true;
                 $line .= ',' . $summary[$bench][$stat];
             } else {
