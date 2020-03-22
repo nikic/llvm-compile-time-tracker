@@ -2,14 +2,6 @@
 
 require __DIR__ . '/common.php';
 
-function getStats(string $hash, string $config): ?array {
-    $file = DATA_DIR . "/experiments/$hash/$config/stats.json";
-    if (file_exists($file)) {
-        return json_decode(file_get_contents($file), true);
-    }
-    return null;
-}
-
 function formatPerc(float $value, bool $isInteresting): string {
     $str = sprintf('%+.2f%%', $value);
     if ($isInteresting) {

@@ -2,7 +2,8 @@
 
 require __DIR__ . '/src/common.php';
 $commitsFile = DATA_DIR . '/commits.json';
-$stddevFile = __DIR__ . '/stddev.json';
+$summaryStddevFile = __DIR__ . '/stddev.json';
+$statsStddevFile = __DIR__ . '/stats_stddev.msgpack';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $masterCommits = $branchCommits['origin/master'];
 $from = 'bb8622094d77417c629e45fc9964d0b699019f22';
@@ -25,32 +26,56 @@ foreach ($masterCommits as $commit) {
     }
 }
 
-$data = [];
+$summaryData = [];
+$statsData = [];
 foreach ($commits as $hash) {
     foreach (CONFIGS as $config) {
         $summary = getSummary($hash, $config);
-        if (!$summary) {
-            continue;
+        if ($summary) {
+            foreach ($summary as $bench => $stats) {
+                foreach ($stats as $stat => $value) {
+                    $summaryData[$config][$bench][$stat][] = $value;
+                }
+            }
         }
 
-        foreach ($summary as $bench => $stats) {
-            foreach ($stats as $stat => $value) {
-                $data[$config][$bench][$stat][] = $value;
+        $stats = getStats($hash, $config);
+        if ($stats) {
+            foreach ($stats as $bench => $files) {
+                foreach ($files as $stats) {
+                    $file = $stats['file'];
+                    foreach ($stats as $stat => $value) {
+                        if ($stat === 'file') {
+                            continue;
+                        }
+                        $statsData[$config][$file][$stat][] = $value;
+                    }
+                }
             }
         }
     }
 }
 
-$stddevs = [];
-foreach ($data as $config => $configData) {
+$summaryStddevs = [];
+foreach ($summaryData as $config => $configData) {
     foreach ($configData as $bench => $benchData) {
         foreach ($benchData as $stat => $statData) {
-            $stddevs[$config][$bench][$stat] = stddev($statData);
+            $summaryStddevs[$config][$bench][$stat] = stddev($statData);
         }
     }
 }
 
-file_put_contents($stddevFile, json_encode($stddevs, JSON_PRETTY_PRINT));
+$statsStddevs = [];
+foreach ($statsData as $config => $configData) {
+    foreach ($configData as $file => $fileData) {
+        foreach ($fileData as $stat => $statData) {
+            $statsStddevs[$config][$file][$stat] = stddev($statData);
+        }
+    }
+}
+
+file_put_contents($summaryStddevFile, json_encode($summaryStddevs, JSON_PRETTY_PRINT));
+file_put_contents($statsStddevFile, msgpack_pack($statsStddevs));
 
 function avg(array $values): float {
     return array_sum($values) / count($values);

@@ -38,10 +38,22 @@ function getSummary(string $hash, string $config): ?array {
     return $summary;
 }
 
+function getStats(string $hash, string $config): ?array {
+    $file = DATA_DIR . "/experiments/$hash/$config/stats.json";
+    if (file_exists($file)) {
+        return json_decode(file_get_contents($file), true);
+    }
+    return null;
+}
+
 function getStddevData(): array {
     return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
 }
 
 function getStddev(array $data, string $config, string $bench, string $stat): ?float {
     return $data[$config][$bench][$stat] ?? null;
+}
+
+function getPerFileStddevData(): array {
+    return msgpack_unpack(file_get_contents(__DIR__ . '/../stats_stddev.msgpack'));
 }

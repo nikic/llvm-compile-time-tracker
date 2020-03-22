@@ -56,7 +56,7 @@ if (!$details) {
         echo "</table>\n";
     }
 } else {
-    // TODO: Doesn't seem to be terrible useful, possibly remove this?
+    $fileStddevs = getPerFileStddevData();
     foreach (CONFIGS as $config) {
         $fromStats = getStats($from, $config);
         $toStats = getStats($to, $config);
@@ -91,6 +91,7 @@ if (!$details) {
                     }
                     $fromMetric = $fromFile[$stat];
                     $toMetric = $toFile[$stat];
+                    $stddev = getStddev($fileStddevs, $config, $file, $stat);
                     echo "<tr>\n";
                     echo "<td style=\"text-align: left\">&nbsp;&nbsp;&nbsp;&nbsp;$file</td>\n";
                     echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
