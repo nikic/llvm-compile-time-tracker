@@ -14,6 +14,8 @@ echo "<form>\n";
 echo "<label>From: <input name=\"from\" value=\"" . h($from ?? '') . "\" /></label>\n";
 echo "<label>To: <input name=\"to\" value=\"" . h($to ?? '') . "\" /></label>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
+echo "<label>Per-file details: <input type=\"checkbox\" name=\"details\""
+   . ($details ? " checked" : "") . " /></label>";
 echo "<input type=\"submit\" value=\"Compare\" />\n";
 echo "</form>\n";
 if (!is_string($from) || !is_string($to)) {
