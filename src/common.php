@@ -39,9 +39,9 @@ function getSummary(string $hash, string $config): ?array {
 }
 
 function getStats(string $hash, string $config): ?array {
-    $file = DATA_DIR . "/experiments/$hash/$config/stats.json";
+    $file = DATA_DIR . "/experiments/$hash/$config/stats.msgpack";
     if (file_exists($file)) {
-        return json_decode(file_get_contents($file), true);
+        return msgpack_unpack(file_get_contents($file));
     }
     return null;
 }
