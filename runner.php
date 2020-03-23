@@ -77,7 +77,7 @@ function logInfo(string $str) {
     echo "[RUNNER] [$date] $str\n";
 }
 
-class CommandException {
+class CommandException extends Exception {
     public $stderr;
 
     public function __construct(string $message, string $stderr) {
