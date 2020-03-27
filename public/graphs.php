@@ -6,6 +6,7 @@ $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $commits = $branchCommits['origin/master'];
 
 $stat = $_GET['stat'] ?? 'instructions';
+$relative = isset($_GET['relative']);
 
 ob_start("ob_gzhandler");
 
@@ -13,6 +14,8 @@ printHeader();
 
 echo "<form>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
+echo "<label>Relative (percent): <input type=\"checkbox\" name=\"relative\""
+   . ($relative ? " checked" : "") . " /></label>\n";
 echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
 echo "<hr />\n";
@@ -42,6 +45,7 @@ $benches = [
 $hashes = [];
 foreach ($benches as $bench) {
     $csv = "Date," . implode(",", CONFIGS) . "\n";
+    $firstData = [];
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $hasAtLeastOneConfig = false;
@@ -49,8 +53,18 @@ foreach ($benches as $bench) {
         foreach (CONFIGS as $config) {
             $summary = getSummary($hash, $config);
             if (isset($summary[$bench][$stat])) {
+                $value = $summary[$bench][$stat];
+                if ($relative) {
+                    if (!isset($firstData[$config])) {
+                        $firstData[$config] = $value;
+                    }
+                    $firstValue = $firstData[$config];
+                    //$value -= $firstValue;
+                    $value = ($value - $firstValue) / $firstValue;
+                }
+
                 $hasAtLeastOneConfig = true;
-                $line .= ',' . $summary[$bench][$stat];
+                $line .= ',' . $value;
             } else {
                 $line .= ',';
             }
