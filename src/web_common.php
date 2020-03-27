@@ -3,6 +3,10 @@
 require __DIR__ . '/common.php';
 
 function formatPerc(float $value, bool $isInteresting): string {
+    if ($value === 0.0) {
+        return "      ";
+    }
+
     $str = sprintf('%+.2f%%', $value);
     if ($isInteresting) {
         $color = $value > 0 ? "red" : "green";
@@ -40,8 +44,9 @@ function formatMetric(?float $value, string $metric): string {
     }
 }
 
-function formatMetricDiff(float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
-    if ($oldValue !== null) {
+function formatMetricDiff(
+        ?float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
+    if ($oldValue !== null && $newValue !== null) {
         $perc = ($newValue / $oldValue - 1.0) * 100;
         $isInteresting = false;
         if ($stddev !== null) {
@@ -50,7 +55,7 @@ function formatMetricDiff(float $newValue, ?float $oldValue, string $stat, ?floa
         }
         return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $isInteresting) . ')';
     } else {
-        return formatMetric($newValue, $stat) . ' (------)';
+        return formatMetric($newValue, $stat) . '         ';
     }
 }
 
@@ -64,7 +69,7 @@ function printHeader() {
 <style>
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; margin: 0 -1em; }
-td { text-align: right; }
+td { text-align: right; white-space: pre; }
 </style>
 <nav>
 <a href="index.php">Index</a> |
@@ -89,5 +94,9 @@ function printStatSelect(string $stat) {
     $opt("branches");
     $opt("branch-misses");
     $opt("wall-time");
+    $opt("size-total");
+    $opt("size-text");
+    $opt("size-data");
+    $opt("size-bss");
     echo "</select>\n";
 }

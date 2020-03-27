@@ -95,7 +95,7 @@ if (!$details) {
                     $toMetric = $toFile[$stat];
                     $stddev = getStddev($fileStddevs, $config, $file, $stat);
                     echo "<tr>\n";
-                    echo "<td style=\"text-align: left\">&nbsp;&nbsp;&nbsp;&nbsp;$file</td>\n";
+                    echo "<td style=\"text-align: left\">    $file</td>\n";
                     echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
                     echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat, $stddev), "</td>\n";
                     echo "</tr>\n";
