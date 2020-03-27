@@ -60,7 +60,7 @@ foreach ($benches as $bench) {
                     }
                     $firstValue = $firstData[$config];
                     //$value -= $firstValue;
-                    $value = ($value - $firstValue) / $firstValue;
+                    $value = ($value - $firstValue) / $firstValue * 100;
                 }
 
                 $hasAtLeastOneConfig = true;
