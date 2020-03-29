@@ -53,7 +53,9 @@ while (true) {
         echo $e->getMessage(), "\n";
         $dir = getDirForHash($hash);
         @mkdir($dir, 0755, true);
-        file_put_contents($dir . '/error', $e->stderr);
+        $debugOutput = "STDOUT:\n" . substr($e->stdout, -1000)
+                     . "\n\nSTDERR:\n" . $e->stderr;
+        file_put_contents($dir . '/error', $debugOutput);
         continue;
     }
 
@@ -78,10 +80,12 @@ function logInfo(string $str) {
 }
 
 class CommandException extends Exception {
+    public $stdout;
     public $stderr;
 
-    public function __construct(string $message, string $stderr) {
+    public function __construct(string $message, string $stdout, string $stderr) {
         parent::__construct($message);
+        $this->stdout = $stdout;
         $this->stderr = $stderr;
     }
 }
@@ -93,7 +97,10 @@ function runCommand(string $command) {
         echo $buffer;
     });
     if ($exitCode !== 0) {
-        throw new CommandException("Execution of \"$command\" failed", $process->getErrorOutput());
+        throw new CommandException(
+            "Execution of \"$command\" failed",
+            $process->getOutput(), $process->getErrorOutput()
+        );
     }
 }
 
