@@ -134,10 +134,6 @@ function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCom
     return getParsedLog($repo, $branch, $mergeBase);
 }
 
-function getDirForHash(string $hash): string {
-    return DATA_DIR . '/experiments/' . $hash;
-}
-
 function haveData(string $hash, string $config): bool {
     return is_dir(getDirForHash($hash) . '/' . $config);
 }

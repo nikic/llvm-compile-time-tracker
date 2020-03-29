@@ -64,6 +64,9 @@ foreach ($branchCommits as $branch => $commits) {
             $lastMetrics = $metrics;
             $lastHash = $hash;
         }
+        if (hasBuildError($hash)) {
+            $row[] = 'Failed to build llvm-project';
+        }
         $rows[$hash] = $row;
     }
 
@@ -76,8 +79,16 @@ foreach ($branchCommits as $branch => $commits) {
     echo "</tr>\n";
     foreach (array_reverse($rows) as $hash => $row) {
         echo "<tr>\n";
-        foreach ($row as $value) {
-            echo "<td>$value</td>\n";
+        $colSpan = 1;
+        if (count($row) < count($titles)) {
+            $colSpan =  count($titles) - count($row) + 1;
+        }
+        foreach ($row as $i => $value) {
+            if ($colSpan > 1 && $i == count($row) - 1) {
+                echo "<td colspan=\"$colSpan\" style=\"text-align: left\">$value</td>\n";
+            } else {
+                echo "<td>$value</td>\n";
+            }
         }
         echo "</tr>\n";
     }

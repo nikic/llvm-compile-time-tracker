@@ -21,8 +21,16 @@ function geomean(array $stats): float {
     return pow(array_product($stats), 1/count($stats));
 }
 
+function getDirForHash(string $hash): string {
+    return DATA_DIR . '/experiments/' . $hash;
+}
+
+function hasBuildError(string $hash): bool {
+    return file_exists(getDirForHash($hash) . '/error');
+}
+
 function getSummary(string $hash, string $config): ?array {
-    $file = DATA_DIR . "/experiments/$hash/$config/summary.json";
+    $file = getDirForHash($hash) . "/$config/summary.json";
     if (!file_exists($file)) {
         return null;
     }
@@ -39,7 +47,7 @@ function getSummary(string $hash, string $config): ?array {
 }
 
 function getStats(string $hash, string $config): ?array {
-    $file = DATA_DIR . "/experiments/$hash/$config/stats.msgpack.gz";
+    $file = getDirForHash($hash) . "/$config/stats.msgpack.gz";
     if (file_exists($file)) {
         return msgpack_unpack(gzdecode(file_get_contents($file)));
     }
