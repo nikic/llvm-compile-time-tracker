@@ -96,8 +96,8 @@ class CommandException extends Exception {
     }
 
     public function getDebugOutput(): string {
-        return "STDOUT:\n" . substr($e->stdout, -2000)
-             . "\n\nSTDERR:\n" . $e->stderr;
+        return "STDOUT:\n" . substr($this->stdout, -2000)
+             . "\n\nSTDERR:\n" . $this->stderr;
     }
 }
 
