@@ -2,6 +2,7 @@
 
 use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
+use GitWrapper\Exception\GitException;
 use Symfony\Component\Process\Process;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -24,7 +25,12 @@ $stddevs = getStddevData();
 
 while (true) {
     logInfo("Fetching branches");
-    $repo->fetch('--all');
+    try {
+        $repo->fetch('--all');
+    } catch (GitException $e) {
+        // Log the failure, but carry on, we have plenty of old commits to build!
+        logError($e->getMessage());
+    }
 
     // Redoing all this work might get inefficient at some point...
     $branches = getRelevantBranches($repo, $branchPatterns);
@@ -80,9 +86,17 @@ while (true) {
     $dataRepo->push('origin', 'master');
 }
 
-function logInfo(string $str) {
+function logWithLevel(string $level, string $str) {
     $date = (new DateTime())->format('Y-m-d H:i:s.v');
-    echo "[RUNNER] [$date] $str\n";
+    echo "[RUNNER] [$level] [$date] $str\n";
+}
+
+function logInfo(string $str) {
+    logWithLevel("INFO", $str);
+}
+
+function logError(string $str) {
+    logWithLevel("ERROR", $str);
 }
 
 class CommandException extends Exception {
