@@ -53,15 +53,21 @@ while (true) {
         echo $e->getMessage(), "\n";
         $dir = getDirForHash($hash);
         @mkdir($dir, 0755, true);
-        $debugOutput = "STDOUT:\n" . substr($e->stdout, -1000)
-                     . "\n\nSTDERR:\n" . $e->stderr;
-        file_put_contents($dir . '/error', $debugOutput);
+        file_put_contents($dir . '/error', $e->getDebugOutput());
         continue;
     }
 
     foreach ($configs as $config) {
         logInfo("Building $config configuration");
-        runCommand("./build_llvm_test_suite.sh $config");
+        try {
+            runCommand("./build_llvm_test_suite.sh $config");
+        } catch (CommandException $e) {
+            echo $e->getMessage(), "\n";
+            $dir = getDirForHash($hash) . '/' . $config;
+            @mkdir($dir, 0755, true);
+            file_put_contents($dir . '/error', $e->getDebugOutput());
+            continue;
+        }
 
         // TODO: Don't call into PHP here.
         $outDir = $hash . '/' . $config;
@@ -87,6 +93,11 @@ class CommandException extends Exception {
         parent::__construct($message);
         $this->stdout = $stdout;
         $this->stderr = $stderr;
+    }
+
+    public function getDebugOutput(): string {
+        return "STDOUT:\n" . substr($e->stdout, -2000)
+             . "\n\nSTDERR:\n" . $e->stderr;
     }
 }
 
