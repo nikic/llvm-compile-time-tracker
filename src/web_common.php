@@ -31,6 +31,8 @@ function formatMetric(?float $value, string $metric): string {
     case 'task-clock':
         return round($value) . 'ms';
     case 'max-rss':
+        $m = $value / 1024;
+        return round($m) . 'MiB';
     case 'size-total':
     case 'size-text':
     case 'size-data':
