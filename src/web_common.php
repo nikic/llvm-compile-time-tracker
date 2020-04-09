@@ -16,7 +16,7 @@ function formatPerc(float $value, float $interestingness): string {
         $interestingness = min($interestingness, $maxInterestingness);
         $interestingness -= $minInterestingness;
         $interestingness /= $maxInterestingness - $minInterestingness;
-        $alpha = 0.5 * $interestingness;
+        $alpha = 0.4 * $interestingness;
         if ($value > 0.0) {
             $color = "rgba(255, 0, 0, $alpha)";
         } else {
