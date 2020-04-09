@@ -130,7 +130,11 @@ function runCommand(string $command) {
 }
 
 function getParsedLog(GitWorkingCopy $repo, string $branch, string $baseCommit) {
-    $log = $repo->log('--pretty=format:%H;%an;%ae;%cI;%s', '--reverse', "$baseCommit^..$branch");
+    $log = $repo->log(
+        '--pretty=format:%H;%an;%ae;%cI;%s',
+        '--reverse',
+        '--first-parent',
+        "$baseCommit^..$branch");
     $lines = explode("\n", $log);
 
     $parsedLog = [];
