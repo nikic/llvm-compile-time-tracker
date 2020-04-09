@@ -2,12 +2,29 @@
 
 require __DIR__ . '/common.php';
 
-function formatPerc(float $value): string {
+function formatPerc(float $value, float $interestingness): string {
     if ($value === 0.0) {
         return "      ";
     }
 
-    return sprintf('%+.2f%%', $value);
+    $formattedValue = sprintf('%+.2f%%', $value);
+
+    $minInterestingness = 4.0;
+    $maxInterestingness = 5.0;
+    if ($interestingness >= $minInterestingness) {
+        // Map interestingness to [0, 1]
+        $interestingness = min($interestingness, $maxInterestingness);
+        $interestingness -= $minInterestingness;
+        $interestingness /= $maxInterestingness - $minInterestingness;
+        $alpha = 0.5 * $interestingness;
+        if ($value > 0.0) {
+            $color = "rgba(255, 0, 0, $alpha)";
+        } else {
+            $color = "rgba(0, 255, 0, $alpha)";
+        }
+        return "<span style=\"background-color: $color\">$formattedValue</span>";
+    }
+    return $formattedValue;
 }
 
 function formatMetric(?float $value, string $metric): string {
@@ -40,32 +57,17 @@ function formatMetric(?float $value, string $metric): string {
     }
 }
 
-function formatMetricDiffCell(
+function formatMetricDiff(
         ?float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
     if ($oldValue !== null && $newValue !== null) {
         $perc = ($newValue / $oldValue - 1.0) * 100;
-        $extra = "";
+        $interestingness = 0.0;
         if ($stddev !== null) {
             $interestingness = abs($newValue - $oldValue) / $stddev;
-            $minInterestingness = 4.0;
-            $maxInterestingness = 5.0;
-            if ($interestingness >= $minInterestingness) {
-                // Map interestingness to [0, 1]
-                $interestingness = min($interestingness, $maxInterestingness);
-                $interestingness -= $minInterestingness;
-                $interestingness /= $maxInterestingness - $minInterestingness;
-                $alpha = 0.5 * $interestingness;
-                if ($oldValue < $newValue) {
-                    $color = "rgba(255, 0, 0, $alpha)";
-                } else {
-                    $color = "rgba(0, 255, 0, $alpha)";
-                }
-                $extra = " style=\"background-color: $color\"";
-            }
         }
-        return "<td$extra>" . formatMetric($newValue, $stat) . ' (' . formatPerc($perc) . ')</td>';
+        return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $interestingness) . ')';
     } else {
-        return '<td>' . formatMetric($newValue, $stat) . '         </td>';
+        return formatMetric($newValue, $stat) . '         ';
     }
 }
 

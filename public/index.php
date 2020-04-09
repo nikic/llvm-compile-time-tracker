@@ -59,7 +59,7 @@ foreach ($branchCommits as $branch => $commits) {
             foreach ($metrics as $bench => $value) {
                 $stddev = getStddev($stddevs, $config, $bench, $stat);
                 $prevValue = $lastMetrics[$bench] ?? null;
-                $row[] = formatMetricDiffCell($value, $prevValue, $stat, $stddev);
+                $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
             }
             $lastMetrics = $metrics;
             $lastHash = $hash;
@@ -86,8 +86,6 @@ foreach ($branchCommits as $branch => $commits) {
         foreach ($row as $i => $value) {
             if ($colSpan > 1 && $i == count($row) - 1) {
                 echo "<td colspan=\"$colSpan\" style=\"text-align: left\">$value</td>\n";
-            } else if (strpos($value, "<td") === 0) {
-                echo "$value\n";
             } else {
                 echo "<td>$value</td>\n";
             }
