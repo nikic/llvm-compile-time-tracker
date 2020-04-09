@@ -2,18 +2,12 @@
 
 require __DIR__ . '/common.php';
 
-function formatPerc(float $value, bool $isInteresting): string {
+function formatPerc(float $value): string {
     if ($value === 0.0) {
         return "      ";
     }
 
-    $str = sprintf('%+.2f%%', $value);
-    if ($isInteresting) {
-        $color = $value > 0 ? "red" : "green";
-        return "<span style=\"color: $color\">$str</span>";
-    } else {
-        return $str;
-    }
+    return sprintf('%+.2f%%', $value);
 }
 
 function formatMetric(?float $value, string $metric): string {
@@ -46,18 +40,32 @@ function formatMetric(?float $value, string $metric): string {
     }
 }
 
-function formatMetricDiff(
+function formatMetricDiffCell(
         ?float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
     if ($oldValue !== null && $newValue !== null) {
         $perc = ($newValue / $oldValue - 1.0) * 100;
-        $isInteresting = false;
+        $extra = "";
         if ($stddev !== null) {
-            $threshold = 5 * $stddev;
-            $isInteresting = abs($newValue - $oldValue) >= $threshold;
+            $interestingness = abs($newValue - $oldValue) / $stddev;
+            $minInterestingness = 4.0;
+            $maxInterestingness = 5.0;
+            if ($interestingness >= $minInterestingness) {
+                // Map interestingness to [0, 1]
+                $interestingness = min($interestingness, $maxInterestingness);
+                $interestingness -= $minInterestingness;
+                $interestingness /= $maxInterestingness - $minInterestingness;
+                $alpha = 0.5 * $interestingness;
+                if ($oldValue < $newValue) {
+                    $color = "rgba(255, 0, 0, $alpha)";
+                } else {
+                    $color = "rgba(0, 255, 0, $alpha)";
+                }
+                $extra = " style=\"background-color: $color\"";
+            }
         }
-        return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $isInteresting) . ')';
+        return "<td$extra>" . formatMetric($newValue, $stat) . ' (' . formatPerc($perc) . ')</td>';
     } else {
-        return formatMetric($newValue, $stat) . '         ';
+        return '<td>' . formatMetric($newValue, $stat) . '         </td>';
     }
 }
 

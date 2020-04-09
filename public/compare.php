@@ -52,7 +52,7 @@ if (!$details) {
             echo "<tr>\n";
             echo "<td style=\"text-align: left\">$bench</td>\n";
             echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
-            echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat, $stddev), "</td>\n";
+            echo formatMetricDiffCell($toMetric, $fromMetric, $stat, $stddev), "\n";
             echo "</tr>\n";
         }
         echo "</table>\n";
@@ -82,7 +82,7 @@ if (!$details) {
             echo "<tr>\n";
             echo "<td style=\"text-align: left\">$bench</td>\n";
             echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
-            echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
+            echo formatMetricDiffCell($toAggMetric, $fromAggMetric, $stat, $stddev), "\n";
             echo "</tr>\n";
             if ($details) {
                 foreach ($fromFiles as $i => $fromFile) {
@@ -97,7 +97,7 @@ if (!$details) {
                     echo "<tr>\n";
                     echo "<td style=\"text-align: left\">    $file</td>\n";
                     echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
-                    echo "<td>", formatMetricDiff($toMetric, $fromMetric, $stat, $stddev), "</td>\n";
+                    echo formatMetricDiffCell($toMetric, $fromMetric, $stat, $stddev), "\n";
                     echo "</tr>\n";
                 }
             }
