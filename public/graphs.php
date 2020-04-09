@@ -6,6 +6,7 @@ $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $commits = $branchCommits['origin/master'];
 
 $stat = $_GET['stat'] ?? 'instructions';
+$bench = $_GET['bench'] ?? 'all';
 $relative = isset($_GET['relative']);
 
 ob_start("ob_gzhandler");
@@ -28,19 +29,14 @@ echo "<style>
 }
 </style>\n";
 
-$benches = [
-    'geomean',
-    'kimwitu++',
-    'sqlite3',
-    'consumer-typeset',
-    'Bullet',
-    'tramp3d-v4',
-    'mafft',
-    'ClamAV',
-    'lencod',
-    'SPASS',
-    '7zip',
-];
+if ($bench == 'all') {
+    $benches = BENCHES;
+} else {
+    if (!in_array($bench, BENCHES)) {
+        die("Unknown benchmark " . h($bench));
+    }
+    $benches = [$bench];
+}
 
 $hashes = [];
 foreach ($benches as $bench) {

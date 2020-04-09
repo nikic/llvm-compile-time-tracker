@@ -2,6 +2,19 @@
 
 const DATA_DIR = __DIR__ . '/../data';
 const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g'];
+const BENCHES = [
+    'geomean',
+    'kimwitu++',
+    'sqlite3',
+    'consumer-typeset',
+    'Bullet',
+    'tramp3d-v4',
+    'mafft',
+    'ClamAV',
+    'lencod',
+    'SPASS',
+    '7zip',
+];
 
 function array_column_with_keys(array $array, $column): array {
     $result = [];
