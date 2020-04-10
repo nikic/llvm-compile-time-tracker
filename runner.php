@@ -281,7 +281,8 @@ function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem
             }
 
             if (isInteresting($summary1, $summary2, $config, $stddevs)) {
-                return getBisectWorkItemInRange($missingHashes, "Bisecting interesting range");
+                return getBisectWorkItemInRange($missingHashes,
+                    "Bisecting interesting range for config $config");
             }
         }
     }
@@ -301,9 +302,25 @@ function getBisectWorkItem(array $missingRanges): ?WorkItem {
     return null;
 }
 
+function getRecentCommits(array $commits): array {
+    $recentCommits = [];
+    $now = new DateTime();
+    foreach ($commits as $commit) {
+        $date = new DateTime($commit['commit_date']);
+        if ($date->diff($now)->days > 10) {
+            continue;
+        }
+        $recentCommits[] = $commit;
+    }
+    return $recentCommits;
+}
+
 function getWorkItem(array $branchCommits, array $stddevs): ?WorkItem {
     foreach ($branchCommits as $branch => $commits) {
         if ($branch == 'origin/master') {
+            // Don't try to build too old commits.
+            $commits = getRecentCommits($commits);
+
             $missingRanges = getMissingRanges($commits);
             // Bisect ranges where a signficant change occurred,
             // to pin-point the exact revision.
