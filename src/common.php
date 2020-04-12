@@ -42,13 +42,7 @@ function hasBuildError(string $hash): bool {
     return file_exists(getDirForHash($hash) . '/error');
 }
 
-function getSummary(string $hash, string $config): ?array {
-    $file = getDirForHash($hash) . "/$config/summary.json";
-    if (!file_exists($file)) {
-        return null;
-    }
-
-    $summary = json_decode(file_get_contents($file), true);
+function addGeomean(array $summary): array {
     $statValues = [];
     foreach ($summary as $bench => $stats) {
         foreach ($stats as $stat => $value) {
@@ -57,6 +51,15 @@ function getSummary(string $hash, string $config): ?array {
     }
     $summary['geomean'] = array_map('geomean', $statValues);
     return $summary;
+}
+
+function getSummary(string $hash, string $config): ?array {
+    $file = getDirForHash($hash) . "/$config/summary.json";
+    if (!file_exists($file)) {
+        return null;
+    }
+
+    return addGeomean(json_decode(file_get_contents($file), true));
 }
 
 function getStats(string $hash, string $config): ?array {
