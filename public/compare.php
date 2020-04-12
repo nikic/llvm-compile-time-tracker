@@ -42,7 +42,6 @@ if (!$details) {
         echo "<th>Benchmark</th>";
         echo "<th>Old</th>";
         echo "<th>New</th>";
-        echo "<tr>\n";
         echo "</tr>\n";
         $benches = array_key_union($fromStats, $toStats);
         foreach ($benches as $bench) {
@@ -72,7 +71,6 @@ if (!$details) {
         echo "<th>Benchmark</th>";
         echo "<th>Old</th>";
         echo "<th>New</th>";
-        echo "<tr>\n";
         echo "</tr>\n";
         foreach ($fromStats as $bench => $fromFiles) {
             $toFiles = $toStats[$bench];
