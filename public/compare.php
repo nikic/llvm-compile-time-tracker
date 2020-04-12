@@ -77,7 +77,50 @@ foreach (CONFIGS as $config) {
     echo "</table>\n";
 }
 
+foreach (array_slice(CONFIGS, 1) as $config) {
+    $fromStats = getStats($from, $config);
+    $toStats = getStats($to, $config);
+    if (!$fromStats || !$toStats) {
+        continue;
+    }
+
+    $fromSummary = addGeomean(array_map('getLinkStats', $fromStats));
+    $toSummary = addGeomean(array_map('getLinkStats', $toStats));
+    $benches = array_keys($fromSummary);
+
+    echo "<h4>$config (link only):</h4>\n";
+    echo "<table>\n";
+    echo "<tr>\n";
+    echo "<th>Benchmark</th>";
+    echo "<th>Old</th>";
+    echo "<th>New</th>";
+    echo "</tr>\n";
+    foreach ($benches as $bench) {
+        $fromAggMetric = $fromSummary[$bench][$stat];
+        $toAggMetric = $toSummary[$bench][$stat];
+        $stddev = getStddev($fileStddevs, $config, $fromSummary[$bench]['file'], $stat);
+        echo "<tr>\n";
+        echo "<td style=\"text-align: left\">$bench</td>\n";
+        echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
+        echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
+}
+
 function formatHash(string $hash): string {
     return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
          . h($hash) . "</a>";
+}
+
+function getLinkStats(array $statsList): array {
+    foreach ($statsList as $stats) {
+        if (strpos($stats['file'], '.link') === false) {
+            continue;
+        }
+
+        return $stats;
+    }
+
+    throw new Exception('No link stats found');
 }
