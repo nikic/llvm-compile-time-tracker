@@ -9,8 +9,8 @@ function formatPerc(float $value, float $interestingness): string {
 
     $formattedValue = sprintf('%+.2f%%', $value);
 
-    $minInterestingness = 4.0;
-    $maxInterestingness = 5.0;
+    $minInterestingness = 3.0;
+    $maxInterestingness = 4.0;
     if ($interestingness >= $minInterestingness) {
         // Map interestingness to [0, 1]
         $interestingness = min($interestingness, $maxInterestingness);
@@ -63,7 +63,8 @@ function formatMetricDiff(
         $perc = ($newValue / $oldValue - 1.0) * 100;
         $interestingness = 0.0;
         if ($stddev !== null) {
-            $interestingness = abs($newValue - $oldValue) / $stddev;
+            // Correct by sqrt(2) because we want the stddev of differences.
+            $interestingness = abs($newValue - $oldValue) / $stddev / sqrt(2);
         }
         return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $interestingness) . ')';
     } else {
