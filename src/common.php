@@ -35,7 +35,7 @@ function geomean(array $stats): float {
 }
 
 function getDirForHash(string $hash): string {
-    return DATA_DIR . '/experiments/' . $hash;
+    return DATA_DIR . '/experiments/' . substr($hash, 0, 2) . '/' . substr($hash, 2);
 }
 
 function hasBuildError(string $hash): bool {
