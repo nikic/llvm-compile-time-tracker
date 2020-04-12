@@ -92,6 +92,11 @@ td { text-align: right; white-space: pre; }
 STYLE;
 }
 
+function printFooter() {
+    $dt = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+    echo "<!-- Generated in {$dt}s -->";
+}
+
 function printStatSelect(string $stat) {
     $opt = function(string $name) use($stat) {
         $selected = $name === $stat ? " selected" : "";

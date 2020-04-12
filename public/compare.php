@@ -108,6 +108,8 @@ foreach (array_slice(CONFIGS, 1) as $config) {
     echo "</table>\n";
 }
 
+printFooter();
+
 function formatHash(string $hash): string {
     return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
          . h($hash) . "</a>";

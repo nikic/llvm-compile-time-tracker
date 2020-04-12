@@ -39,42 +39,48 @@ if ($bench == 'all') {
 }
 
 $hashes = [];
+$data = [];
+$firstData = [];
 foreach ($benches as $bench) {
-    $csv = "Date," . implode(",", CONFIGS) . "\n";
-    $firstData = [];
-    foreach ($commits as $commit) {
-        $hash = $commit['hash'];
-        $hasAtLeastOneConfig = false;
-        $line = $commit['commit_date'];
-        foreach (CONFIGS as $config) {
-            $summary = getSummary($hash, $config);
+    $csv[$bench] = "Date," . implode(",", CONFIGS) . "\n";
+}
+foreach ($commits as $commit) {
+    $hasAtLeastOneConfig = false;
+    $hash = $commit['hash'];
+    $lines = [];
+    foreach ($benches as $bench) {
+        $lines[$bench] = $commit['commit_date'];
+    }
+    foreach (CONFIGS as $config) {
+        $summary = getSummary($hash, $config);
+        foreach ($benches as $bench) {
             if (isset($summary[$bench][$stat])) {
                 $value = $summary[$bench][$stat];
                 if ($relative) {
-                    if (!isset($firstData[$config])) {
-                        $firstData[$config] = $value;
+                    if (!isset($firstData[$bench][$config])) {
+                        $firstData[$bench][$config] = $value;
                     }
-                    $firstValue = $firstData[$config];
-                    //$value -= $firstValue;
+                    $firstValue = $firstData[$bench][$config];
                     $value = ($value - $firstValue) / $firstValue * 100;
                 }
 
+                $lines[$bench] .= ',' . $value;
                 $hasAtLeastOneConfig = true;
-                $line .= ',' . $value;
             } else {
-                $line .= ',';
-            }
-        }
-        $line .= "\n";
-        if ($hasAtLeastOneConfig) {
-            $csv .= $line;
-            if ($bench === $benches[0]) {
-                $hashes[] = $hash;
+                $lines[$bench] .= ',';
             }
         }
     }
+    if ($hasAtLeastOneConfig) {
+        $hashes[] = $hash;
+        foreach ($benches as $bench) {
+            $csv[$bench] .= $lines[$bench] . "\n";
+        }
+    }
+}
 
-    $encodedCsv = json_encode($csv);
+foreach ($benches as $bench) {
+    $encodedCsv = json_encode($csv[$bench]);
     $encodedStat = json_encode($stat);
     echo <<<HTML
 <div style="float: left; margin: 1em;">
@@ -104,4 +110,7 @@ echo <<<HTML
 <script>
 hashes = $encodedHashes;
 </script>
+
 HTML;
+
+printFooter();

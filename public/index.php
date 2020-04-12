@@ -41,7 +41,7 @@ foreach ($branchCommits as $branch => $commits) {
         $metrics = $summary !== null ? array_column_with_keys($summary, $stat) : [];
         $row = [];
         if ($metrics && $lastHash) {
-            $row[] = "<a href=\"compare.php?from=$lastHash&to=$hash&stat=" . h($stat) . "\">C</a>";
+            $row[] = "<a href=\"compare.php?from=$lastHash&amp;to=$hash&amp;stat=" . h($stat) . "\">C</a>";
         } else {
             $row[] = '';
         }
@@ -95,6 +95,7 @@ foreach ($branchCommits as $branch => $commits) {
     echo "</table>\n";
 }
 echo "</form>\n";
+echo printFooter();
 
 function formatCommit(array $commit): string {
     $hash = $commit['hash'];
