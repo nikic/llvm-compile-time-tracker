@@ -50,7 +50,7 @@ while (true) {
     $hash = $workItem->hash;
     $configs = $workItem->configs;
     $reason = $workItem->reason;
-    $dir = getDirForHash($hash);
+    $hashDir = getDirForHash($hash);
     logInfo("Building $hash. Reason: $reason");
 
     $repo->checkout($hash);
@@ -58,8 +58,8 @@ while (true) {
         runCommand('./build_llvm_project.sh');
     } catch (CommandException $e) {
         echo $e->getMessage(), "\n";
-        @mkdir($dir, 0755, true);
-        file_put_contents($dir . '/error', $e->getDebugOutput());
+        @mkdir($hashDir, 0755, true);
+        file_put_contents($hashDir . '/error', $e->getDebugOutput());
         continue;
     }
 
@@ -69,13 +69,13 @@ while (true) {
             runCommand("./build_llvm_test_suite.sh $config");
         } catch (CommandException $e) {
             echo $e->getMessage(), "\n";
-            @mkdir($dir, 0755, true);
-            file_put_contents($dir . '/error', $e->getDebugOutput());
+            @mkdir($hashDir, 0755, true);
+            file_put_contents($hashDir . '/error', $e->getDebugOutput());
             continue;
         }
 
         // TODO: Don't call into PHP here.
-        runCommand("php aggregate_data.php $dir");
+        runCommand("php aggregate_data.php $hashDir/$config");
     }
 
     file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
