@@ -5,7 +5,11 @@ $commitsFile = DATA_DIR . '/commits.json';
 
 $config = $_GET['config'] ?? 'O3';
 $stat = $_GET['stat'] ?? 'instructions';
-$filterBranch = $_GET['branch'] ?? 'all';
+$sortBy = $_GET['sortBy'] ?? 'date';
+$filterRemote = $_GET['remote'] ?? null;
+$filterBranch = $_GET['branch'] ?? null;
+
+$isFrontPage = $filterRemote === null && $filterBranch === null;
 
 printHeader();
 
@@ -13,86 +17,122 @@ echo "<form>\n";
 echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<input type=\"submit\" value=\"Go\" />\n";
-if ($filterBranch !== 'all') {
+if ($sortBy) {
+    echo "<input type=\"hidden\" name=\"sortBy\" value=\"" . h($sortBy) . "\" />\n";
+}
+if ($filterRemote) {
+    echo "<input type=\"hidden\" name=\"remote\" value=\"" . h($filterRemote) . "\" />\n";
+}
+if ($filterBranch) {
     echo "<input type=\"hidden\" name=\"branch\" value=\"" . h($filterBranch) . "\" />\n";
 }
 echo "</form>\n";
 echo "<hr />\n";
 
-$branchCommits = json_decode(file_get_contents($commitsFile), true);
+$commitData = json_decode(file_get_contents($commitsFile), true);
 $stddevs = getStddevData();
 
 echo "<form action=\"compare_selected.php\">\n";
 echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
 echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
 echo "Or click the \"C\" to compare with previous.\n";
-foreach ($branchCommits as $branch => $commits) {
-    if ($filterBranch !== $branch && $filterBranch !== 'all') {
+foreach (groupByRemote($commitData) as $remote => $branchCommits) {
+    if ($filterRemote !== null && $filterRemote !== $remote) {
         continue;
     }
 
-    $titles = null;
-    $rows = [];
-    $lastMetrics = null;
-    $lastHash = null;
-    foreach ($commits as $commit) {
-        $hash = $commit['hash'];
-        $summary = getSummary($hash, $config);
-        $metrics = $summary !== null ? array_column_with_keys($summary, $stat) : [];
-        $row = [];
-        if ($metrics && $lastHash) {
-            $row[] = "<a href=\"compare.php?from=$lastHash&amp;to=$hash&amp;stat=" . h($stat) . "\">C</a>";
+    echo "<div>\n";
+    echo "<h3 style=\"display: inline-block\">Remote " . h($remote) . ":</h3>\n";
+    if ($remote !== 'origin') {
+        $params = ["config" => $config, "stat" => $stat, "remote" => $remote];
+        if ($isFrontPage) {
+            echo "Showing recent experiments. ";
+            $branchCommits = filterRecentBranches($branchCommits);
+            $url = makeUrl("", $params);
+            echo "<a href=\"" . h($url) . "\">Show all</a>\n";
         } else {
-            $row[] = '';
-        }
-        if ($metrics) {
-            $row[] = "<input type=\"checkbox\" name=\"commits[]\" value=\"$hash\" style=\"margin: -1px -0.5em\" />";
-        } else {
-            $row[] = '';
-        }
-        $row[] = formatCommit($commit);
-
-        if ($metrics) {
-            if (!$titles) {
-                $titles = array_merge(['', '', 'Commit'], array_keys($summary));
-            }
-            foreach ($metrics as $bench => $value) {
-                $stddev = getStddev($stddevs, $config, $bench, $stat);
-                $prevValue = $lastMetrics[$bench] ?? null;
-                $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
-            }
-            $lastMetrics = $metrics;
-            $lastHash = $hash;
-        }
-        if (hasBuildError($hash)) {
-            $row[] = 'Failed to build llvm-project';
-        }
-        $rows[$hash] = $row;
-    }
-
-    echo "<h4>", h($branch), ":</h4>\n";
-    echo "<table>\n";
-    echo "<tr>\n";
-    foreach ($titles as $title) {
-        echo "<th>$title</th>\n";
-    }
-    echo "</tr>\n";
-    foreach (array_reverse($rows) as $hash => $row) {
-        echo "<tr>\n";
-        $colSpan = 1;
-        if (count($row) < count($titles)) {
-            $colSpan =  count($titles) - count($row) + 1;
-        }
-        foreach ($row as $i => $value) {
-            if ($colSpan > 1 && $i == count($row) - 1) {
-                echo "<td colspan=\"$colSpan\" style=\"text-align: left\">$value</td>\n";
+            if ($sortBy == 'date') {
+                $url = makeUrl("", $params + ["sortBy" => "name"]);
+                echo "<a href=\"" . h($url) . "\">Sort by name</a>\n";
             } else {
-                echo "<td>$value</td>\n";
+                $url = makeUrl("", $params + ["sortBy" => "date"]);
+                echo "<a href=\"" . h($url) . "\">Sort by date</a>\n";
             }
+        }
+    }
+    echo "</div>\n";
+
+    if ($sortBy === 'date') {
+        $branchCommits = sortBranchesByDate($branchCommits);
+    }
+    foreach ($branchCommits as $branch => $commits) {
+        if ($filterBranch !== null && $filterBranch !== $branch) {
+            continue;
+        }
+
+        $titles = null;
+        $rows = [];
+        $lastMetrics = null;
+        $lastHash = null;
+        foreach ($commits as $commit) {
+            $hash = $commit['hash'];
+            $summary = getSummary($hash, $config);
+            $metrics = $summary !== null ? array_column_with_keys($summary, $stat) : [];
+            $row = [];
+            if ($metrics && $lastHash) {
+                $row[] = "<a href=\"compare.php?from=$lastHash&amp;to=$hash&amp;stat=" . h($stat) . "\">C</a>";
+            } else {
+                $row[] = '';
+            }
+            if ($metrics) {
+                $row[] = "<input type=\"checkbox\" name=\"commits[]\" value=\"$hash\" style=\"margin: -1px -0.5em\" />";
+            } else {
+                $row[] = '';
+            }
+            $row[] = formatCommit($commit);
+
+            if ($metrics) {
+                if (!$titles) {
+                    $titles = array_merge(['', '', 'Commit'], array_keys($summary));
+                }
+                foreach ($metrics as $bench => $value) {
+                    $stddev = getStddev($stddevs, $config, $bench, $stat);
+                    $prevValue = $lastMetrics[$bench] ?? null;
+                    $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
+                }
+                $lastMetrics = $metrics;
+                $lastHash = $hash;
+            }
+            if (hasBuildError($hash)) {
+                $row[] = 'Failed to build llvm-project';
+            }
+            $rows[$hash] = $row;
+        }
+
+        echo "<h4>", h($branch), ":</h4>\n";
+        echo "<table>\n";
+        echo "<tr>\n";
+        foreach ($titles as $title) {
+            echo "<th>$title</th>\n";
         }
         echo "</tr>\n";
+        foreach (array_reverse($rows) as $hash => $row) {
+            echo "<tr>\n";
+            $colSpan = 1;
+            if (count($row) < count($titles)) {
+                $colSpan =  count($titles) - count($row) + 1;
+            }
+            foreach ($row as $i => $value) {
+                if ($colSpan > 1 && $i == count($row) - 1) {
+                    echo "<td colspan=\"$colSpan\" style=\"text-align: left\">$value</td>\n";
+                } else {
+                    echo "<td>$value</td>\n";
+                }
+            }
+            echo "</tr>\n";
+        }
+        echo "</table>\n";
     }
-    echo "</table>\n";
 }
 echo "</form>\n";
 echo printFooter();
@@ -111,4 +151,33 @@ function printConfigSelect(string $name) {
         echo "<option$selected>$config</option>\n";
     }
     echo "</select>\n";
+}
+
+function groupByRemote(array $branchCommits): array {
+    $remotes = [];
+    foreach ($branchCommits as $branch => $commits) {
+        $remote = strstr($branch, '/', true);
+        $remotes[$remote][$branch] = $commits;
+    }
+    return $remotes;
+}
+
+function getNewestCommitDate(array $commits): DateTime {
+    $commit = $commits[count($commits) - 1];
+    return new DateTime($commit['commit_date']);
+}
+
+function sortBranchesByDate(array $branchCommits): array {
+    uasort($branchCommits, function($a, $b) {
+        return getNewestCommitDate($b) <=> getNewestCommitDate($a);
+    });
+    return $branchCommits;
+}
+
+function filterRecentBranches(array $branchCommits) {
+    $now = new DateTime;
+    return array_filter($branchCommits, function(array $commits) use ($now) {
+        $date = getNewestCommitDate($commits);
+        return $date->diff($now)->days <= 7;
+    });
 }

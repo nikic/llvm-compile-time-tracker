@@ -118,3 +118,7 @@ function printStatSelect(string $stat) {
     $opt("size-bss");
     echo "</select>\n";
 }
+
+function makeUrl(string $page, array $queryParams): string {
+    return $page . '?' . http_build_query($queryParams);
+}
