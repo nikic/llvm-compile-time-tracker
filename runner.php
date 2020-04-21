@@ -81,7 +81,12 @@ while (true) {
     file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
     $dataRepo->add('.');
     $dataRepo->commit('-m', 'Add data');
-    $dataRepo->push('origin', 'master');
+    try {
+        $dataRepo->push('origin', 'master');
+    } catch (GitException $e) {
+        // Log the failure, but carry on, we can push the data later.
+        logError($e->getMessage());
+    }
 }
 
 function logWithLevel(string $level, string $str) {
