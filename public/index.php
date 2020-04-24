@@ -41,26 +41,28 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
         continue;
     }
 
-    echo "<div>\n";
-    echo "<h3 style=\"display: inline-block\">Remote " . h($remote) . ":</h3>\n";
-    if ($remote !== 'origin') {
-        $params = ["config" => $config, "stat" => $stat, "remote" => $remote];
-        if ($isFrontPage) {
-            echo "Showing recent experiments. ";
-            $branchCommits = filterRecentBranches($branchCommits);
-            $url = makeUrl("", $params);
-            echo "<a href=\"" . h($url) . "\">Show all</a>\n";
-        } else {
-            if ($sortBy == 'date') {
-                $url = makeUrl("", $params + ["sortBy" => "name"]);
-                echo "<a href=\"" . h($url) . "\">Sort by name</a>\n";
+    if ($filterBranch === null) {
+        echo "<div>\n";
+        echo "<h3 style=\"display: inline-block\">Remote " . h($remote) . ":</h3>\n";
+        if ($remote !== 'origin') {
+            $params = ["config" => $config, "stat" => $stat, "remote" => $remote];
+            if ($isFrontPage) {
+                echo "Showing recent experiments. ";
+                $branchCommits = filterRecentBranches($branchCommits);
+                $url = makeUrl("", $params);
+                echo "<a href=\"" . h($url) . "\">Show all</a>\n";
             } else {
-                $url = makeUrl("", $params + ["sortBy" => "date"]);
-                echo "<a href=\"" . h($url) . "\">Sort by date</a>\n";
+                if ($sortBy == 'date') {
+                    $url = makeUrl("", $params + ["sortBy" => "name"]);
+                    echo "<a href=\"" . h($url) . "\">Sort by name</a>\n";
+                } else {
+                    $url = makeUrl("", $params + ["sortBy" => "date"]);
+                    echo "<a href=\"" . h($url) . "\">Sort by date</a>\n";
+                }
             }
         }
+        echo "</div>\n";
     }
-    echo "</div>\n";
 
     if ($sortBy === 'date') {
         $branchCommits = sortBranchesByDate($branchCommits);
