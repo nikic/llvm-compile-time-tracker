@@ -7,6 +7,7 @@ use Symfony\Component\Process\Process;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/src/common.php';
+require __DIR__ . '/src/data_aggregation.php';
 
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
@@ -63,13 +64,19 @@ while (true) {
         continue;
     }
 
+    @mkdir($hashDir, 0755, true);
+
+    // Gather statistics on the size of the clang binary.
+    $sizeContents = shell_exec("size llvm-project-build/bin/clang");
+    $sizeStats = parseSizeStats($sizeContents);
+    file_put_contents($hashDir . '/size.json', json_encode($sizeStats, JSON_PRETTY_PRINT));
+
     foreach ($configs as $config) {
         logInfo("Building $config configuration");
         try {
             runCommand("./build_llvm_test_suite.sh $config");
         } catch (CommandException $e) {
             echo $e->getMessage(), "\n";
-            @mkdir($hashDir, 0755, true);
             file_put_contents($hashDir . '/error', $e->getDebugOutput());
             continue;
         }
