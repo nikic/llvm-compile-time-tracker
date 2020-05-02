@@ -23,7 +23,8 @@ if (!is_string($from) || !is_string($to)) {
 }
 
 echo "<hr />\n";
-echo "Comparing " . formatHash($from) . " to " . formatHash($to) . ".\n";
+echo "Comparing " . formatHash($from) . " to " . formatHash($to)
+   . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>).\n";
 
 $stddevs = getStddevData();
 $fileStddevs = getPerFileStddevData();
@@ -113,6 +114,11 @@ printFooter();
 function formatHash(string $hash): string {
     return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
          . h($hash) . "</a>";
+}
+
+function getGitHubCompareUrl(string $fromHash, string $toHash): string {
+    return "https://github.com/llvm/llvm-project/compare/"
+         . urlencode($fromHash) . "..." . urlencode($toHash);
 }
 
 function getLinkStats(array $statsList): array {
