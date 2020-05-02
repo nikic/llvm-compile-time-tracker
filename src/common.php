@@ -70,6 +70,15 @@ function getStats(string $hash, string $config): ?array {
     return null;
 }
 
+function getClangSizeSummary(string $hash): ?array {
+    $file = getDirForHash($hash) . "/size.json";
+    if (!file_exists($file)) {
+        return null;
+    }
+
+    return json_decode(file_get_contents($file), true);
+}
+
 function getStddevData(): array {
     return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
 }

@@ -17,6 +17,9 @@ echo "<form>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<label>Relative (percent): <input type=\"checkbox\" name=\"relative\""
    . ($relative ? " checked" : "") . " /></label>\n";
+if ($bench !== 'all') {
+    echo "<input type=\"hidden\" name=\"bench\" value=\"" . h($bench) . "\" />\n";
+}
 echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
 echo "<hr />\n";
@@ -32,7 +35,7 @@ echo "<style>
 if ($bench == 'all') {
     $benches = BENCHES;
 } else {
-    if (!in_array($bench, BENCHES)) {
+    if (!in_array($bench, BENCHES) && $bench != 'clang') {
         die("Unknown benchmark " . h($bench));
     }
     $benches = [$bench];
@@ -51,23 +54,39 @@ foreach ($commits as $commit) {
     foreach ($benches as $bench) {
         $lines[$bench] = $commit['commit_date'];
     }
-    foreach (CONFIGS as $config) {
-        $summary = getSummary($hash, $config);
-        foreach ($benches as $bench) {
-            if (isset($summary[$bench][$stat])) {
-                $value = $summary[$bench][$stat];
-                if ($relative) {
-                    if (!isset($firstData[$bench][$config])) {
-                        $firstData[$bench][$config] = $value;
-                    }
-                    $firstValue = $firstData[$bench][$config];
-                    $value = ($value - $firstValue) / $firstValue * 100;
+    if ($bench == 'clang') {
+        $summary = getClangSizeSummary($hash);
+        $value = $summary[$stat] ?? null;
+        if ($value !== null) {
+            if ($relative) {
+                if (!isset($firstData[$bench])) {
+                    $firstData[$bench] = $value;
                 }
+                $firstValue = $firstData[$bench];
+                $value = ($value - $firstValue) / $firstValue * 100;
+            }
+            $hasAtLeastOneConfig = true;
+        }
+        $lines[$bench] .= ',' . $value;
+    } else {
+        foreach (CONFIGS as $config) {
+            $summary = getSummary($hash, $config);
+            foreach ($benches as $bench) {
+                if (isset($summary[$bench][$stat])) {
+                    $value = $summary[$bench][$stat];
+                    if ($relative) {
+                        if (!isset($firstData[$bench][$config])) {
+                            $firstData[$bench][$config] = $value;
+                        }
+                        $firstValue = $firstData[$bench][$config];
+                        $value = ($value - $firstValue) / $firstValue * 100;
+                    }
 
-                $lines[$bench] .= ',' . $value;
-                $hasAtLeastOneConfig = true;
-            } else {
-                $lines[$bench] .= ',';
+                    $lines[$bench] .= ',' . $value;
+                    $hasAtLeastOneConfig = true;
+                } else {
+                    $lines[$bench] .= ',';
+                }
             }
         }
     }
