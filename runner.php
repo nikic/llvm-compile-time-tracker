@@ -199,6 +199,13 @@ function getMissingConfigs(string $hash): array {
             $configs[] = $wantedConfig;
         }
     }
+
+    // The O0-g configuration was added later.
+    // We do not want to run O0-g benchmarks for all old commits, so skip this case.
+    if ($configs === ['O0-g']) {
+        return [];
+    }
+
     return $configs;
 }
 
@@ -273,7 +280,7 @@ function isInteresting(array $summary1, array $summary2, string $config, array $
             $value2 = $stats2[$stat];
             $diff = abs($value1 - $value2);
             $stddev = getStddev($stddevs, $config, $bench, $stat);
-            if ($diff >= $sigma * $stddev) {
+            if ($stddev !== null && $diff >= $sigma * $stddev) {
                 return true;
             }
         }
