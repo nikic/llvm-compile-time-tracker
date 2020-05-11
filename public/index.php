@@ -72,7 +72,7 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
             continue;
         }
 
-        $titles = null;
+        $titles = [];
         $rows = [];
         $lastMetrics = null;
         $lastHash = null;

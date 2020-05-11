@@ -78,7 +78,7 @@ foreach (CONFIGS as $config) {
     echo "</table>\n";
 }
 
-foreach (array_slice(CONFIGS, 1) as $config) {
+foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
     $fromStats = getStats($from, $config);
     $toStats = getStats($to, $config);
     if (!$fromStats || !$toStats) {
