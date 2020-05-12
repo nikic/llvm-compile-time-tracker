@@ -6,11 +6,9 @@ $summaryStddevFile = __DIR__ . '/stddev.json';
 $statsStddevFile = __DIR__ . '/stats_stddev.msgpack';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $masterCommits = $branchCommits['origin/master'];
-$from = 'ced0d1f42b39bd93b350b2597ce6587d107c26a7';
-$to = '89c7d9633b3f2255ed711522f29751566a6f5d70';
-//$from = 'bb8622094d77417c629e45fc9964d0b699019f22';
-//$to = 'c93652517c810a3afafe6d2a57b528bf2692a165';
-//$to = '564180429818dd48f2fab970fdb42d172ebd2a5f';
+//$from = 'ced0d1f42b39bd93b350b2597ce6587d107c26a7';
+$from = '32e90cbcd19a83e20a86bfc1cbf7cec9729e9077';
+$to = '5c10c6e0128a69442b55d324f010f94dbe7eebc9';
 
 $commits = [];
 $foundFirst = false;
@@ -28,6 +26,7 @@ foreach ($masterCommits as $commit) {
     }
 }
 
+echo "Reading data...\n";
 $summaryData = [];
 $statsData = [];
 foreach ($commits as $hash) {
@@ -58,6 +57,7 @@ foreach ($commits as $hash) {
     }
 }
 
+echo "Computing stddevs...\n";
 $summaryStddevs = [];
 foreach ($summaryData as $config => $configData) {
     foreach ($configData as $bench => $benchData) {
@@ -97,14 +97,33 @@ function diffs(array $values): array {
  * trick allows us to work on values that potentially have significant changes, because these
  * jumps will show up as individual large values in the differences, and don't have an overly
  * large impact on the final result. */
-function stddev(array $values): float {
+function diffs_stddev(array $diffs): float {
     $sqSum = 0.0;
-    $diffs = diffs($values);
     foreach ($diffs as $diff) {
         $sqSum += $diff * $diff;
     }
     $stddev = sqrt($sqSum / (count($diffs) - 1));
-    return $stddev / sqrt(2);
+    return $stddev;
+}
+
+function stddev(array $values): float {
+    $diffs = diffs($values);
+
+    // Compute preliminary stddev, discard diffs >= 5sigma, and then recompute.
+    $changed = true;
+    while ($changed) {
+        $changed = false;
+        $stddev = diffs_stddev($diffs);
+        foreach ($diffs as $i => $diff) {
+            if (abs($diff) >= 5 * $stddev) {
+                unset($diffs[$i]);
+                $changed = true;
+            }
+        }
+    }
+
+    // Taking abs() here to avoid negative zero.
+    return abs($stddev / sqrt(2));
 }
 
 /*function avg(array $values): float {
