@@ -63,8 +63,13 @@ function formatMetricDiff(
         $perc = ($newValue / $oldValue - 1.0) * 100;
         $interestingness = 0.0;
         if ($stddev !== null) {
-            // Correct by sqrt(2) because we want the stddev of differences.
-            $interestingness = abs($newValue - $oldValue) / $stddev / sqrt(2);
+            if ($stddev === 0.0) {
+                // Avoid division by zero. Could use fdiv() in PHP 8.
+                $interestingness = INF;
+            } else {
+                // Correct by sqrt(2) because we want the stddev of differences.
+                $interestingness = abs($newValue - $oldValue) / $stddev / sqrt(2);
+            }
         }
         return formatMetric($newValue, $stat) . ' (' . formatPerc($perc, $interestingness) . ')';
     } else {
