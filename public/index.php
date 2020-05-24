@@ -104,9 +104,8 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
                 }
                 $lastMetrics = $metrics;
                 $lastHash = $hash;
-            }
-            if (hasBuildError($hash)) {
-                $row[] = 'Failed to build llvm-project';
+            } else if (hasBuildError($hash)) {
+                $row[] = 'Failed to build llvm-project or llvm-test-suite';
             }
             $rows[$hash] = $row;
         }
