@@ -78,7 +78,7 @@ while (true) {
         } catch (CommandException $e) {
             echo $e->getMessage(), "\n";
             file_put_contents($hashDir . '/error', $e->getDebugOutput());
-            continue;
+            break;
         }
 
         // TODO: Don't call into PHP here.
