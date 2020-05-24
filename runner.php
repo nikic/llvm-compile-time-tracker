@@ -109,6 +109,12 @@ function logError(string $str) {
     logWithLevel("ERROR", $str);
 }
 
+function getLastLines(string $str, int $numLines): string {
+    $lines = explode("\n", $str);
+    $lines = array_slice($lines, -$numLines);
+    return implode("\n", $lines);
+}
+
 class CommandException extends Exception {
     public $stdout;
     public $stderr;
@@ -120,8 +126,8 @@ class CommandException extends Exception {
     }
 
     public function getDebugOutput(): string {
-        return "STDOUT:\n" . substr($this->stdout, -2000)
-             . "\n\nSTDERR:\n" . $this->stderr;
+        return "STDOUT:\n" . getLastLines($this->stdout, 128)
+             . "\n\nSTDERR:\n" . getLastLines($this->stderr, 128);
     }
 }
 
