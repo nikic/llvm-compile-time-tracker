@@ -108,6 +108,7 @@ foreach ($benches as $bench) {
 <script>
 g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
     includeZero: true,
+    connectSeparatedPoints: true,
     clickCallback: function(e, x, points) {
         var idx = points[0].idx;
         if (idx == 0) {
