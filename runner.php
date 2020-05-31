@@ -6,6 +6,8 @@ use GitWrapper\Exception\GitException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
+error_reporting(E_ALL);
+
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/data_aggregation.php';
@@ -270,11 +272,45 @@ class MissingRange {
         $this->missingHashes = $missingHashes;
     }
 
+    public function getNonErrorSize(): int {
+        $size = 0;
+        foreach ($this->missingHashes as list(, $haveError)) {
+            if (!$haveError) {
+                $size++;
+            }
+        }
+        return $size;
+    }
+
     public function getBisectWorkItem(string $reason): WorkItem {
-        $count = count($this->missingHashes);
-        $idx = intdiv($count, 2);
-        $hash = $this->missingHashes[$idx];
+        $ranges = $this->getErrorFreeRanges();
+        $largestRange = null;
+        foreach ($ranges as $range) {
+            if ($largestRange === null || count($range) > count($largestRange)) {
+                $largestRange = $range;
+            }
+        }
+
+        $idx = intdiv(count($largestRange), 2);
+        $hash = $largestRange[$idx];
         return new WorkItem($hash, getMissingConfigs($hash), $reason);
+    }
+
+    private function getErrorFreeRanges(): array {
+        $ranges = [];
+        $curRange = [];
+        foreach ($this->missingHashes as list($hash, $haveError)) {
+            if (!$haveError) {
+                $curRange[] = $hash;
+            } else if (!empty($curRange)) {
+                $ranges[] = $curRange;
+                $curRange = [];
+            }
+        }
+        if (!empty($curRange)) {
+            $ranges[] = $curRange;
+        }
+        return $ranges;
     }
 }
 
@@ -284,16 +320,17 @@ function getMissingRanges(array $commits): array {
     $missingRanges = [];
     foreach (array_reverse($commits) as $commit) {
         $hash = $commit['hash'];
-        if (haveError($hash)) {
-            continue;
-        }
-
-        if ($configs = getMissingConfigs($hash)) {
-            $missingHashes[] = $hash;
+        $haveError = haveError($hash);
+        if ($haveError || getMissingConfigs($hash)) {
+            $missingHashes[] = [$hash, $haveError];
         } else {
             if ($missingHashes && $lastPresentHash) {
-                $missingRanges[] = new MissingRange($lastPresentHash, $hash, $missingHashes);
+                $missingRange = new MissingRange($lastPresentHash, $hash, $missingHashes);
+                if ($missingRange->getNonErrorSize() !== 0) {
+                    $missingRanges[] = $missingRange;
+                }
             }
+
             $missingHashes = [];
             $lastPresentHash = $hash;
         }
@@ -340,7 +377,7 @@ function getBisectWorkItem(array $missingRanges): ?WorkItem {
     $largestMissingRange = null;
     foreach ($missingRanges as $missingRange) {
         if (!$largestMissingRange ||
-                count($missingRange->missingHashes) > count($largestMissingRange->missingHashes)) {
+                $missingRange->getNonErrorSize() > $largestMissingRange->getNonErrorSize()) {
             $largestMissingRange = $missingRange;
         }
     }
