@@ -259,6 +259,25 @@ function getNewestWorkItem(array $commits): ?WorkItem {
     return null;
 }
 
+class MissingRange {
+    public $hash1;
+    public $hash2;
+    public $missingHashes;
+
+    public function __construct(string $hash1, string $hash2, array $missingHashes) {
+        $this->hash1 = $hash1;
+        $this->hash2 = $hash2;
+        $this->missingHashes = $missingHashes;
+    }
+
+    public function getBisectWorkItem(string $reason): WorkItem {
+        $count = count($this->missingHashes);
+        $idx = intdiv($count, 2);
+        $hash = $this->missingHashes[$idx];
+        return new WorkItem($hash, getMissingConfigs($hash), $reason);
+    }
+}
+
 function getMissingRanges(array $commits): array {
     $lastPresentHash = null;
     $missingHashes = [];
@@ -273,20 +292,13 @@ function getMissingRanges(array $commits): array {
             $missingHashes[] = $hash;
         } else {
             if ($missingHashes && $lastPresentHash) {
-                $missingRanges[] = [$lastPresentHash, $hash, $missingHashes];
+                $missingRanges[] = new MissingRange($lastPresentHash, $hash, $missingHashes);
             }
             $missingHashes = [];
             $lastPresentHash = $hash;
         }
     }
     return $missingRanges;
-}
-
-function getBisectWorkItemInRange(array $missingHashes, string $reason): WorkItem {
-    $count = count($missingHashes);
-    $idx = intdiv($count, 2);
-    $hash = $missingHashes[$idx];
-    return new WorkItem($hash, getMissingConfigs($hash), $reason);
 }
 
 function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
@@ -307,16 +319,16 @@ function isInteresting(array $summary1, array $summary2, string $config, array $
 }
 
 function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem {
-    foreach ($missingRanges as list($hash1, $hash2, $missingHashes)) {
+    foreach ($missingRanges as $missingRange) {
         foreach (CONFIGS as $config) {
-            $summary1 = getSummary($hash1, $config);
-            $summary2 = getSummary($hash2, $config);
+            $summary1 = getSummary($missingRange->hash1, $config);
+            $summary2 = getSummary($missingRange->hash2, $config);
             if (!$summary1 || !$summary2) {
                 continue;
             }
 
             if (isInteresting($summary1, $summary2, $config, $stddevs)) {
-                return getBisectWorkItemInRange($missingHashes,
+                return $missingRange->getBisectWorkItem(
                     "Bisecting interesting range for config $config");
             }
         }
@@ -325,14 +337,15 @@ function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem
 }
 
 function getBisectWorkItem(array $missingRanges): ?WorkItem {
-    $largestMissingHashes = null;
-    foreach ($missingRanges as list(, , $missingHashes)) {
-        if (!$largestMissingHashes || count($missingHashes) > count($largestMissingHashes)) {
-            $largestMissingHashes = $missingHashes;
+    $largestMissingRange = null;
+    foreach ($missingRanges as $missingRange) {
+        if (!$largestMissingRange ||
+                count($missingRange->missingHashes) > count($largestMissingRange->missingHashes)) {
+            $largestMissingRange = $missingRange;
         }
     }
-    if ($largestMissingHashes) {
-        return getBisectWorkItemInRange($largestMissingHashes, "Bisecting range");
+    if ($largestMissingRange) {
+        return $largestMissingRange->getBisectWorkItem("Bisecting range");
     }
     return null;
 }
