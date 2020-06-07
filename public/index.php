@@ -8,6 +8,8 @@ $stat = $_GET['stat'] ?? 'instructions';
 $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;
 $filterBranch = $_GET['branch'] ?? null;
+$startHash = $_GET['startHash'] ?? null;
+$numCommits = $_GET['numCommits'] ?? 1000;
 
 $isFrontPage = $filterRemote === null && $filterBranch === null;
 
@@ -17,7 +19,7 @@ echo "<form>\n";
 echo "<label>Config: "; printConfigSelect($config); echo "</label>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<input type=\"submit\" value=\"Go\" />\n";
-if ($sortBy) {
+if ($sortBy !== 'date') {
     echo "<input type=\"hidden\" name=\"sortBy\" value=\"" . h($sortBy) . "\" />\n";
 }
 if ($filterRemote) {
@@ -25,6 +27,9 @@ if ($filterRemote) {
 }
 if ($filterBranch) {
     echo "<input type=\"hidden\" name=\"branch\" value=\"" . h($filterBranch) . "\" />\n";
+}
+if ($startHash) {
+    echo "<input type=\"hidden\" name=\"startHash\" value=\"" . h($startHash) . "\" />\n";
 }
 echo "</form>\n";
 echo "<hr />\n";
@@ -71,6 +76,8 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
         if ($filterBranch !== null && $filterBranch !== $branch) {
             continue;
         }
+
+        list($commits, $nextStartHash) = filterCommits($commits, $startHash, $numCommits);
 
         $titles = [];
         $rows = [];
@@ -133,6 +140,17 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
             echo "</tr>\n";
         }
         echo "</table>\n";
+
+        if ($nextStartHash) {
+            $params = [
+                "config" => $config,
+                "stat" => $stat,
+                "branch" => $branch,
+                "startHash" => $nextStartHash,
+            ];
+            $url = makeUrl("", $params + ["startHash" => $nextStartHash]);
+            echo "<br><a href=\"" . h($url) . "\">Show next " . h($numCommits) ." commits</a>";
+        }
     }
 }
 echo "</form>\n";
@@ -181,4 +199,27 @@ function filterRecentBranches(array $branchCommits) {
         $date = getNewestCommitDate($commits);
         return $date->diff($now)->days <= 7;
     });
+}
+
+function findCommitIndex(array $commits, string $hash): ?int {
+    foreach ($commits as $index => $commit) {
+        if ($commit['hash'] === $hash) {
+            return $index;
+        }
+    }
+    return nuLL;
+}
+
+function filterCommits(array $commits, ?string $startHash, int $numCommits): array {
+    // Note: Commits are ordered from oldest to newest
+    if ($startHash !== null) {
+        $startIndex = findCommitIndex($commits, $startHash);
+    } else {
+        $startIndex = count($commits) - 1;
+    }
+
+    $endIndex = $startIndex - $numCommits + 1;
+    $filteredCommits = array_slice($commits, $endIndex, $numCommits);
+    $nextStartHash = $commits[$endIndex - 1]['hash'] ?? null;
+    return [$filteredCommits, $nextStartHash];
 }
