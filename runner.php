@@ -4,6 +4,7 @@ use GitWrapper\GitWorkingCopy;
 use GitWrapper\GitWrapper;
 use GitWrapper\Exception\GitException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/src/common.php';
@@ -74,7 +75,16 @@ while (true) {
     foreach ($configs as $config) {
         logInfo("Building $config configuration");
         try {
-            runCommand("./build_llvm_test_suite.sh $config");
+            try {
+                runCommand("./build_llvm_test_suite.sh $config", /* timeout */ 10 * 60);
+            } catch (ProcessTimedOutException $e) {
+                // Make sure we kill hanging clang processes.
+                runCommand("killall clang*");
+                $process = $e->getProcess();
+                throw new CommandException(
+                    $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
+                );
+            }
         } catch (CommandException $e) {
             echo $e->getMessage(), "\n";
             file_put_contents($hashDir . '/error', $e->getDebugOutput());
@@ -126,14 +136,15 @@ class CommandException extends Exception {
     }
 
     public function getDebugOutput(): string {
-        return "STDOUT:\n" . getLastLines($this->stdout, 128)
+        return "MESSAGE: " . $this->getMessage()
+             . "\n\nSTDOUT:\n" . getLastLines($this->stdout, 128)
              . "\n\nSTDERR:\n" . getLastLines($this->stderr, 128);
     }
 }
 
-function runCommand(string $command) {
+function runCommand(string $command, ?int $timeout = null): void {
     $process = Process::fromShellCommandline($command);
-    $process->setTimeout(null);
+    $process->setTimeout($timeout);
     $exitCode = $process->run(function($type, $buffer) {
         echo $buffer;
     });
