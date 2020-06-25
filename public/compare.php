@@ -111,11 +111,6 @@ foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
 
 printFooter();
 
-function formatHash(string $hash): string {
-    return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
-         . h($hash) . "</a>";
-}
-
 function getGitHubCompareUrl(string $fromHash, string $toHash): string {
     return "https://github.com/llvm/llvm-project/compare/"
          . urlencode($fromHash) . "..." . urlencode($toHash);

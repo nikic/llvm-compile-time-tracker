@@ -2,6 +2,10 @@
 
 require __DIR__ . '/common.php';
 
+set_exception_handler(function(Throwable $e) {
+    echo h($e->getMessage());
+});
+
 function formatPerc(float $value, float $interestingness): string {
     if ($value === 0.0) {
         return "      ";
@@ -77,6 +81,11 @@ function formatMetricDiff(
     }
 }
 
+function formatHash(string $hash): string {
+    return "<a href=\"https://github.com/llvm/llvm-project/commit/" . urlencode($hash) . "\">"
+         . h($hash) . "</a>";
+}
+
 function h(string $str): string {
     return htmlspecialchars($str);
 }
@@ -126,4 +135,20 @@ function printStatSelect(string $stat) {
 
 function makeUrl(string $page, array $queryParams): string {
     return $page . '?' . http_build_query($queryParams);
+}
+
+function getStringParam(string $name): ?string {
+    if (!isset($_GET[$name])) {
+        return null;
+    }
+
+    $value = $_GET[$name];
+    if (!is_string($value)) {
+        throw new Exception("Query parameter \"$name\" is not a string");
+    }
+    return $value;
+}
+
+function isCommitHash(string $value): bool {
+    return (bool) preg_match('/^[0-9a-f]{40}$/', $value);
 }
