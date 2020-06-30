@@ -3,8 +3,14 @@
 function aggregateData(array $statsList): array {
     $aggStats = [];
     foreach ($statsList as $stats) {
+        // The file name is not a statistic.
+        $file = $stats['file'];
+        unset($stats['file']);
+
         foreach ($stats as $name => $stat) {
-            if ($name === 'file') {
+            // When aggregating size stats, we want to report the size of the binary
+            // as the aggregate stat, not the sum of all object files.
+            if (0 === strpos($name, 'size-') && !preg_match('/\.link$/', $file)) {
                 continue;
             }
 
@@ -33,25 +39,24 @@ function readRawData(string $dir): array {
             }
             continue;
         }
-
         list(, $project, $file) = $matches;
+
+        if (!preg_match('~(.+?)(?:\.link)?\.time\.perfstats~', $pathName, $matches)) {
+            throw new Exception("Unexpected file name: $pathName");
+        }
+        list(, $objectName) = $matches;
+
         $perfContents = file_get_contents($pathName);
         $timeContents = file_get_contents(str_replace('.perfstats', '', $pathName));
-        $sizeContents = null;
-        if (preg_match('~(.+)\.link\.time\.perfstats~', $pathName, $matches)) {
-            $executable = $matches[1];
-            $sizeContents = shell_exec("size $executable");
-        }
 
         try {
             $perfStats = parsePerfStats($perfContents);
             $timeStats = parseTimeStats($timeContents);
-            $sizeStats = $sizeContents !== null ? parseSizeStats($sizeContents) : [];
+            $sizeStats = computeSizeStatsForObject($objectName);
         } catch (Exception $e) {
             echo $pathName, ":\n";
             echo $perfContents, "\n";
             echo $timeContents, "\n";
-            echo $sizeContents, "\n";
             throw $e;
         }
 
@@ -94,4 +99,15 @@ function parseSizeStats(string $str): array {
         'size-bss' => (int) $matches[3],
         'size-total' => (int) $matches[4],
     ];
+}
+
+function computeSizeStatsForObject(string $objectName): array {
+    exec("size $objectName 2>&1", $output, $returnCode);
+    if ($returnCode !== 0) {
+        // Silently ignore invalid objects.
+        // We might be calling size on a bitcode LTO object.
+        return [];
+    }
+
+    return parseSizeStats(implode("\n", $output));
 }
