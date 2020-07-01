@@ -102,12 +102,14 @@ function parseSizeStats(string $str): array {
 }
 
 function computeSizeStatsForObject(string $objectName): array {
+    $stats = ['size-file' => filesize($objectName)];
+
     exec("size $objectName 2>&1", $output, $returnCode);
     if ($returnCode !== 0) {
         // Silently ignore invalid objects.
         // We might be calling size on a bitcode LTO object.
-        return [];
+        return $stats;
     }
 
-    return parseSizeStats(implode("\n", $output));
+    return $stats + parseSizeStats(implode("\n", $output));
 }
