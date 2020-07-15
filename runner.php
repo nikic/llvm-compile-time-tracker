@@ -18,6 +18,7 @@ $firstCommit = '3860b2a0bd09291a276b0590939961dffe67fbb6';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/master$~',
+    '~^origin/release/11.x$~',
 ];
 
 $gitWrapper = new GitWrapper();
@@ -351,31 +352,37 @@ function getRecentCommits(array $commits): array {
 
 function getWorkItem(array $branchCommits, array $stddevs): ?WorkItem {
     foreach ($branchCommits as $branch => $commits) {
+        // First process all non-master branches.
         if ($branch == 'origin/master') {
-            // Don't try to build too old commits.
-            $commits = getRecentCommits($commits);
-
-            $missingRanges = getMissingRanges($commits);
-            // Bisect ranges where a signficant change occurred,
-            // to pin-point the exact revision.
-            if ($workItem = getInterestingWorkItem($missingRanges, $stddevs)) {
-                return $workItem;
-            }
-            // Build new commit.
-            if ($workItem = getHeadWorkItem($commits)) {
-                return $workItem;
-            }
-            // Bisect large ranges, so gaps are smaller.
-            if ($workItem = getBisectWorkItem($missingRanges)) {
-                return $workItem;
-            }
-        } else {
-            // Build the newest missing commit.
-            $workItem = getNewestWorkItem($commits);
-            if ($workItem) {
-                return $workItem;
-            }
+            continue;
         }
+
+        // Build the newest missing commit.
+        $workItem = getNewestWorkItem($commits);
+        if ($workItem) {
+            return $workItem;
+        }
+    }
+
+    // Then build the master branch.
+    $commits = $branchCommits['origin/master'];
+
+    // Don't try to build too old commits.
+    $commits = getRecentCommits($commits);
+
+    $missingRanges = getMissingRanges($commits);
+    // Bisect ranges where a signficant change occurred,
+    // to pin-point the exact revision.
+    if ($workItem = getInterestingWorkItem($missingRanges, $stddevs)) {
+        return $workItem;
+    }
+    // Build new commit.
+    if ($workItem = getHeadWorkItem($commits)) {
+        return $workItem;
+    }
+    // Bisect large ranges, so gaps are smaller.
+    if ($workItem = getBisectWorkItem($missingRanges)) {
+        return $workItem;
     }
     return null;
 }
