@@ -6,9 +6,8 @@ $summaryStddevFile = __DIR__ . '/stddev.json';
 $statsStddevFile = __DIR__ . '/stats_stddev.msgpack';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $masterCommits = $branchCommits['origin/master'];
-//$from = 'ced0d1f42b39bd93b350b2597ce6587d107c26a7';
 $from = '32e90cbcd19a83e20a86bfc1cbf7cec9729e9077';
-$to = '5c10c6e0128a69442b55d324f010f94dbe7eebc9';
+$to = null;
 
 $commits = [];
 $foundFirst = false;
