@@ -131,6 +131,7 @@ function printStatSelect(string $stat) {
     $opt("size-text");
     $opt("size-data");
     $opt("size-bss");
+    $opt("size-file");
     echo "</select>\n";
 }
 
