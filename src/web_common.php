@@ -56,7 +56,7 @@ function formatMetric(?float $value, string $metric): string {
         $k = $value / 1024;
         return round($k) . 'KiB';
     case 'wall-time':
-        return sprintf('%.2f', $value);
+        return sprintf('%.2fs', $value);
     default:
         return (string) $value;
     }
