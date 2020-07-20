@@ -26,6 +26,10 @@ echo "<hr />\n";
 echo "Comparing " . formatHash($from) . " to " . formatHash($to)
    . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>).\n";
 
+if ($stat === 'task-clock' || $stat === 'wall-time') {
+    echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and not meaningful for comparisons between specific revisions.</div>";
+}
+
 $stddevs = getStddevData();
 $fileStddevs = getPerFileStddevData();
 foreach (CONFIGS as $config) {
