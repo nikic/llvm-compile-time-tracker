@@ -16,7 +16,7 @@ require __DIR__ . '/src/data_aggregation.php';
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 
-$firstCommit = '3860b2a0bd09291a276b0590939961dffe67fbb6';
+$firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/master$~',
