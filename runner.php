@@ -38,6 +38,7 @@ while (true) {
     }
 
     // Redoing all this work might get inefficient at some point...
+    logInfo("Fetching commits");
     $branches = getRelevantBranches($repo, $branchPatterns);
     $branchCommits = [];
     foreach ($branches as $branch) {
