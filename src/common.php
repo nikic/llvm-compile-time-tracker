@@ -54,20 +54,27 @@ function addGeomean(array $summary): array {
 }
 
 function getSummary(string $hash, string $config): ?array {
-    $file = getDirForHash($hash) . "/$config/summary.json";
+    $file = getDirForHash($hash) . "/summary.json";
     if (!file_exists($file)) {
         return null;
     }
 
-    return addGeomean(json_decode(file_get_contents($file), true));
+    $summary = json_decode(file_get_contents($file), true);
+    if (!isset($summary[$config])) {
+        return null;
+    }
+
+    return addGeomean($summary[$config]);
 }
 
 function getStats(string $hash, string $config): ?array {
-    $file = getDirForHash($hash) . "/$config/stats.msgpack.gz";
-    if (file_exists($file)) {
-        return msgpack_unpack(gzdecode(file_get_contents($file)));
+    $file = getDirForHash($hash) . "/stats.msgpack.gz";
+    if (!file_exists($file)) {
+        return null;
     }
-    return null;
+
+    $stats = msgpack_unpack(gzdecode(file_get_contents($file)));
+    return $stats[$config] ?? null;
 }
 
 function getClangSizeSummary(string $hash): ?array {
