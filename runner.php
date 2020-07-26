@@ -201,8 +201,8 @@ function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCom
     return getParsedLog($repo, $branch, $mergeBase);
 }
 
-function haveData(string $hash, string $config): bool {
-    return is_dir(getDirForHash($hash) . '/' . $config);
+function haveData(string $hash): bool {
+    return file_exists(getDirForHash($hash) . '/summary.json');
 }
 
 function haveError(string $hash): bool {
@@ -210,24 +210,11 @@ function haveError(string $hash): bool {
 }
 
 function getMissingConfigs(string $hash): array {
-    if (haveError($hash)) {
+    if (haveError($hash) || haveData($hash)) {
         return [];
     }
 
-    $configs = [];
-    foreach (CONFIGS as $wantedConfig) {
-        if (!haveData($hash, $wantedConfig)) {
-            $configs[] = $wantedConfig;
-        }
-    }
-
-    // The O0-g configuration was added later.
-    // We do not want to run O0-g benchmarks for all old commits, so skip this case.
-    if ($configs === ['O0-g']) {
-        return [];
-    }
-
-    return $configs;
+    return CONFIGS;
 }
 
 class WorkItem {
