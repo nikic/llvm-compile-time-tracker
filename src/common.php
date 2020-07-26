@@ -53,10 +53,10 @@ function addGeomean(array $summary): array {
     return $summary;
 }
 
-function getSummaryForHash(string $hash): ?array {
+function getSummaryForHash(string $hash): array {
     $file = getDirForHash($hash) . "/summary.json";
     if (!file_exists($file)) {
-        return null;
+        return [];
     }
 
     return json_decode(file_get_contents($file), true);
@@ -67,22 +67,22 @@ function writeSummaryForHash(string $hash, array $summary): void {
     file_put_contents($file, json_encode($summary, JSON_PRETTY_PRINT));
 }
 
-function writeStatsForHash(string $hash, array $stats): void {
-    $file = getDirForHash($hash) . "/stats.msgpack.gz";
-    file_put_contents($file, gzencode(msgpack_pack($stats), 9));
-}
-
-function getStatsForHash(string $hash): ?array {
+function getStatsForHash(string $hash): array {
     $file = getDirForHash($hash) . "/stats.msgpack.gz";
     if (!file_exists($file)) {
-        return null;
+        return [];
     }
 
     return msgpack_unpack(gzdecode(file_get_contents($file)));
 }
 
+function writeStatsForHash(string $hash, array $stats): void {
+    $file = getDirForHash($hash) . "/stats.msgpack.gz";
+    file_put_contents($file, gzencode(msgpack_pack($stats), 9));
+}
+
 function getSummary(string $hash, string $config): ?array {
-    $summary = getSummaryForHash($file);
+    $summary = getSummaryForHash($hash);
     if (!isset($summary[$config])) {
         return null;
     }
