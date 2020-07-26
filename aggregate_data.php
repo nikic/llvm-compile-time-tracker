@@ -3,19 +3,24 @@
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/data_aggregation.php';
 
-if ($argc < 2) {
-    throw new Exception("Expected output directory");
+if ($argc < 3) {
+    throw new Exception("Usage: aggregate_data.php hash config");
 }
 
-$outDir = $argv[1];
+$hash = $argv[1];
+$config = $argv[2];
 $inDir = __DIR__ . '/llvm-test-suite-build/CTMark';
-@mkdir($outDir, 0755, true);
 
-$statsFile = $outDir . '/stats.msgpack.gz';
-$summaryFile = $outDir . '/summary.json';
+$outDir = getDirForHash($hash);
+@mkdir($outDir, 0755, true);
 
 $rawData = readRawData($inDir);
 $aggData = array_map('aggregateData', $rawData);
 
-file_put_contents($statsFile, gzencode(msgpack_pack($rawData), 9));
-file_put_contents($summaryFile, json_encode($aggData, JSON_PRETTY_PRINT));
+$summary = getSummaryForHash($hash);
+$summary[$config] = $aggData;
+writeSummaryForHash($hash, $summary);
+
+$stats = getStatsForHash($hash);
+$stats[$config] = $rawData;
+writeStatsForHash($hash, $stats);

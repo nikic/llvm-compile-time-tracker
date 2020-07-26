@@ -96,7 +96,7 @@ while (true) {
         }
 
         // TODO: Don't call into PHP here.
-        runCommand("php aggregate_data.php $hashDir/$config");
+        runCommand("php aggregate_data.php $hash $config");
     }
 
     file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
