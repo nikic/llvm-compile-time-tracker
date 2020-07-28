@@ -79,7 +79,7 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
 
         list($commits, $nextStartHash) = filterCommits($commits, $startHash, $numCommits);
 
-        $titles = [];
+        $titles = array_merge(['', '', 'Commit', ...BENCHES_GEOMEAN_LAST]);
         $rows = [];
         $lastMetrics = null;
         $lastHash = null;
@@ -101,10 +101,8 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
             $row[] = formatCommit($commit);
 
             if ($metrics) {
-                if (!$titles) {
-                    $titles = array_merge(['', '', 'Commit'], array_keys($summary));
-                }
-                foreach ($metrics as $bench => $value) {
+                foreach (BENCHES_GEOMEAN_LAST as $bench) {
+                    $value = $metrics[$bench];
                     $stddev = getStddev($stddevs, $config, $bench, $stat);
                     $prevValue = $lastMetrics[$bench] ?? null;
                     $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);

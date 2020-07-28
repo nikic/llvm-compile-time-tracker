@@ -2,8 +2,7 @@
 
 const DATA_DIR = __DIR__ . '/../data';
 const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g', 'O0-g'];
-const BENCHES = [
-    'geomean',
+const REAL_BENCHES = [
     'kimwitu++',
     'sqlite3',
     'consumer-typeset',
@@ -14,6 +13,14 @@ const BENCHES = [
     'lencod',
     'SPASS',
     '7zip',
+];
+const BENCHES = [
+    'geomean',
+    ...REAL_BENCHES,
+];
+const BENCHES_GEOMEAN_LAST = [
+    ...REAL_BENCHES,
+    'geomean',
 ];
 
 function array_column_with_keys(array $array, $column): array {
