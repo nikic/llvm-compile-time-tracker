@@ -15,6 +15,7 @@ require __DIR__ . '/src/data_aggregation.php';
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
+$ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
@@ -76,6 +77,8 @@ while (true) {
     $sizeStats = parseSizeStats($sizeContents);
     file_put_contents($hashDir . '/size.json', json_encode($sizeStats, JSON_PRETTY_PRINT));
 
+    $stats = [];
+    $summary = [];
     foreach ($configs as $config) {
         logInfo("Building $config configuration");
         try {
@@ -95,11 +98,14 @@ while (true) {
             break;
         }
 
-        // TODO: Don't call into PHP here.
-        runCommand("php aggregate_data.php $hash $config");
+        $stats[$config] = readRawData($ctmarkDir);
+        $summary[$config] = array_map('aggregateData', $rawData);
     }
 
+    writeSummaryForHash($hash, $summary);
+    writeStatsForHash($hash, $stats);
     file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
+
     $dataRepo->add('.');
     $dataRepo->commit('-m', 'Add data');
     try {
