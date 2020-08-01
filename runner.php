@@ -422,5 +422,9 @@ function getWorkItem(array $branchCommits, array $stddevs): ?WorkItem {
     if ($workItem = getBisectWorkItem($missingRanges)) {
         return $workItem;
     }
+    // Build the newest missing commit.
+    if ($workItem = getNewestWorkItem($commits)) {
+        return $workItem;
+    }
     return null;
 }
