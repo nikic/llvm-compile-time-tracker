@@ -16,6 +16,7 @@ require __DIR__ . '/src/data_aggregation.php';
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
+$runs = 2;
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
@@ -80,26 +81,31 @@ while (true) {
     $stats = [];
     $summary = [];
     foreach ($configs as $config) {
-        logInfo("Building $config configuration");
-        try {
+        $rawDatas = [];
+        for ($run = 1; $run <= $runs; $run++) {
+            logInfo("Building $config configuration (run $run)");
             try {
-                runCommand("./build_llvm_test_suite.sh $config", /* timeout */ 10 * 60);
-            } catch (ProcessTimedOutException $e) {
-                // Make sure we kill hanging clang processes.
-                runCommand("killall clang*");
-                $process = $e->getProcess();
-                throw new CommandException(
-                    $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
-                );
+                try {
+                    runCommand("./build_llvm_test_suite.sh $config", /* timeout */ 10 * 60);
+                } catch (ProcessTimedOutException $e) {
+                    // Make sure we kill hanging clang processes.
+                    runCommand("killall clang*");
+                    $process = $e->getProcess();
+                    throw new CommandException(
+                        $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
+                    );
+                }
+            } catch (CommandException $e) {
+                echo $e->getMessage(), "\n";
+                file_put_contents($hashDir . '/error', $e->getDebugOutput());
+                break;
             }
-        } catch (CommandException $e) {
-            echo $e->getMessage(), "\n";
-            file_put_contents($hashDir . '/error', $e->getDebugOutput());
-            break;
+            $rawDatas[] = readRawData($ctmarkDir);
         }
 
-        $stats[$config] = readRawData($ctmarkDir);
-        $summary[$config] = array_map('aggregateData', $rawData);
+        $data = $runs > 1 ? averageRawData($rawDatas) : $rawDatas[0];
+        $stats[$config] = $data;
+        $summary[$config] = array_map('aggregateData', $data);
     }
 
     writeSummaryForHash($hash, $summary);

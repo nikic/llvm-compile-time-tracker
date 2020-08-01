@@ -24,6 +24,41 @@ function aggregateData(array $statsList): array {
     return $aggStats;
 }
 
+function average(array $values): float {
+    return array_sum($values) / count($values);
+}
+
+function averageRawData(array $rawDatas): array {
+    // TODO: Should really key by "file" to make things less awkward.
+    $data = [];
+    foreach ($rawDatas as $rawData) {
+        foreach ($rawData as $bench => $files) {
+            foreach ($files as $stats) {
+                $file = $stats['file'];
+                foreach ($stats as $stat => $value) {
+                    if ($stat === 'file') {
+                        continue;
+                    }
+                    $data[$bench][$file][$stat][] = $value;
+                }
+            }
+        }
+    }
+
+    $avgData = [];
+    foreach ($data as $bench => $benchData) {
+        foreach ($benchData as $file => $fileData) {
+            $avgStats = ['file' => $file];
+            foreach ($fileData as $stat => $values) {
+                $avgStats[$stat] = average($values);
+            }
+            $avgData[$bench][] = $avgStats;
+        }
+    }
+
+    return $avgData;
+}
+
 function readRawData(string $dir): array {
     $it = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($dir),
