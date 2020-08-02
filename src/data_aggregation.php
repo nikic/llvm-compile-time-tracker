@@ -1,12 +1,12 @@
 <?php
 
+function summarizeData(array $data): array {
+    return addGeomean(array_map('aggregateData', $data));
+}
+
 function aggregateData(array $statsList): array {
     $aggStats = [];
-    foreach ($statsList as $stats) {
-        // The file name is not a statistic.
-        $file = $stats['file'];
-        unset($stats['file']);
-
+    foreach ($statsList as $file => $stats) {
         foreach ($stats as $name => $stat) {
             // When aggregating size stats, we want to report the size of the binary
             // as the aggregate stat, not the sum of all object files.
@@ -29,16 +29,11 @@ function average(array $values): float {
 }
 
 function averageRawData(array $rawDatas): array {
-    // TODO: Should really key by "file" to make things less awkward.
     $data = [];
     foreach ($rawDatas as $rawData) {
         foreach ($rawData as $bench => $files) {
-            foreach ($files as $stats) {
-                $file = $stats['file'];
+            foreach ($files as $file => $stats) {
                 foreach ($stats as $stat => $value) {
-                    if ($stat === 'file') {
-                        continue;
-                    }
                     $data[$bench][$file][$stat][] = $value;
                 }
             }
@@ -48,11 +43,7 @@ function averageRawData(array $rawDatas): array {
     $avgData = [];
     foreach ($data as $bench => $benchData) {
         foreach ($benchData as $file => $fileData) {
-            $avgStats = ['file' => $file];
-            foreach ($fileData as $stat => $values) {
-                $avgStats[$stat] = average($values);
-            }
-            $avgData[$bench][] = $avgStats;
+            $avgData[$bench][$file] = array_map('average', $fileData);
         }
     }
 
@@ -95,11 +86,11 @@ function readRawData(string $dir): array {
             throw $e;
         }
 
-        $stats = $perfStats + $timeStats + $sizeStats + ['file' => $file];
+        $stats = $perfStats + $timeStats + $sizeStats;
         if (!isset($projectData[$project])) {
             $projectData[$project] = [];
         }
-        $projectData[$project][] = $stats;
+        $projectData[$project][$file] = $stats;
     }
     return $projectData;
 }

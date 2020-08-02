@@ -16,6 +16,7 @@ require __DIR__ . '/src/data_aggregation.php';
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
+$configNum = 1;
 $runs = 2;
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
@@ -76,10 +77,9 @@ while (true) {
     // Gather statistics on the size of the clang binary.
     $sizeContents = shell_exec("size llvm-project-build/bin/clang");
     $sizeStats = parseSizeStats($sizeContents);
-    file_put_contents($hashDir . '/size.json', json_encode($sizeStats, JSON_PRETTY_PRINT));
 
     $stats = [];
-    $summary = [];
+    $summary = new Summary($configNum, $sizeStats, []);
     foreach ($configs as $config) {
         $rawDatas = [];
         for ($run = 1; $run <= $runs; $run++) {
@@ -105,7 +105,7 @@ while (true) {
 
         $data = $runs > 1 ? averageRawData($rawDatas) : $rawDatas[0];
         $stats[$config] = $data;
-        $summary[$config] = array_map('aggregateData', $data);
+        $summary->data[$config] = summarizeData($data);
     }
 
     writeSummaryForHash($hash, $summary);

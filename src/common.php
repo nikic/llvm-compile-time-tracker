@@ -65,12 +65,14 @@ class Summary {
     public array $clang_size;
     public array $data;
 
+    public function __construct(int $config, array $clang_size, array $data) {
+        $this->config = $config;
+        $this->clang_size = $clang_size;
+        $this->data = $data;
+    }
+
     public static function fromArray(array $data): Summary {
-        $summary = new Summary;
-        $summary->config = $data['config'];
-        $summary->clang_size = $data['clang_size'];
-        $summary->data = $data['data'];
-        return $summary;
+        return new Summary($data['config'], $data['clang_size'], $data['data']);
     }
 
     public function hasConfig(string $config): bool {
