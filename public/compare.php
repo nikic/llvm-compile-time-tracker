@@ -30,8 +30,10 @@ if ($stat === 'task-clock' || $stat === 'wall-time') {
     echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and not meaningful for comparisons between specific revisions.</div>";
 }
 
-$stddevs = getStddevData();
-$fileStddevs = getPerFileStddevData();
+$stddevs = new StdDevManager();
+$fromSummary = getSummaryForHash($from);
+$toSummary = getSummaryForHash($to);
+
 foreach (CONFIGS as $config) {
     $fromStats = getStats($from, $config);
     $toStats = getStats($to, $config);
@@ -39,9 +41,9 @@ foreach (CONFIGS as $config) {
         continue;
     }
 
-    $fromSummary = addGeomean(array_map('aggregateData', $fromStats));
-    $toSummary = addGeomean(array_map('aggregateData', $toStats));
-    $benches = array_keys($fromSummary);
+    $fromSummaryData = $fromSummary->getConfig($config);
+    $toSummaryData = $toSummary->getConfig($config);
+    $benches = array_keys($fromSummaryData);
 
     echo "<h4>$config:</h4>\n";
     echo "<table>\n";
@@ -53,9 +55,11 @@ foreach (CONFIGS as $config) {
     foreach ($benches as $bench) {
         $fromFiles = $fromStats[$bench] ?? [];
         $toFiles = $toStats[$bench] ?? [];
-        $fromAggMetric = $fromSummary[$bench][$stat];
-        $toAggMetric = $toSummary[$bench][$stat];
-        $stddev = getStddev($stddevs, $config, $bench, $stat);
+        $fromAggMetric = $fromSummaryData[$bench][$stat];
+        $toAggMetric = $toSummaryData[$bench][$stat];
+        $stddev = $fromSummary->configNum === $toSummary->configNum
+            ? $stddevs->getBenchStdDev($fromSummary->configNum, $config, $bench, $stat)
+            : null;
         echo "<tr>\n";
         echo "<td style=\"text-align: left\">$bench</td>\n";
         echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
@@ -66,7 +70,9 @@ foreach (CONFIGS as $config) {
                 $toFile = $toFiles[$file];
                 $fromMetric = $fromFile[$stat];
                 $toMetric = $toFile[$stat];
-                $stddev = getStddev($fileStddevs, $config, $file, $stat);
+                $stddev = $fromSummary->configNum === $toSummary->configNum
+                    ? $stddevs->getFileStdDev($fromSummary->configNum, $config, $file, $stat)
+                    : null;
                 echo "<tr>\n";
                 echo "<td style=\"text-align: left\">    $file</td>\n";
                 echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
@@ -85,9 +91,9 @@ foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
         continue;
     }
 
-    $fromSummary = addGeomean(array_map('getLinkStats', $fromStats));
-    $toSummary = addGeomean(array_map('getLinkStats', $toStats));
-    $benches = array_keys($fromSummary);
+    $fromSummaryData = addGeomean(array_map('getLinkStats', $fromStats));
+    $toSummaryData = addGeomean(array_map('getLinkStats', $toStats));
+    $benches = array_keys($fromSummaryData);
 
     echo "<h4>$config (link only):</h4>\n";
     echo "<table>\n";
@@ -97,9 +103,11 @@ foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
     echo "<th>New</th>";
     echo "</tr>\n";
     foreach ($benches as $bench) {
-        $fromAggMetric = $fromSummary[$bench][$stat];
-        $toAggMetric = $toSummary[$bench][$stat];
-        $stddev = getStddev($fileStddevs, $config, $fromSummary[$bench]['file'], $stat);
+        $fromAggMetric = $fromSummaryData[$bench][$stat];
+        $toAggMetric = $toSummaryData[$bench][$stat];
+        $stddev = $fromSummary->configNum === $toSummary->configNum
+            ? $stddevs->getFileStdDev($fromSummary->configNum, $config, $fromSummaryData[$bench]['file'], $stat)
+            : null;
         echo "<tr>\n";
         echo "<td style=\"text-align: left\">$bench</td>\n";
         echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
@@ -117,11 +125,12 @@ function getGitHubCompareUrl(string $fromHash, string $toHash): string {
 }
 
 function getLinkStats(array $statsList): array {
-    foreach ($statsList as $stats) {
-        if (strpos($stats['file'], '.link') === false) {
+    foreach ($statsList as $file => $stats) {
+        if (strpos($file, '.link') === false) {
             continue;
         }
 
+        $stats['file'] = $file;
         return $stats;
     }
 

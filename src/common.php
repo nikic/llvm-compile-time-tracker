@@ -33,10 +33,6 @@ function array_column_with_keys(array $array, $column): array {
     return $result;
 }
 
-function array_key_union(array $array1, array $array2): array {
-    return array_keys(array_merge($array1, $array2));
-}
-
 function geomean(array $stats): float {
     return pow(array_product($stats), 1/count($stats));
 }
@@ -61,12 +57,12 @@ function addGeomean(array $summary): array {
 }
 
 class Summary {
-    public int $config;
+    public int $configNum;
     public array $clang_size;
     public array $data;
 
     public function __construct(int $config, array $clang_size, array $data) {
-        $this->config = $config;
+        $this->configNum = $config;
         $this->clang_size = $clang_size;
         $this->data = $data;
     }
@@ -75,8 +71,24 @@ class Summary {
         return new Summary($data['config'], $data['clang_size'], $data['data']);
     }
 
-    public function hasConfig(string $config): bool {
-        return isset($this->data[$config]);
+    public function toArray(): array {
+        return [
+            'config' => $this->configNum,
+            'clang_size' => $this->clang_size,
+            'data' => $this->data,
+        ];
+    }
+
+    public function getConfig(string $config): ?array {
+        return $this->data[$config] ?? null;
+    }
+
+    public function getConfigStat(string $config, string $stat): ?array {
+        $data = $this->getConfig($config);
+        if ($data === null) {
+            return null;
+        }
+        return array_column_with_keys($data, $stat);
     }
 }
 
@@ -91,7 +103,7 @@ function getSummaryForHash(string $hash): ?Summary {
 
 function writeSummaryForHash(string $hash, Summary $summary): void {
     $file = getDirForHash($hash) . "/summary.json";
-    file_put_contents($file, json_encode($summary, JSON_PRETTY_PRINT));
+    file_put_contents($file, json_encode($summary->toArray(), JSON_PRETTY_PRINT));
 }
 
 function getStatsForHash(string $hash): array {
@@ -127,14 +139,39 @@ function getClangSizeSummary(string $hash): ?array {
     return $summary->clang_size;
 }
 
-function getStddevData(): array {
-    return json_decode(file_get_contents(__DIR__ . '/../stddev.json'), true);
-}
+class StdDevManager {
+    private array $summaryData = [];
+    private array $statsData = [];
 
-function getStddev(array $data, string $config, string $bench, string $stat): ?float {
-    return $data[$config][$bench][$stat] ?? null;
-}
+    private function initSummaryData(int $configNum): void {
+        if (!isset($this->summaryData[$configNum])) {
+            $path = __DIR__ . "/../stddev_$configNum.json";
+            $this->summaryData[$configNum] = file_exists($path)
+                ? json_decode(file_get_contents($path), true)
+                : null;
+        }
+    }
 
-function getPerFileStddevData(): array {
-    return msgpack_unpack(file_get_contents(__DIR__ . '/../stats_stddev.msgpack'));
+    private function initStatsData(int $configNum): void {
+        if (!isset($this->statsData[$configNum])) {
+            $path = __DIR__ . "/../stats_stddev_$configNum.msgpack";
+            $this->summaryData[$configNum] = file_exists($path)
+                ? msgpack_unpack(file_get_contents($path))
+                : null;
+        }
+    }
+
+    public function getBenchStdDev(
+        int $configNum, string $config, string $bench, string $stat
+    ): ?float {
+        $this->initSummaryData($configNum);
+        return $this->summaryData[$configNum][$config][$bench][$stat] ?? null;
+    }
+
+    public function getFileStdDev(
+        int $configNum, string $config, string $file, string $stat
+    ): ?float {
+        $this->initStatsData($configNum);
+        return $this->summaryData[$configNum][$config][$file][$stat] ?? null;
+    }
 }

@@ -35,7 +35,7 @@ echo "</form>\n";
 echo "<hr />\n";
 
 $commitData = json_decode(file_get_contents($commitsFile), true);
-$stddevs = getStddevData();
+$stddevs = new StdDevManager();
 
 echo "<form action=\"compare_selected.php\">\n";
 echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
@@ -85,8 +85,8 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
         $lastHash = null;
         foreach ($commits as $commit) {
             $hash = $commit['hash'];
-            $summary = getSummary($hash, $config);
-            $metrics = $summary !== null ? array_column_with_keys($summary, $stat) : [];
+            $summary = getSummaryForHash($hash);
+            $metrics = $summary !== null ? $summary->getConfigStat($config, $stat) : null;
             $row = [];
             if ($metrics && $lastHash) {
                 $row[] = "<a href=\"compare.php?from=$lastHash&amp;to=$hash&amp;stat=" . h($stat) . "\">C</a>";
@@ -103,7 +103,7 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
             if ($metrics) {
                 foreach (BENCHES_GEOMEAN_LAST as $bench) {
                     $value = $metrics[$bench];
-                    $stddev = getStddev($stddevs, $config, $bench, $stat);
+                    $stddev = $stddevs->getBenchStdDev($summary->configNum, $config, $bench, $stat);
                     $prevValue = $lastMetrics[$bench] ?? null;
                     $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
                 }
@@ -154,7 +154,7 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
     }
 }
 echo "</form>\n";
-echo printFooter();
+printFooter();
 
 function formatCommit(array $commit): string {
     $hash = $commit['hash'];

@@ -1,5 +1,9 @@
 {
     "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "ext-zlib": "*",
+        "ext-msgpack": "*",
         "cpliakas/git-wrapper": "^3.0",
         "symfony/process": "^5.0"
     }
