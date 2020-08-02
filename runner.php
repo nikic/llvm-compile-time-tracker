@@ -29,7 +29,7 @@ $branchPatterns = [
 $gitWrapper = new GitWrapper();
 $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
 $dataRepo = $gitWrapper->workingCopy(__DIR__ . '/data');
-$stddevs = getStddevData();
+$stddevs = new StdDevManager();
 
 while (true) {
     logInfo("Fetching branches");
@@ -338,7 +338,9 @@ function getMissingRanges(array $commits): array {
     return $missingRanges;
 }
 
-function isInteresting(array $summary1, array $summary2, string $config, array $stddevs): bool {
+function isInteresting(
+    array $summary1, array $summary2, string $config, StdDevManager $stddevs
+): bool {
     $sigma = 5;
     foreach (['instructions', 'max-rss'] as $stat) {
         foreach ($summary1 as $bench => $stats1) {
@@ -346,7 +348,7 @@ function isInteresting(array $summary1, array $summary2, string $config, array $
             $value1 = $stats1[$stat];
             $value2 = $stats2[$stat];
             $diff = abs($value1 - $value2);
-            $stddev = getStddev($stddevs, $config, $bench, $stat);
+            $stddev = $stddevs->getBenchStdDev(/* TODO */ 1, $config, $bench, $stat);
             if ($stddev !== null && $diff >= $sigma * $stddev) {
                 return true;
             }
@@ -355,7 +357,7 @@ function isInteresting(array $summary1, array $summary2, string $config, array $
     return false;
 }
 
-function getInterestingWorkItem(array $missingRanges, array $stddevs): ?WorkItem {
+function getInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?WorkItem {
     foreach ($missingRanges as $missingRange) {
         foreach (CONFIGS as $config) {
             $summary1 = getSummary($missingRange->hash1, $config);
@@ -403,7 +405,7 @@ function getRecentCommits(array $commits): array {
     return $recentCommits;
 }
 
-function getWorkItem(array $branchCommits, array $stddevs): ?WorkItem {
+function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
     foreach ($branchCommits as $branch => $commits) {
         // First process all non-master branches.
         if ($branch == 'origin/master') {
