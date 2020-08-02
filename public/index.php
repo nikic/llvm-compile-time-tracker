@@ -83,6 +83,7 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
         $rows = [];
         $lastMetrics = null;
         $lastHash = null;
+        $lastConfigNum = null;
         foreach ($commits as $commit) {
             $hash = $commit['hash'];
             $summary = getSummaryForHash($hash);
@@ -103,12 +104,15 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
             if ($metrics) {
                 foreach (BENCHES_GEOMEAN_LAST as $bench) {
                     $value = $metrics[$bench];
-                    $stddev = $stddevs->getBenchStdDev($summary->configNum, $config, $bench, $stat);
+                    $stddev = $lastConfigNum === $summary->configNum
+                        ? $stddevs->getBenchStdDev($summary->configNum, $config, $bench, $stat)
+                        : null;
                     $prevValue = $lastMetrics[$bench] ?? null;
                     $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
                 }
                 $lastMetrics = $metrics;
                 $lastHash = $hash;
+                $lastConfigNum = $summary->configNum;
             } else if (hasBuildError($hash)) {
                 $url = makeUrl("show_error.php", ["commit" => $hash]);
                 $row[] = "Failed to build llvm-project or llvm-test-suite"
