@@ -53,16 +53,34 @@ function addGeomean(array $summary): array {
     return $summary;
 }
 
-function getSummaryForHash(string $hash): array {
-    $file = getDirForHash($hash) . "/summary.json";
-    if (!file_exists($file)) {
-        return [];
+class Summary {
+    public int $config;
+    public array $clang_size;
+    public array $data;
+
+    public static function fromArray(array $data): Summary {
+        $summary = new Summary;
+        $summary->config = $data['config'];
+        $summary->clang_size = $data['clang_size'];
+        $summary->data = $data['data'];
+        return $summary;
     }
 
-    return json_decode(file_get_contents($file), true);
+    public function hasConfig(string $config): bool {
+        return isset($this->data[$config]);
+    }
 }
 
-function writeSummaryForHash(string $hash, array $summary): void {
+function getSummaryForHash(string $hash): ?Summary {
+    $file = getDirForHash($hash) . "/summary.json";
+    if (!file_exists($file)) {
+        return null;
+    }
+
+    return Summary::fromArray(json_decode(file_get_contents($file), true));
+}
+
+function writeSummaryForHash(string $hash, Summary $summary): void {
     $file = getDirForHash($hash) . "/summary.json";
     file_put_contents($file, json_encode($summary, JSON_PRETTY_PRINT));
 }
@@ -83,11 +101,7 @@ function writeStatsForHash(string $hash, array $stats): void {
 
 function getSummary(string $hash, string $config): ?array {
     $summary = getSummaryForHash($hash);
-    if (!isset($summary[$config])) {
-        return null;
-    }
-
-    return addGeomean($summary[$config]);
+    return $summary->data[$config] ?? null;
 }
 
 function getStats(string $hash, string $config): ?array {
@@ -96,12 +110,12 @@ function getStats(string $hash, string $config): ?array {
 }
 
 function getClangSizeSummary(string $hash): ?array {
-    $file = getDirForHash($hash) . "/size.json";
-    if (!file_exists($file)) {
+    $summary = getSummaryForHash($hash);
+    if ($summary === null) {
         return null;
     }
 
-    return json_decode(file_get_contents($file), true);
+    return $summary->clang_size;
 }
 
 function getStddevData(): array {

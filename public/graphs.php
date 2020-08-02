@@ -71,8 +71,7 @@ foreach ($commits as $commit) {
     } else {
         $fullSummary = getSummaryForHash($hash);
         foreach (CONFIGS as $config) {
-            $summary = isset($fullSummary[$config])
-                ? addGeomean($fullSummary[$config]) : [];
+            $summary = $fullSummary->data[$config] ?? [];
             foreach ($benches as $bench) {
                 if (isset($summary[$bench][$stat])) {
                     $value = $summary[$bench][$stat];

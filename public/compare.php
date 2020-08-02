@@ -62,12 +62,8 @@ foreach (CONFIGS as $config) {
         echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
         echo "</tr>\n";
         if ($details) {
-            foreach ($fromFiles as $i => $fromFile) {
-                $toFile = $toFiles[$i];
-                $file = $fromFile['file'];
-                if ($file != $toFile['file']) {
-                    throw new Exception('Mismatch');
-                }
+            foreach ($fromFiles as $file => $fromFile) {
+                $toFile = $toFiles[$file];
                 $fromMetric = $fromFile[$stat];
                 $toMetric = $toFile[$stat];
                 $stddev = getStddev($fileStddevs, $config, $file, $stat);
