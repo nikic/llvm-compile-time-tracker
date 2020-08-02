@@ -3,5 +3,5 @@ rm -rf ./llvm-test-suite-build
 cp ./timeit.sh ./llvm-test-suite/tools
 ./cmake_llvm_test_suite.sh $1
 # By default ninja will use nproc + 2 threads.
-# Limit to number of cores to keep task-clock and wall-time close.
-ninja -j`nproc` -C./llvm-test-suite-build
+# Limit to nproc - 1 to reduce noise.
+ninja -j$((`nproc`-1)) -C./llvm-test-suite-build
