@@ -32,18 +32,16 @@ if ($stat === 'task-clock' || $stat === 'wall-time') {
 
 $stddevs = new StdDevManager();
 $fromSummary = getSummaryForHash($from);
+$fromStats = getStatsForHash($from);
 $toSummary = getSummaryForHash($to);
+$toStats = getStatsForHash($to);
 
 foreach (CONFIGS as $config) {
-    $fromStats = getStats($from, $config);
-    $toStats = getStats($to, $config);
-    if (!$fromStats || !$toStats) {
-        continue;
-    }
-
     $fromSummaryData = $fromSummary->getConfig($config);
     $toSummaryData = $toSummary->getConfig($config);
-    $benches = array_keys($fromSummaryData);
+    if (!$fromSummaryData || !$toSummaryData) {
+        continue;
+    }
 
     echo "<h4>$config:</h4>\n";
     echo "<table>\n";
@@ -52,9 +50,7 @@ foreach (CONFIGS as $config) {
     echo "<th>Old</th>";
     echo "<th>New</th>";
     echo "</tr>\n";
-    foreach ($benches as $bench) {
-        $fromFiles = $fromStats[$bench] ?? [];
-        $toFiles = $toStats[$bench] ?? [];
+    foreach (BENCHES_GEOMEAN_LAST as $bench) {
         $fromAggMetric = $fromSummaryData[$bench][$stat];
         $toAggMetric = $toSummaryData[$bench][$stat];
         $stddev = $fromSummary->configNum === $toSummary->configNum
@@ -66,6 +62,9 @@ foreach (CONFIGS as $config) {
         echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
         echo "</tr>\n";
         if ($details) {
+            $fromFiles = $fromStats[$config][$bench] ?? [];
+            $toFiles = $toStats[$config][$bench] ?? [];
+            ksort($fromFiles);
             foreach ($fromFiles as $file => $fromFile) {
                 $toFile = $toFiles[$file];
                 $fromMetric = $fromFile[$stat];
@@ -93,7 +92,6 @@ foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
 
     $fromSummaryData = addGeomean(array_map('getLinkStats', $fromStats));
     $toSummaryData = addGeomean(array_map('getLinkStats', $toStats));
-    $benches = array_keys($fromSummaryData);
 
     echo "<h4>$config (link only):</h4>\n";
     echo "<table>\n";
@@ -102,7 +100,7 @@ foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
     echo "<th>Old</th>";
     echo "<th>New</th>";
     echo "</tr>\n";
-    foreach ($benches as $bench) {
+    foreach (BENCHES_GEOMEAN_LAST as $bench) {
         $fromAggMetric = $fromSummaryData[$bench][$stat];
         $toAggMetric = $toSummaryData[$bench][$stat];
         $stddev = $fromSummary->configNum === $toSummary->configNum
