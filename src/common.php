@@ -155,7 +155,7 @@ class StdDevManager {
     private function initStatsData(int $configNum): void {
         if (!isset($this->statsData[$configNum])) {
             $path = __DIR__ . "/../stats_stddev_$configNum.msgpack";
-            $this->summaryData[$configNum] = file_exists($path)
+            $this->statsData[$configNum] = file_exists($path)
                 ? msgpack_unpack(file_get_contents($path))
                 : null;
         }
@@ -172,6 +172,6 @@ class StdDevManager {
         int $configNum, string $config, string $file, string $stat
     ): ?float {
         $this->initStatsData($configNum);
-        return $this->summaryData[$configNum][$config][$file][$stat] ?? null;
+        return $this->statsData[$configNum][$config][$file][$stat] ?? null;
     }
 }
