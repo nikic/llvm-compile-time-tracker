@@ -38,6 +38,7 @@ function formatMetric(?float $value, string $metric): string {
 
     switch ($metric) {
     case 'instructions':
+    case 'instructions:u':
     case 'cycles':
     case 'branches':
     case 'branch-misses':
