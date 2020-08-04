@@ -33,23 +33,25 @@ echo "Reading data...\n";
 $summaryData = [];
 $statsData = [];
 foreach ($commits as $hash) {
-    foreach (CONFIGS as $config) {
-        $summary = getSummary($hash, $config);
-        if ($summary) {
-            foreach ($summary as $bench => $stats) {
-                foreach ($stats as $stat => $value) {
-                    $summaryData[$config][$bench][$stat][] = $value;
-                }
+    $summary = getSummaryForHash($hash);
+    $stats = getStatsForHash($hash);
+    if (!$summary || !$stats) {
+        continue;
+    }
+
+    foreach ($summary->data as $config => $configData) {
+        foreach ($configData as $bench => $benchData) {
+            foreach ($benchData as $stat => $value) {
+                $summaryData[$config][$bench][$stat][] = $value;
             }
         }
+    }
 
-        $stats = getStats($hash, $config);
-        if ($stats) {
-            foreach ($stats as $bench => $files) {
-                foreach ($files as $file => $stats) {
-                    foreach ($stats as $stat => $value) {
-                        $statsData[$config][$file][$stat][] = $value;
-                    }
+    foreach ($stats as $config => $configData) {
+        foreach ($configData as $bench => $files) {
+            foreach ($files as $file => $fileData) {
+                foreach ($fileData as $stat => $value) {
+                    $statsData[$config][$file][$stat][] = $value;
                 }
             }
         }
