@@ -36,6 +36,15 @@ $fromStats = getStatsForHash($from);
 $toSummary = getSummaryForHash($to);
 $toStats = getStatsForHash($to);
 
+if (!$fromSummary) {
+    echo "<div class=\"warning\">No data for commit " . formatHash($from) . ".</div>\n";
+    return;
+}
+if (!$toSummary) {
+    echo "<div class=\"warning\">No data for commit " . formatHash($to) . ".</div>\n";
+    return;
+}
+
 foreach (CONFIGS as $config) {
     $fromSummaryData = $fromSummary->getConfig($config);
     $toSummaryData = $toSummary->getConfig($config);
