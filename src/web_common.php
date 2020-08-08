@@ -99,6 +99,7 @@ function printHeader() {
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; margin: 0 -1em; }
 td { text-align: right; white-space: pre; }
+p { max-width: 40em; }
 .warning {
     font-weight: bold; background-color: rgba(255, 0, 0, 0.3); padding: .3em; margin: .5em 0;
 }
@@ -106,7 +107,8 @@ td { text-align: right; white-space: pre; }
 <nav>
 <a href="index.php">Index</a> |
 <a href="graphs.php">Graphs</a> |
-<a href="compare.php">Compare</a>
+<a href="compare.php">Compare</a> |
+<a href="about.php">About</a>
 </nav>
 <hr />
 STYLE;
