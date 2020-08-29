@@ -5,11 +5,20 @@ $commitsFile = DATA_DIR . '/commits.json';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $commits = $branchCommits['origin/master'];
 
-$stat = $_GET['stat'] ?? 'instructions';
-$bench = $_GET['bench'] ?? 'all';
-$relative = isset($_GET['relative']);
-
 ob_start("ob_gzhandler");
+
+$stat = getStringParam('stat') ?? 'instructions';
+$bench = getStringParam('bench') ?? 'all';
+$relative = isset($_GET['relative']);
+$startDateStr = getStringParam('startDate') ?? '';
+
+if (empty($_SERVER['QUERY_STRING'])) {
+    // By default, show relative metrics for last month.
+    $relative = true;
+    $startDateStr = (new DateTime('-1 month'))->format('Y-m-d');
+}
+
+$startDate = $startDateStr ? new DateTime($startDateStr) : null;
 
 printHeader();
 
@@ -17,6 +26,7 @@ echo "<form>\n";
 echo "<label>Metric: "; printStatSelect($stat); echo "</label>\n";
 echo "<label>Relative (percent): <input type=\"checkbox\" name=\"relative\""
    . ($relative ? " checked" : "") . " /></label>\n";
+echo "<label>Start date: <input name=\"startDate\" value=\"" . h($startDateStr) . "\" /></label>\n";
 if ($bench !== 'all') {
     echo "<input type=\"hidden\" name=\"bench\" value=\"" . h($bench) . "\" />\n";
 }
@@ -48,6 +58,13 @@ foreach ($benches as $bench) {
     $csv[$bench] = "Date," . implode(",", CONFIGS) . "\n";
 }
 foreach ($commits as $commit) {
+    if ($startDate) {
+        $commitDate = new DateTime($commit['commit_date']);
+        if ($commitDate < $startDate) {
+            continue;
+        }
+    }
+
     $hasAtLeastOneConfig = false;
     $hash = $commit['hash'];
     $lines = [];
