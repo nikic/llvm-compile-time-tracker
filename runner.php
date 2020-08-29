@@ -394,12 +394,9 @@ function getRecentCommits(array $commits): array {
     $now = new DateTime();
     foreach ($commits as $commit) {
         $date = new DateTime($commit['commit_date']);
-        if ($date->diff($now)->days > 0) {
+        if ($date->diff($now)->days > 10) {
             continue;
         }
-        /*if ($date->diff($now)->days > 10) {
-            continue;
-        }*/
         $recentCommits[] = $commit;
     }
     return $recentCommits;
