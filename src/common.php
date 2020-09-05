@@ -1,7 +1,7 @@
 <?php
 
 const DATA_DIR = __DIR__ . '/../data';
-const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g', 'O0-g'];
+const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g', 'O0-g', 'NewPM-O3'];
 const REAL_BENCHES = [
     'kimwitu++',
     'sqlite3',
