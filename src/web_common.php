@@ -99,7 +99,8 @@ function printHeader() {
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; margin: 0 -1em; }
 td { text-align: right; white-space: pre; }
-p { max-width: 40em; }
+p, pre { max-width: 40em; }
+pre { margin-left: 2em; white-space: pre-wrap; }
 .warning {
     font-weight: bold; background-color: rgba(255, 0, 0, 0.3); padding: .3em; margin: .5em 0;
 }
