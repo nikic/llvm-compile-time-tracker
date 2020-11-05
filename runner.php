@@ -18,6 +18,7 @@ $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
 $configNum = 1;
 $runs = 2;
+$timeout = 5 * 60; // 5 minutes
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
@@ -86,10 +87,14 @@ while (true) {
             logInfo("Building $config configuration (run $run)");
             try {
                 try {
-                    runCommand("./build_llvm_test_suite.sh $config", /* timeout */ 10 * 60);
+                    runCommand("./build_llvm_test_suite.sh $config", $timeout);
                 } catch (ProcessTimedOutException $e) {
                     // Make sure we kill hanging clang processes.
-                    runCommand("killall clang*");
+                    try {
+                        runCommand("killall clang*");
+                    } catch (CommandException $e) {
+                        /* We don't care if there was nothing to kill. */
+                    }
                     $process = $e->getProcess();
                     throw new CommandException(
                         $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
