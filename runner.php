@@ -23,7 +23,7 @@ $timeout = 5 * 60; // 5 minutes
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
-    '~^origin/master$~',
+    '~^origin/main$~',
     '~^origin/release/11.x$~',
 ];
 
@@ -211,10 +211,10 @@ function getRelevantBranches(GitWorkingCopy $repo, array $branchPatterns): array
 }
 
 function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCommit): array {
-    if ($branch === 'origin/master') {
+    if ($branch === 'origin/main') {
         return getParsedLog($repo, $branch, $firstCommit);
     }
-    $mergeBase = trim($repo->run('merge-base', [$branch, 'origin/master']));
+    $mergeBase = trim($repo->run('merge-base', [$branch, 'origin/main']));
     return getParsedLog($repo, $branch, $mergeBase);
 }
 
@@ -409,8 +409,8 @@ function getRecentCommits(array $commits): array {
 
 function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
     foreach ($branchCommits as $branch => $commits) {
-        // First process all non-master branches.
-        if ($branch == 'origin/master') {
+        // First process all non-main branches.
+        if ($branch == 'origin/main') {
             continue;
         }
 
@@ -421,8 +421,8 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
         }
     }
 
-    // Then build the master branch.
-    $commits = $branchCommits['origin/master'];
+    // Then build the main branch.
+    $commits = $branchCommits['origin/main'];
 
     // Don't try to build too old commits.
     $commits = getRecentCommits($commits);
