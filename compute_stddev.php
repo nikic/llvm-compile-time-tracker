@@ -11,11 +11,11 @@ $commitsFile = DATA_DIR . '/commits.json';
 $summaryStddevFile = __DIR__ . '/stddev_' . $configNum . '.json';
 $statsStddevFile = __DIR__ . '/stats_stddev_' . $configNum . '.msgpack';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
-$masterCommits = $branchCommits['origin/master'];
+$mainCommits = $branchCommits['origin/main'];
 
 $commits = [];
 $foundFirst = false;
-foreach ($masterCommits as $commit) {
+foreach ($mainCommits as $commit) {
     $hash = $commit['hash'];
     if (!$foundFirst) {
         if ($hash !== $from) {
