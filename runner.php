@@ -25,6 +25,7 @@ $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
     '~^origin/release/11.x$~',
+    '~^origin/release/12.x$~',
 ];
 
 $gitWrapper = new GitWrapper();
