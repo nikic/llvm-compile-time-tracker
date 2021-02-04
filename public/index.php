@@ -3,7 +3,7 @@
 require __DIR__ . '/../src/web_common.php';
 $commitsFile = DATA_DIR . '/commits.json';
 
-$config = $_GET['config'] ?? 'O3';
+$config = upgradeConfigName($_GET['config'] ?? 'NewPM-O3');
 $stat = $_GET['stat'] ?? 'instructions';
 $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;

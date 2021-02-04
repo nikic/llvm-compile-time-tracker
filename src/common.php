@@ -71,19 +71,27 @@ function addGeomean(array $summary): array {
     return $summary;
 }
 
+function upgradeConfigName(string $config): string {
+    return CONFIG_RENAMES[$config] ?? $config;
+}
+
 class Summary {
     public int $configNum;
     public array $clang_size;
     public array $data;
 
-    public function __construct(int $config, array $clang_size, array $data) {
-        $this->configNum = $config;
+    public function __construct(int $configNum, array $clang_size, array $data) {
+        $this->configNum = $configNum;
         $this->clang_size = $clang_size;
         $this->data = $data;
     }
 
     public static function fromArray(array $data): Summary {
-        return new Summary($data['config'], $data['clang_size'], $data['data']);
+        return new Summary(
+            $data['config'],
+            $data['clang_size'],
+            self::upgradeData($data['data'])
+        );
     }
 
     public function toArray(): array {
@@ -104,6 +112,14 @@ class Summary {
             return null;
         }
         return array_column_with_keys($data, $stat);
+    }
+
+    private static function upgradeData(array $data): array {
+        $newData = [];
+        foreach ($data as $config => $configData) {
+            $newData[upgradeConfigName($config)] = $configData;
+        }
+        return $newData;
     }
 }
 
