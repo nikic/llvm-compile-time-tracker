@@ -97,7 +97,7 @@ while (true) {
                     throw new Exception('Missing config prefix');
                 }
                 try {
-                    runCommand("./build_llvm_test_suite.sh $realConfig", $timeout);
+                    runCommand("./build_llvm_test_suite.sh $realConfig \"$cflags\"", $timeout);
                 } catch (ProcessTimedOutException $e) {
                     // Make sure we kill hanging clang processes.
                     try {
