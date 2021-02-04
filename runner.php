@@ -89,10 +89,10 @@ while (true) {
             try {
                 if (strpos($config, 'NewPM-') === 0) {
                     $realConfig = substr($config, strlen('NewPM-'));
-                    $cflags = '-fexperimental-pass-manager';
+                    $cflags = '-fexperimental-new-pass-manager';
                 } else if (strpos($config, 'LegacyPM-') === 0) {
                     $realConfig = substr($config, strlen('LegacyPM-'));
-                    $cflags = '-fnoexperimental-pass-manager';
+                    $cflags = '-fno-experimental-new-pass-manager';
                 } else {
                     throw new Exception('Missing config prefix');
                 }
