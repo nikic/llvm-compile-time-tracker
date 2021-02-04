@@ -16,8 +16,8 @@ require __DIR__ . '/src/data_aggregation.php';
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
-$configNum = 1;
-$runs = 2;
+$configNum = 2;
+$runs = 1;
 $timeout = 5 * 60; // 5 minutes
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
@@ -87,8 +87,17 @@ while (true) {
         for ($run = 1; $run <= $runs; $run++) {
             logInfo("Building $config configuration (run $run)");
             try {
+                if (strpos($config, 'NewPM-') === 0) {
+                    $realConfig = substr($config, strlen('NewPM-'));
+                    $cflags = '-fexperimental-pass-manager';
+                } else if (strpos($config, 'LegacyPM-') === 0) {
+                    $realConfig = substr($config, strlen('LegacyPM-'));
+                    $cflags = '-fnoexperimental-pass-manager';
+                } else {
+                    throw new Exception('Missing config prefix');
+                }
                 try {
-                    runCommand("./build_llvm_test_suite.sh $config", $timeout);
+                    runCommand("./build_llvm_test_suite.sh $realConfig", $timeout);
                 } catch (ProcessTimedOutException $e) {
                     // Make sure we kill hanging clang processes.
                     try {
@@ -354,7 +363,7 @@ function isInteresting(
             $value1 = $stats1[$stat];
             $value2 = $stats2[$stat];
             $diff = abs($value1 - $value2);
-            $stddev = $stddevs->getBenchStdDev(/* TODO */ 1, $config, $bench, $stat);
+            $stddev = $stddevs->getBenchStdDev(/* TODO */ 2, $config, $bench, $stat);
             if ($stddev !== null && $diff >= $sigma * $stddev) {
                 return true;
             }

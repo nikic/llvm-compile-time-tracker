@@ -1,7 +1,22 @@
 <?php
 
 const DATA_DIR = __DIR__ . '/../data';
-const CONFIGS = ['O3', 'ReleaseThinLTO', 'ReleaseLTO-g', 'O0-g', 'NewPM-O3'];
+const CONFIGS = [
+    'NewPM-O3',
+    'NewPM-ReleaseThinLTO',
+    'NewPM-ReleaseLTO-g',
+    'NewPM-O0-g',
+    'LegacyPM-O3',
+    'LegacyPM-ReleaseThinLTO',
+    'LegacyPM-ReleaseLTO-g',
+    'LegacyPM-O0-g',
+];
+const CONFIG_RENAMES = [
+    'O3' => 'LegacyPM-O3',
+    'ReleaseThinLTO' => 'LegacyPM-ReleaseThinLTO',
+    'ReleaseLTO-g' => 'LegacyPM-ReleaseLTO-g',
+    'O0-g' => 'LegacyPM-O0-g',
+];
 const REAL_BENCHES = [
     'kimwitu++',
     'sqlite3',
