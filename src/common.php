@@ -75,6 +75,14 @@ function upgradeConfigName(string $config): string {
     return CONFIG_RENAMES[$config] ?? $config;
 }
 
+function upgradeConfigNameKeys(array $data): array {
+    $newData = [];
+    foreach ($data as $config => $configData) {
+        $newData[upgradeConfigName($config)] = $configData;
+    }
+    return $newData;
+}
+
 class Summary {
     public int $configNum;
     public array $clang_size;
@@ -90,7 +98,7 @@ class Summary {
         return new Summary(
             $data['config'],
             $data['clang_size'],
-            self::upgradeData($data['data'])
+            upgradeConfigNameKeys($data['data'])
         );
     }
 
@@ -112,14 +120,6 @@ class Summary {
             return null;
         }
         return array_column_with_keys($data, $stat);
-    }
-
-    private static function upgradeData(array $data): array {
-        $newData = [];
-        foreach ($data as $config => $configData) {
-            $newData[upgradeConfigName($config)] = $configData;
-        }
-        return $newData;
     }
 }
 
@@ -178,7 +178,7 @@ class StdDevManager {
         if (!isset($this->summaryData[$configNum])) {
             $path = __DIR__ . "/../stddev_$configNum.json";
             $this->summaryData[$configNum] = file_exists($path)
-                ? json_decode(file_get_contents($path), true)
+                ? upgradeConfigNameKeys(json_decode(file_get_contents($path), true))
                 : null;
         }
     }
@@ -187,7 +187,7 @@ class StdDevManager {
         if (!isset($this->statsData[$configNum])) {
             $path = __DIR__ . "/../stats_stddev_$configNum.msgpack";
             $this->statsData[$configNum] = file_exists($path)
-                ? msgpack_unpack(file_get_contents($path))
+                ? upgradeConfigNameKeys(msgpack_unpack(file_get_contents($path)))
                 : null;
         }
     }
