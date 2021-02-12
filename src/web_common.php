@@ -95,6 +95,7 @@ function h(string $str): string {
 function printHeader() {
     echo <<<'STYLE'
 <!DOCTYPE html>
+<title>LLVM Compile-Time Tracker</title>
 <style>
 * { font-family: monospace; }
 table { border-spacing: 1em .1em; margin: 0 -1em; }
