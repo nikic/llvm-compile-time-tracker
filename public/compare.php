@@ -60,8 +60,8 @@ foreach (CONFIGS as $config) {
     echo "<th>New</th>";
     echo "</tr>\n";
     foreach (BENCHES_GEOMEAN_LAST as $bench) {
-        $fromAggMetric = $fromSummaryData[$bench][$stat];
-        $toAggMetric = $toSummaryData[$bench][$stat];
+        $fromAggMetric = $fromSummaryData[$bench][$stat] ?? null;
+        $toAggMetric = $toSummaryData[$bench][$stat] ?? null;
         $stddev = $fromSummary->configNum === $toSummary->configNum
             ? $stddevs->getBenchStdDev($fromSummary->configNum, $config, $bench, $stat)
             : null;
@@ -76,8 +76,8 @@ foreach (CONFIGS as $config) {
             ksort($fromFiles);
             foreach ($fromFiles as $file => $fromFile) {
                 $toFile = $toFiles[$file];
-                $fromMetric = $fromFile[$stat];
-                $toMetric = $toFile[$stat];
+                $fromMetric = $fromFile[$stat] ?? null;
+                $toMetric = $toFile[$stat] ?? null;
                 $stddev = $fromSummary->configNum === $toSummary->configNum
                     ? $stddevs->getFileStdDev($fromSummary->configNum, $config, $file, $stat)
                     : null;
