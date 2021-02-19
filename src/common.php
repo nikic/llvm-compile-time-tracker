@@ -143,7 +143,7 @@ function getStatsForHash(string $hash): array {
         return [];
     }
 
-    return msgpack_unpack(gzdecode(file_get_contents($file)));
+    return upgradeConfigNameKeys(msgpack_unpack(gzdecode(file_get_contents($file))));
 }
 
 function writeStatsForHash(string $hash, array $stats): void {
