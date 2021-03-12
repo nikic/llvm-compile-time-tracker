@@ -113,7 +113,8 @@ while (true) {
             } catch (CommandException $e) {
                 echo $e->getMessage(), "\n";
                 file_put_contents($hashDir . '/error', $e->getDebugOutput());
-                break;
+                // Skip this config, but test others.
+                continue 2;
             }
             $rawDatas[] = readRawData($ctmarkDir);
         }
