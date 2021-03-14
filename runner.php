@@ -65,16 +65,30 @@ while (true) {
     logInfo("Building $hash. Reason: $reason");
 
     $repo->checkout($hash);
+    @mkdir($hashDir, 0755, true);
+
+    testHash($hash, $configs, $configNum, $runs, $timeout, $ctmarkDir);
+    file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
+
+    $dataRepo->add('.');
+    $dataRepo->commit('-m', 'Add data');
+    try {
+        $dataRepo->push('origin', 'master');
+    } catch (GitException $e) {
+        // Log the failure, but carry on, we can push the data later.
+        logError($e->getMessage());
+    }
+}
+
+function testHash(
+        string $hash, array $configs, int $configNum, int $runs, int $timeout, string $ctmarkDir) {
     try {
         runCommand('./build_llvm_project.sh');
     } catch (CommandException $e) {
         echo $e->getMessage(), "\n";
-        @mkdir($hashDir, 0755, true);
-        file_put_contents($hashDir . '/error', $e->getDebugOutput());
-        continue;
+        file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
+        return;
     }
-
-    @mkdir($hashDir, 0755, true);
 
     // Gather statistics on the size of the clang binary.
     $sizeContents = shell_exec("size llvm-project-build/bin/clang");
@@ -99,10 +113,15 @@ while (true) {
                 try {
                     runCommand("./build_llvm_test_suite.sh $realConfig \"$cflags\"", $timeout);
                 } catch (ProcessTimedOutException $e) {
-                    // Make sure we kill hanging clang processes.
+                    // Make sure we kill hanging clang and ld processes.
                     try {
                         runCommand("killall clang*");
-                    } catch (CommandException $e) {
+                    } catch (CommandException $_) {
+                        /* We don't care if there was nothing to kill. */
+                    }
+                    try {
+                        runCommand("killall ld*");
+                    } catch (CommandException $_) {
                         /* We don't care if there was nothing to kill. */
                     }
                     $process = $e->getProcess();
@@ -112,7 +131,7 @@ while (true) {
                 }
             } catch (CommandException $e) {
                 echo $e->getMessage(), "\n";
-                file_put_contents($hashDir . '/error', $e->getDebugOutput());
+                file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
                 // Skip this config, but test others.
                 continue 2;
             }
@@ -126,16 +145,6 @@ while (true) {
 
     writeSummaryForHash($hash, $summary);
     writeStatsForHash($hash, $stats);
-    file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
-
-    $dataRepo->add('.');
-    $dataRepo->commit('-m', 'Add data');
-    try {
-        $dataRepo->push('origin', 'master');
-    } catch (GitException $e) {
-        // Log the failure, but carry on, we can push the data later.
-        logError($e->getMessage());
-    }
 }
 
 function logWithLevel(string $level, string $str) {
