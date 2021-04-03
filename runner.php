@@ -199,7 +199,7 @@ function runCommand(string $command, ?int $timeout = null): void {
 
 function getParsedLog(GitWorkingCopy $repo, string $branch, string $baseCommit) {
     $log = $repo->log(
-        '--pretty=format:%H;%an;%ae;%cI;%s',
+        '--pretty=format:%H;%an;%cI;%s',
         '--reverse',
         '--first-parent',
         "$baseCommit^..$branch");
@@ -207,13 +207,12 @@ function getParsedLog(GitWorkingCopy $repo, string $branch, string $baseCommit) 
 
     $parsedLog = [];
     foreach ($lines as $line) {
-        $parts = explode(';', $line, 5);
+        $parts = explode(';', $line, 4);
         $parsedLog[] = [
             "hash" => $parts[0],
             "author_name" => $parts[1],
-            "author_email" => $parts[2],
-            "commit_date" => $parts[3],
-            "subject" => $parts[4]
+            "commit_date" => $parts[2],
+            "subject" => $parts[3]
         ];
     }
     return $parsedLog;
