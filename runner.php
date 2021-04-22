@@ -33,10 +33,14 @@ $repo = $gitWrapper->workingCopy(__DIR__ . '/llvm-project');
 $dataRepo = $gitWrapper->workingCopy(__DIR__ . '/data');
 $stddevs = new StdDevManager();
 
+// We --prune remote branches, but don't want old experiments in the commits file
+// to be removed. For this reason, load the old data and overwrite the data, thus
+// not touching branches that have been removed upstream.
+$branchCommits = json_decode(file_get_contents($commitsFile), true);
 while (true) {
     logInfo("Fetching branches");
     try {
-        $repo->fetch('--all');
+        $repo->fetchAll(['prune' => true]);
     } catch (GitException $e) {
         // Log the failure, but carry on, we have plenty of old commits to build!
         logError($e->getMessage());
@@ -45,7 +49,6 @@ while (true) {
     // Redoing all this work might get inefficient at some point...
     logInfo("Fetching commits");
     $branches = getRelevantBranches($repo, $branchPatterns);
-    $branchCommits = [];
     foreach ($branches as $branch) {
         $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
     }
