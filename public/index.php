@@ -180,6 +180,12 @@ function groupByRemote(array $branchCommits): array {
         $remote = strstr($branch, '/', true);
         $remotes[$remote][$branch] = $commits;
     }
+
+    // Move the origin remote to the end. We display much more commits for it,
+    // and don't want to obscure any of the "smaller" remotes.
+    $origin = $remotes['origin'];
+    unset($remotes['origin']);
+    $remotes['origin'] = $origin;
     return $remotes;
 }
 
