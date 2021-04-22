@@ -41,7 +41,21 @@ echo "<form action=\"compare_selected.php\">\n";
 echo "<input type=\"hidden\" name=\"stat\" value=\"" . h($stat) . "\" />\n";
 echo "Compare selected: <input type=\"submit\" value=\"Compare\" />\n";
 echo "Or click the \"C\" to compare with previous.\n";
-foreach (groupByRemote($commitData) as $remote => $branchCommits) {
+
+$remotes = groupByRemote($commitData);
+$inactiveRemotes = [];
+if ($isFrontPage) {
+    [$remotes, $inactiveRemotes] = partitionRemotes($remotes);
+    echo "<div>\n";
+    echo "<h3 style=\"display: inline-block\">Remotes without recent activity:</h3>\n";
+    foreach ($inactiveRemotes as $remote) {
+        $params = ["config" => $config, "stat" => $stat, "remote" => $remote];
+        echo "<a href=\"" . makeUrl("", $params) . "\">" . h($remote) . "</a>\n";
+    }
+    echo "</div>\n";
+}
+
+foreach ($remotes as $remote => $branchCommits) {
     if ($filterRemote !== null && $filterRemote !== $remote) {
         continue;
     }
@@ -52,7 +66,6 @@ foreach (groupByRemote($commitData) as $remote => $branchCommits) {
         $params = ["config" => $config, "stat" => $stat, "remote" => $remote];
         if ($isFrontPage) {
             echo "Showing recent experiments. ";
-            $branchCommits = filterRecentBranches($branchCommits);
             $url = makeUrl("", $params);
             echo "<a href=\"" . h($url) . "\">Show all</a>\n";
         } else {
@@ -207,6 +220,20 @@ function filterRecentBranches(array $branchCommits) {
         $date = getNewestCommitDate($commits);
         return $date->diff($now)->days <= 7;
     });
+}
+
+function partitionRemotes(array $remotes): array {
+    $activeRemotes = [];
+    $inactiveRemotes = [];
+    foreach ($remotes as $remote => $branches) {
+        $branches = filterRecentBranches($branches);
+        if (empty($branches)) {
+            $inactiveRemotes[] = $remote;
+        } else {
+            $activeRemotes[$remote] = $branches;
+        }
+    }
+    return [$activeRemotes, $inactiveRemotes];
 }
 
 function findCommitIndex(array $commits, string $hash): ?int {
