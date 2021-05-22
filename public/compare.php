@@ -22,9 +22,12 @@ if (!is_string($from) || !is_string($to)) {
     return;
 }
 
+$swappedParams = ["stat" => $stat, "from" => $to, "to" => $from];
+
 echo "<hr />\n";
 echo "Comparing " . formatHash($from) . " to " . formatHash($to)
-   . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>).\n";
+   . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>)."
+   . " <a href=\"" . h(makeUrl("compare.php", $swappedParams)) . "\">Swap commits</a>.\n";
 
 if ($stat === 'task-clock' || $stat === 'wall-time') {
     echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and not meaningful for comparisons between specific revisions.</div>";
