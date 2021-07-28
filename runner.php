@@ -116,14 +116,9 @@ function testHash(
                 try {
                     runCommand("./build_llvm_test_suite.sh $realConfig \"$cflags\"", $timeout);
                 } catch (ProcessTimedOutException $e) {
-                    // Make sure we kill hanging clang and ld processes.
+                    // Kill ninja, which should kill any hanging clang/ld processes.
                     try {
-                        runCommand("killall clang*");
-                    } catch (CommandException $_) {
-                        /* We don't care if there was nothing to kill. */
-                    }
-                    try {
-                        runCommand("killall ld*");
+                        runCommand("killall ninja");
                     } catch (CommandException $_) {
                         /* We don't care if there was nothing to kill. */
                     }
