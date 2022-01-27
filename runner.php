@@ -110,7 +110,7 @@ function testHash(
                     $cflags = '-fexperimental-new-pass-manager';
                 } else if (strpos($config, 'LegacyPM-') === 0) {
                     $realConfig = substr($config, strlen('LegacyPM-'));
-                    $cflags = '-fno-experimental-new-pass-manager';
+                    $cflags = '-flegacy-pass-manager';
                 } else {
                     throw new Exception('Missing config prefix');
                 }
