@@ -24,9 +24,7 @@ $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
-    '~^origin/release/11.x$~',
-    '~^origin/release/12.x$~',
-    '~^origin/release/13.x$~',
+    '~^origin/release/1[1-9].x$~',
 ];
 
 $gitWrapper = new GitWrapper();
