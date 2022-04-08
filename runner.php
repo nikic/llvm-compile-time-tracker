@@ -12,6 +12,16 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/data_aggregation.php';
 
+// Decouple runner from viewer configs.
+const RUNNER_CONFIGS = [
+    'NewPM-O3',
+    'NewPM-ReleaseThinLTO',
+    'NewPM-ReleaseLTO-g',
+    'NewPM-O0-g',
+    'LegacyPM-O3',
+    'LegacyPM-O0-g',
+];
+
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
@@ -247,7 +257,7 @@ function getMissingConfigs(string $hash): array {
         return [];
     }
 
-    return CONFIGS;
+    return RUNNER_CONFIGS;
 }
 
 class WorkItem {
@@ -380,7 +390,7 @@ function isInteresting(
 
 function getInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?WorkItem {
     foreach ($missingRanges as $missingRange) {
-        foreach (CONFIGS as $config) {
+        foreach (RUNNER_CONFIGS as $config) {
             $summary1 = getSummary($missingRange->hash1, $config);
             $summary2 = getSummary($missingRange->hash2, $config);
             if (!$summary1 || !$summary2) {
