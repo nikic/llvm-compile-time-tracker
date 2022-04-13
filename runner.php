@@ -18,8 +18,6 @@ const RUNNER_CONFIGS = [
     'NewPM-ReleaseThinLTO',
     'NewPM-ReleaseLTO-g',
     'NewPM-O0-g',
-    'LegacyPM-O3',
-    'LegacyPM-O0-g',
 ];
 
 // Time to sleep if there were no new commits
