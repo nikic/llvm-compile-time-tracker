@@ -40,11 +40,11 @@ $toSummary = getSummaryForHash($to);
 $toStats = getStatsForHash($to);
 
 if (!$fromSummary) {
-    echo "<div class=\"warning\">No data for commit " . formatHash($from) . ".</div>\n";
+    reportMissingData($from);
     return;
 }
 if (!$toSummary) {
-    echo "<div class=\"warning\">No data for commit " . formatHash($to) . ".</div>\n";
+    reportMissingData($to);
     return;
 }
 
@@ -145,4 +145,15 @@ function getLinkStats(array $statsList): array {
     }
 
     throw new Exception('No link stats found');
+}
+
+function reportMissingData(string $hash): void {
+    $errorFile = getDirForHash($hash) . '/error';
+    if (file_exists($errorFile)) {
+        $errorUrl = makeUrl("show_error.php", ["commit" => $hash]);
+        echo "<div class=\"warning\">Failed to build commit " . formatHash($hash)
+           . " (<a href=\"" . h($errorUrl) . "\">Log</a>)</div>\n";
+    } else {
+        echo "<div class=\"warning\">No data for commit " . formatHash($hash) . ".</div>\n";
+    }
 }
