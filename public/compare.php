@@ -48,6 +48,13 @@ if (!$toSummary) {
     return;
 }
 
+if (hasError($from)) {
+    reportError($from, " in some configurations");
+}
+if (hasError($to)) {
+    reportError($to, " in some configurations");
+}
+
 foreach (CONFIGS as $config) {
     $fromSummaryData = $fromSummary->getConfig($config);
     $toSummaryData = $toSummary->getConfig($config);
@@ -147,12 +154,20 @@ function getLinkStats(array $statsList): array {
     throw new Exception('No link stats found');
 }
 
-function reportMissingData(string $hash): void {
+function hasError(string $hash): bool {
     $errorFile = getDirForHash($hash) . '/error';
-    if (file_exists($errorFile)) {
-        $errorUrl = makeUrl("show_error.php", ["commit" => $hash]);
-        echo "<div class=\"warning\">Failed to build commit " . formatHash($hash)
-           . " (<a href=\"" . h($errorUrl) . "\">Log</a>)</div>\n";
+    return file_exists($errorFile);
+}
+
+function reportError(string $hash, string $suffix = ''): void {
+    $errorUrl = makeUrl("show_error.php", ["commit" => $hash]);
+    echo "<div class=\"warning\">Failed to build commit " . formatHash($hash)
+       . $suffix . " (<a href=\"" . h($errorUrl) . "\">Log</a>)</div>\n";
+}
+
+function reportMissingData(string $hash): void {
+    if (hasError($hash)) {
+        reportError($hash);
     } else {
         echo "<div class=\"warning\">No data for commit " . formatHash($hash) . ".</div>\n";
     }
