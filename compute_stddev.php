@@ -3,9 +3,7 @@
 require __DIR__ . '/src/common.php';
 
 $configNum = 2;
-//$from = '32e90cbcd19a83e20a86bfc1cbf7cec9729e9077';
-//$from = '47a4a27f47203055a4700b65533262409f83c491';
-$from = '669ddd1e9b1226432b003dbba05b99f8e992285b';
+$from = '1209b9c2c2bec5a5ffd68d6785015bfd222ecf00';
 $to = null;
 
 $commitsFile = DATA_DIR . '/commits.json';
@@ -33,6 +31,7 @@ foreach ($mainCommits as $commit) {
 echo "Reading data...\n";
 $summaryData = [];
 $statsData = [];
+$i = 0;
 foreach ($commits as $hash) {
     $summary = getSummaryForHash($hash);
     $stats = getStatsForHash($hash);
@@ -56,6 +55,10 @@ foreach ($commits as $hash) {
                 }
             }
         }
+    }
+
+    if (++$i % 1000 == 0) {
+        echo "Read data for $i commits...\n";
     }
 }
 
@@ -95,7 +98,7 @@ function diffs(array $values): array {
 
 /* We compute the standard deviation of the values based on the standard deviation of the
  * differences here, which are connected by a factor of sqrt(2) as a sum of independent normal
- * distributions. We do not correct for the mean, because the mean if expected to be zero. This
+ * distributions. We do not correct for the mean, because the mean is expected to be zero. This
  * trick allows us to work on values that potentially have significant changes, because these
  * jumps will show up as individual large values in the differences, and don't have an overly
  * large impact on the final result. */
