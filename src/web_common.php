@@ -129,6 +129,7 @@ function printStatSelect(string $stat) {
     echo "<select name=\"stat\">\n";
     // Not listed: context-switches, cpu-migrations, page-faults
     $opt("instructions");
+    $opt("instructions:u");
     $opt("max-rss");
     $opt("task-clock");
     $opt("cycles");
