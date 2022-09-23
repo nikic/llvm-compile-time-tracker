@@ -55,7 +55,7 @@ $hashes = [];
 $data = [];
 $firstData = [];
 foreach ($benches as $bench) {
-    $csv[$bench] = "Date," . implode(",", CONFIGS) . "\n";
+    $csv[$bench] = "Date," . implode(",", DEFAULT_CONFIGS) . "\n";
 }
 foreach ($commits as $commit) {
     if ($startDate) {
@@ -87,7 +87,7 @@ foreach ($commits as $commit) {
         $lines[$bench] .= ',' . $value;
     } else {
         $fullSummary = getSummaryForHash($hash);
-        foreach (CONFIGS as $config) {
+        foreach (DEFAULT_CONFIGS as $config) {
             $summary = $fullSummary->data[$config] ?? [];
             foreach ($benches as $bench) {
                 if (isset($summary[$bench][$stat])) {

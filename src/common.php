@@ -1,11 +1,14 @@
 <?php
 
 const DATA_DIR = __DIR__ . '/../data';
-const CONFIGS = [
+const DEFAULT_CONFIGS = [
     'NewPM-O3',
     'NewPM-ReleaseThinLTO',
     'NewPM-ReleaseLTO-g',
     'NewPM-O0-g',
+];
+const CONFIGS = [
+    ...DEFAULT_CONFIGS,
     'LegacyPM-O3',
     'LegacyPM-ReleaseThinLTO',
     'LegacyPM-ReleaseLTO-g',

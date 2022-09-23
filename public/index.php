@@ -180,7 +180,7 @@ function formatCommit(array $commit): string {
 
 function printConfigSelect(string $name) {
     echo "<select name=\"config\">\n";
-    foreach (CONFIGS as $config) {
+    foreach (DEFAULT_CONFIGS as $config) {
         $selected = $name === $config ? " selected" : "";
         echo "<option$selected>$config</option>\n";
     }
