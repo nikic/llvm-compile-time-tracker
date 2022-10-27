@@ -4,7 +4,7 @@ require __DIR__ . '/../src/web_common.php';
 $commitsFile = DATA_DIR . '/commits.json';
 
 $config = upgradeConfigName($_GET['config'] ?? 'NewPM-O3');
-$stat = $_GET['stat'] ?? 'instructions';
+$stat = $_GET['stat'] ?? DEFAULT_METRIC;
 $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;
 $filterBranch = $_GET['branch'] ?? null;

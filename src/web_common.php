@@ -2,6 +2,8 @@
 
 require __DIR__ . '/common.php';
 
+const DEFAULT_METRIC = 'instructions:u';
+
 set_exception_handler(function(Throwable $e) {
     echo h($e->getMessage());
 });

@@ -6,7 +6,7 @@ require __DIR__ . '/../src/data_aggregation.php';
 $from = $_GET['from'] ?? null;
 $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
-$stat = $_GET['stat'] ?? 'instructions';
+$stat = $_GET['stat'] ?? DEFAULT_METRIC;
 
 printHeader();
 

@@ -7,7 +7,7 @@ $commits = $branchCommits['origin/main'];
 
 ob_start("ob_gzhandler");
 
-$stat = getStringParam('stat') ?? 'instructions';
+$stat = getStringParam('stat') ?? DEFAULT_METRIC;
 $bench = getStringParam('bench') ?? 'all';
 $relative = isset($_GET['relative']);
 $startDateStr = getStringParam('startDate') ?? '';
