@@ -113,15 +113,11 @@ function testHash(
             try {
                 if (strpos($config, 'NewPM-') === 0) {
                     $realConfig = substr($config, strlen('NewPM-'));
-                    $cflags = '-fexperimental-new-pass-manager';
-                } else if (strpos($config, 'LegacyPM-') === 0) {
-                    $realConfig = substr($config, strlen('LegacyPM-'));
-                    $cflags = '-flegacy-pass-manager';
                 } else {
                     throw new Exception('Missing config prefix');
                 }
                 try {
-                    runCommand("./build_llvm_test_suite.sh $realConfig \"$cflags\"", $timeout);
+                    runCommand("./build_llvm_test_suite.sh $realConfig", $timeout);
                 } catch (ProcessTimedOutException $e) {
                     // Kill ninja, which should kill any hanging clang/ld processes.
                     try {
