@@ -162,6 +162,19 @@ function getStringParam(string $name): ?string {
     return $value;
 }
 
+function getIntParam(string $name): ?int {
+    $str = getStringParam($name);
+    if ($str === null) {
+        return null;
+    }
+
+    if (!ctype_digit($str)) {
+        throw new Exception("Query parameter \"$name\" is not an integer");
+    }
+
+    return (int) $str;
+}
+
 function isCommitHash(string $value): bool {
     return (bool) preg_match('/^[0-9a-f]{40}$/', $value);
 }

@@ -11,6 +11,7 @@ $stat = getStringParam('stat') ?? DEFAULT_METRIC;
 $bench = getStringParam('bench') ?? 'all';
 $relative = isset($_GET['relative']);
 $startDateStr = getStringParam('startDate') ?? '';
+$interval = getIntParam('interval') ?? 1;
 
 if (empty($_SERVER['QUERY_STRING'])) {
     // By default, show relative metrics for last month.
@@ -29,6 +30,9 @@ echo "<label>Relative (percent): <input type=\"checkbox\" name=\"relative\""
 echo "<label>Start date: <input name=\"startDate\" value=\"" . h($startDateStr) . "\" /></label>\n";
 if ($bench !== 'all') {
     echo "<input type=\"hidden\" name=\"bench\" value=\"" . h($bench) . "\" />\n";
+}
+if ($interval !== 1) {
+    echo "<input type=\"hidden\" name=\"interval\" value=\"" . h($interval) . "\" />\n";
 }
 echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
@@ -57,12 +61,18 @@ $firstData = [];
 foreach ($benches as $bench) {
     $csv[$bench] = "Date," . implode(",", DEFAULT_CONFIGS) . "\n";
 }
+$i = 0;
 foreach ($commits as $commit) {
     if ($startDate) {
         $commitDate = new DateTime($commit['commit_date']);
         if ($commitDate < $startDate) {
             continue;
         }
+    }
+
+    if ($i !== $interval) {
+        $i++;
+        continue;
     }
 
     $hasAtLeastOneConfig = false;
@@ -113,6 +123,7 @@ foreach ($commits as $commit) {
         foreach ($benches as $bench) {
             $csv[$bench] .= $lines[$bench] . "\n";
         }
+        $i = 0;
     }
 }
 
