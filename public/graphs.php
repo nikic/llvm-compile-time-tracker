@@ -39,6 +39,12 @@ if ($configs !== DEFAULT_CONFIGS) {
     echo "<input type=\"hidden\" name=\"configs\" value=\"" . h(implode(',', $configs)) . "\" />\n";
 }
 echo "<input type=\"submit\" value=\"Go\" />\n";
+$longTermUrl = makeUrl("graphs.php", [
+    "startDate" => "2021-02-04",
+    "interval" => "100",
+    "relative" => "on",
+]);
+echo "<a href=\"" . $longTermUrl . "\">Long term view</a>\n";
 echo "</form>\n";
 echo "<hr />\n";
 
