@@ -175,6 +175,22 @@ function getIntParam(string $name): ?int {
     return (int) $str;
 }
 
+function getConfigsParam(string $name): ?array {
+    $str = getStringParam($name);
+    if ($str === null) {
+        return null;
+    }
+
+    $configs = explode(',', $str);
+    foreach ($configs as $config) {
+        if (!in_array($config, CONFIGS)) {
+            throw new Exception("Unknown config  \"$config\"");
+        }
+    }
+
+    return $configs;
+}
+
 function isCommitHash(string $value): bool {
     return (bool) preg_match('/^[0-9a-f]{40}$/', $value);
 }

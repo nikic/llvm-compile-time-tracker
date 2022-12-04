@@ -12,6 +12,7 @@ $bench = getStringParam('bench') ?? 'all';
 $relative = isset($_GET['relative']);
 $startDateStr = getStringParam('startDate') ?? '';
 $interval = getIntParam('interval') ?? 1;
+$configs = getConfigsParam('configs') ?? DEFAULT_CONFIGS;
 
 if (empty($_SERVER['QUERY_STRING'])) {
     // By default, show relative metrics for last month.
@@ -33,6 +34,9 @@ if ($bench !== 'all') {
 }
 if ($interval !== 1) {
     echo "<input type=\"hidden\" name=\"interval\" value=\"" . h($interval) . "\" />\n";
+}
+if ($configs !== DEFAULT_CONFIGS) {
+    echo "<input type=\"hidden\" name=\"configs\" value=\"" . h(implode(',', $configs)) . "\" />\n";
 }
 echo "<input type=\"submit\" value=\"Go\" />\n";
 echo "</form>\n";
@@ -59,7 +63,7 @@ $hashes = [];
 $data = [];
 $firstData = [];
 foreach ($benches as $bench) {
-    $csv[$bench] = "Date," . implode(",", DEFAULT_CONFIGS) . "\n";
+    $csv[$bench] = "Date," . implode(",", $configs) . "\n";
 }
 $i = 0;
 foreach ($commits as $commit) {
@@ -97,7 +101,7 @@ foreach ($commits as $commit) {
         $lines[$bench] .= ',' . $value;
     } else {
         $fullSummary = getSummaryForHash($hash);
-        foreach (DEFAULT_CONFIGS as $config) {
+        foreach ($configs as $config) {
             $summary = $fullSummary->data[$config] ?? [];
             foreach ($benches as $bench) {
                 if (isset($summary[$bench][$stat])) {
