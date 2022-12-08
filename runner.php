@@ -57,7 +57,8 @@ while (true) {
     logInfo("Fetching commits");
     $branches = getRelevantBranches($repo, $branchPatterns);
     foreach ($branches as $branch) {
-        $branchCommits[$branch] = getBranchCommits($repo, $branch, $firstCommit);
+        $branchCommits[$branch] = getBranchCommits(
+            $repo, $branch, $firstCommit, $branchCommits[$branch] ?? []);
     }
 
     logInfo("Finding work item");
@@ -230,7 +231,19 @@ function getRelevantBranches(GitWorkingCopy $repo, array $branchPatterns): array
     });
 }
 
-function getBranchCommits(GitWorkingCopy $repo, string $branch, string $firstCommit): array {
+function getBranchCommits(
+    GitWorkingCopy $repo, string $branch, string $firstCommit, array $prevCommits
+): array {
+    // Merge base calculations are expensive. If the HEAD commit of the branch did not change,
+    // reuse the previous result.
+    if (null !== $key = array_key_last($prevCommits)) {
+        $prevLastCommit = $prevCommits[$key]['hash'];
+        $curLastCommit = trim($repo->run('rev-parse', [$branch]));
+        if ($prevLastCommit === $curLastCommit) {
+            return $prevCommits;
+        }
+    }
+
     if ($branch === 'origin/main') {
         return getParsedLog($repo, $branch, $firstCommit);
     }
