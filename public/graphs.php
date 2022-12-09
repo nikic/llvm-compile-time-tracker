@@ -80,8 +80,7 @@ foreach ($commits as $commit) {
         }
     }
 
-    if ($i !== $interval) {
-        $i++;
+    if (++$i < $interval) {
         continue;
     }
 
