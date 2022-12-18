@@ -157,7 +157,11 @@ g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
         var hash = hashes[idx];
         var prevHash = hashes[idx - 1];
         var url = 'compare.php?from=' + prevHash + '&to=' + hash + '&stat=' + $encodedStat;
-        window.location.href = url;
+        if (e.button == 1) {
+            window.open(url, '_blank');
+        } else {
+            window.location.href = url;
+        }
     },
 });
 </script>
