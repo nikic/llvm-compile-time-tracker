@@ -3,10 +3,30 @@
 require __DIR__ . '/../src/web_common.php';
 require __DIR__ . '/../src/data_aggregation.php';
 
-$from = $_GET['from'] ?? null;
-$to = $_GET['to'] ?? null;
+$from = $_GET['from'] ?? '';
+$to = $_GET['to'] ?? '';
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
+
+if ($from === '' && $to !== '') {
+    // If the start commit is missing, try to find the parent of the end commit.
+    $commitsFile = DATA_DIR . '/commits.json';
+    $commitData = json_decode(file_get_contents($commitsFile), true);
+    $commits = $commitData['origin/main'];
+    $lastCommit = null;
+    foreach ($commits as $commit) {
+        if ($commit['hash'] === $to) {
+            $url = makeUrl("http://{$_SERVER['HTTP_HOST']}/compare.php", [
+                'from' => $lastCommit['hash'],
+                'to' => $to,
+                'stat' => $stat,
+            ]);
+            header("Location: " . $url);
+            die;
+        }
+        $lastCommit = $commit;
+    }
+}
 
 printHeader();
 
