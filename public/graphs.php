@@ -13,6 +13,7 @@ $relative = isset($_GET['relative']);
 $startDateStr = getStringParam('startDate') ?? '';
 $interval = getIntParam('interval') ?? 1;
 $configs = getConfigsParam('configs') ?? DEFAULT_CONFIGS;
+$width = getIntParam('width') ?? 480;
 
 if (empty($_SERVER['QUERY_STRING'])) {
     // By default, show relative metrics for last month.
@@ -147,6 +148,7 @@ foreach ($benches as $bench) {
 g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
     includeZero: true,
     connectSeparatedPoints: true,
+    width: $width,
     clickCallback: function(e, x, points) {
         var idx = points[0].idx;
         if (idx == 0) {
