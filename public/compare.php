@@ -3,8 +3,8 @@
 require __DIR__ . '/../src/web_common.php';
 require __DIR__ . '/../src/data_aggregation.php';
 
-$from = $_GET['from'] ?? '';
-$to = $_GET['to'] ?? '';
+$from = $_GET['from'] ?? null;
+$to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
 
