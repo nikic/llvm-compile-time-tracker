@@ -26,7 +26,8 @@ $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
 $configNum = 2;
 $runs = 1;
-$timeout = 5 * 60; // 5 minutes
+$llvmTimeout = 120 * 60; // 120 minutes
+$benchTimeout = 5 * 60; // 5 minutes
 
 $firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
 $branchPatterns = [
@@ -78,7 +79,7 @@ while (true) {
     $repo->checkout($hash);
     @mkdir($hashDir, 0755, true);
 
-    testHash($hash, $configs, $configNum, $runs, $timeout, $ctmarkDir);
+    testHash($hash, $configs, $configNum, $runs, $llvmTimeout, $benchTimeout, $ctmarkDir);
     file_put_contents($commitsFile, json_encode($branchCommits, JSON_PRETTY_PRINT));
 
     $dataRepo->add('.');
@@ -92,9 +93,12 @@ while (true) {
 }
 
 function testHash(
-        string $hash, array $configs, int $configNum, int $runs, int $timeout, string $ctmarkDir) {
+        string $hash, array $configs,
+        int $configNum, int $runs,
+        int $llvmTimeout, int $benchTimeout,
+        string $ctmarkDir) {
     try {
-        runCommand('./build_llvm_project.sh');
+        runBuildCommand('./build_llvm_project.sh', $llvmTimeout);
     } catch (CommandException $e) {
         echo $e->getMessage(), "\n";
         file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
@@ -117,20 +121,7 @@ function testHash(
                 } else {
                     throw new Exception('Missing config prefix');
                 }
-                try {
-                    runCommand("./build_llvm_test_suite.sh $realConfig", $timeout);
-                } catch (ProcessTimedOutException $e) {
-                    // Kill ninja, which should kill any hanging clang/ld processes.
-                    try {
-                        runCommand("killall ninja");
-                    } catch (CommandException $_) {
-                        /* We don't care if there was nothing to kill. */
-                    }
-                    $process = $e->getProcess();
-                    throw new CommandException(
-                        $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
-                    );
-                }
+                runBuildCommand("./build_llvm_test_suite.sh $realConfig", $benchTimeout);
             } catch (CommandException $e) {
                 echo $e->getMessage(), "\n";
                 file_put_contents(
@@ -196,6 +187,23 @@ function runCommand(string $command, ?int $timeout = null): void {
         throw new CommandException(
             "Execution of \"$command\" failed",
             $process->getOutput(), $process->getErrorOutput()
+        );
+    }
+}
+
+function runBuildCommand(string $command, int $timeout): void {
+    try {
+        runCommand($command, $timeout);
+    } catch (ProcessTimedOutException $e) {
+        // Kill ninja, which should kill any hanging clang/ld processes.
+        try {
+            runCommand("killall ninja");
+        } catch (CommandException $_) {
+            /* We don't care if there was nothing to kill. */
+        }
+        $process = $e->getProcess();
+        throw new CommandException(
+            $e->getMessage(), $process->getOutput(), $process->getErrorOutput()
         );
     }
 }
