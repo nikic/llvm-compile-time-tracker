@@ -133,7 +133,8 @@ function testHash(
                 }
             } catch (CommandException $e) {
                 echo $e->getMessage(), "\n";
-                file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
+                file_put_contents(
+                    getDirForHash($hash) . '/error', $e->getDebugOutput(), FILE_APPEND);
                 // Skip this config, but test others.
                 continue 2;
             }
