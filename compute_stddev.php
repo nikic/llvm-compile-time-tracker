@@ -2,8 +2,8 @@
 
 require __DIR__ . '/src/common.php';
 
-$configNum = 2;
-$from = '1209b9c2c2bec5a5ffd68d6785015bfd222ecf00';
+$configNum = 3;
+$from = 'd8ba9e505ac3a57211fade270532519adde374c2';
 $to = null;
 
 $commitsFile = DATA_DIR . '/commits.json';
