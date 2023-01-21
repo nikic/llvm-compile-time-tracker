@@ -75,6 +75,10 @@ if (hasError($to)) {
     reportError($to, " in some configurations");
 }
 
+if ($fromSummary->configNum != $toSummary->configNum) {
+    echo "<div class=\"warning\">The server configuration changed between the selected commits. Differences may be spurious.</div>\n";
+}
+
 foreach (CONFIGS as $config) {
     $fromSummaryData = $fromSummary->getConfig($config);
     $toSummaryData = $toSummary->getConfig($config);
