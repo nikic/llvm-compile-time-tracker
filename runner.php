@@ -98,7 +98,9 @@ function testHash(
         int $llvmTimeout, int $benchTimeout,
         string $ctmarkDir) {
     try {
+        $startTime = microtime(true);
         runBuildCommand('./build_llvm_project.sh', $llvmTimeout);
+        $buildTime = microtime(true) - $startTime;
     } catch (CommandException $e) {
         echo $e->getMessage(), "\n";
         file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
@@ -107,10 +109,11 @@ function testHash(
 
     // Gather statistics on the size of the clang binary.
     $sizeContents = shell_exec("size llvm-project-build/bin/clang");
-    $sizeStats = parseSizeStats($sizeContents);
+    $clangStats = parseSizeStats($sizeContents);
+    $clangStats['wall-time'] = $buildTime;
 
     $stats = [];
-    $summary = new Summary($configNum, $sizeStats, []);
+    $summary = new Summary($configNum, $clangStats, []);
     foreach ($configs as $config) {
         $rawDatas = [];
         for ($run = 1; $run <= $runs; $run++) {
