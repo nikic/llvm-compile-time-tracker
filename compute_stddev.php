@@ -62,6 +62,7 @@ foreach ($commits as $hash) {
     }
 }
 
+echo "Read data for $i commits.\n";
 echo "Computing stddevs...\n";
 $summaryStddevs = [];
 foreach ($summaryData as $config => $configData) {
