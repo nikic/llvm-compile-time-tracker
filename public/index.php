@@ -2,6 +2,7 @@
 
 require __DIR__ . '/../src/web_common.php';
 $commitsFile = DATA_DIR . '/commits.json';
+$defaultNumCommits = 1000;
 
 $config = upgradeConfigName($_GET['config'] ?? 'NewPM-O3');
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
@@ -9,7 +10,8 @@ $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;
 $filterBranch = $_GET['branch'] ?? null;
 $startHash = $_GET['startHash'] ?? null;
-$numCommits = $_GET['numCommits'] ?? 1000;
+$numCommits = $_GET['numCommits'] ?? $defaultNumCommits;
+$minInterestingness = $_GET['minInterestingness'] ?? 0.0;
 
 $isFrontPage = $filterRemote === null && $filterBranch === null;
 
@@ -30,6 +32,12 @@ if ($filterBranch) {
 }
 if ($startHash) {
     echo "<input type=\"hidden\" name=\"startHash\" value=\"" . h($startHash) . "\" />\n";
+}
+if ($numCommits != $defaultNumCommits) {
+    echo "<input type=\"hidden\" name=\"numCommits\" value=\"" . h($numCommits) . "\" />\n";
+}
+if ($minInterestingness > 0.0) {
+    echo "<input type=\"hidden\" name=\"minInterestingness\" value=\"" . h($minInterestingness) . "\" />\n";
 }
 echo "</form>\n";
 echo "<hr />\n";
@@ -89,6 +97,7 @@ foreach ($remotes as $remote => $branchCommits) {
         }
 
         list($commits, $nextStartHash) = filterCommits($commits, $startHash, $numCommits);
+        $commits = filterByInterestingness($commits, $config, $stat, $stddevs, $minInterestingness);
 
         $titles = array_merge(['', '', 'Commit', ...BENCHES_GEOMEAN_LAST]);
         $rows = [];
@@ -96,6 +105,10 @@ foreach ($remotes as $remote => $branchCommits) {
         $lastHash = null;
         $lastConfigNum = null;
         foreach ($commits as $commit) {
+            if ($commit === null) {
+                $rows[] = ['', '', '...'];
+                continue;
+            }
             $hash = $commit['hash'];
             $summary = getSummaryForHash($hash);
             $metrics = $summary !== null ? $summary->getConfigStat($config, $stat) : null;
@@ -129,7 +142,7 @@ foreach ($remotes as $remote => $branchCommits) {
                 $row[] = "Failed to build llvm-project or llvm-test-suite"
                        . " (<a href=\"" . h($url) . "\">Log</a>)";
             }
-            $rows[$hash] = $row;
+            $rows[] = $row;
         }
 
         echo "<h4>", h($branch), ":</h4>\n";
@@ -139,7 +152,7 @@ foreach ($remotes as $remote => $branchCommits) {
             echo "<th>$title</th>\n";
         }
         echo "</tr>\n";
-        foreach (array_reverse($rows) as $hash => $row) {
+        foreach (array_reverse($rows) as $row) {
             echo "<tr>\n";
             $colSpan = 1;
             if (count($row) < count($titles)) {
@@ -163,6 +176,12 @@ foreach ($remotes as $remote => $branchCommits) {
                 "branch" => $branch,
                 "startHash" => $nextStartHash,
             ];
+            if ($numCommits != $defaultNumCommits) {
+                $params['numCommits'] = $numCommits;
+            }
+            if ($minInterestingness > 0.0) {
+                $params['minInterestingness'] = $minInterestingness;
+            }
             $url = makeUrl("", $params + ["startHash" => $nextStartHash]);
             echo "<br><a href=\"" . h($url) . "\">Show next " . h($numCommits) ." commits</a>";
         }
@@ -257,4 +276,51 @@ function filterCommits(array $commits, ?string $startHash, int $numCommits): arr
     $filteredCommits = array_slice($commits, $endIndex, $numCommits);
     $nextStartHash = $commits[$endIndex - 1]['hash'] ?? null;
     return [$filteredCommits, $nextStartHash];
+}
+
+function filterByInterestingness(
+    array $commits, string $config, string $stat, StdDevManager $stddevs,
+    float $minInterestingness
+): array {
+    if ($minInterestingness <= 0.0) {
+        return $commits;
+    }
+
+    $newCommits = [];
+    $skippedCommits = [];
+    $lastGeomean = null;
+    foreach ($commits as $commit) {
+        $hash = $commit['hash'];
+        $summary = getSummaryForHash($hash);
+        if ($summary === null) {
+            continue;
+        }
+        $data = $summary->getConfig($config);
+        if ($data === null) {
+            continue;
+        }
+        $geomean = $data['geomean'][$stat];
+        if ($lastGeomean !== null) {
+            $stddev = $stddevs->getBenchStdDev($summary->configNum, $config, 'geomean', $stat);
+            $diff = $geomean - $lastGeomean;
+            $interestingness = getInterestingness($diff, $stddev);
+            if ($interestingness > $minInterestingness) {
+                $numSkippedCommits = count($skippedCommits);
+                if ($numSkippedCommits != 0) {
+                    if ($numSkippedCommits > 1) {
+                        // Indicate that some commits were omitted.
+                        $newCommits[] = null;
+                    }
+                    $newCommits[] = $skippedCommits[$numSkippedCommits - 1];
+                }
+                $skippedCommits = [];
+                $newCommits[] = $commit;
+                $lastGeomean = $geomean;
+                continue;
+            }
+        }
+        $skippedCommits[] = $commit;
+        $lastGeomean = $geomean;
+    }
+    return $newCommits;
 }
