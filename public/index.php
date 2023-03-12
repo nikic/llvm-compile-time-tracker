@@ -304,7 +304,7 @@ function filterByInterestingness(
             $stddev = $stddevs->getBenchStdDev($summary->configNum, $config, 'geomean', $stat);
             $diff = $geomean - $lastGeomean;
             $interestingness = getInterestingness($diff, $stddev);
-            if ($interestingness > $minInterestingness) {
+            if ($diff !== 0.0 && $interestingness > $minInterestingness) {
                 $numSkippedCommits = count($skippedCommits);
                 if ($numSkippedCommits != 0) {
                     if ($numSkippedCommits > 1) {
