@@ -29,7 +29,7 @@ $runs = 1;
 $llvmTimeout = 120 * 60; // 120 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 
-$firstCommit = '8f5b44aead89a56c6fbf85ccfda03ae1e82ac431';
+$firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
