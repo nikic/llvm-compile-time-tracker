@@ -1,6 +1,10 @@
 <?php
 
-const DATA_DIR = __DIR__ . '/../data';
+const CURRENT_DATA_DIR = __DIR__ . '/../data';
+const DATA_DIRS = [
+    CURRENT_DATA_DIR,
+    __DIR__ . '/../data-0',
+];
 const DEFAULT_CONFIGS = [
     'NewPM-O3',
     'NewPM-ReleaseThinLTO',
@@ -55,12 +59,22 @@ function geomean(array $stats): float {
     return pow(array_product($stats), 1/count($stats));
 }
 
-function getDirForHash(string $hash): string {
-    return DATA_DIR . '/experiments/' . substr($hash, 0, 2) . '/' . substr($hash, 2);
+function getDirForHash(string $dataDir, string $hash): string {
+    return $dataDir . '/experiments/' . substr($hash, 0, 2) . '/' . substr($hash, 2);
+}
+
+function getPathForHash(string $hash, string $file): ?string {
+    foreach (DATA_DIRS as $dataDir) {
+        $path = getDirForHash($dataDir, $hash) . '/' . $file;
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+    return null;
 }
 
 function hasBuildError(string $hash): bool {
-    return file_exists(getDirForHash($hash) . '/error');
+    return getPathForHash($hash, '/error') !== null;
 }
 
 function addGeomean(array $summary): array {
@@ -127,8 +141,8 @@ class Summary {
 }
 
 function getSummaryForHash(string $hash): ?Summary {
-    $file = getDirForHash($hash) . "/summary.json";
-    if (!file_exists($file)) {
+    $file = getPathForHash($hash, "/summary.json");
+    if ($file === null) {
         return null;
     }
 
@@ -136,13 +150,13 @@ function getSummaryForHash(string $hash): ?Summary {
 }
 
 function writeSummaryForHash(string $hash, Summary $summary): void {
-    $file = getDirForHash($hash) . "/summary.json";
+    $file = getDirForHash(CURRENT_DATA_DIR, $hash) . "/summary.json";
     file_put_contents($file, json_encode($summary->toArray(), JSON_PRETTY_PRINT));
 }
 
 function getStatsForHash(string $hash): array {
-    $file = getDirForHash($hash) . "/stats.msgpack.gz";
-    if (!file_exists($file)) {
+    $file = getPathForHash($hash, "/stats.msgpack.gz");
+    if ($file === null) {
         return [];
     }
 
@@ -150,7 +164,7 @@ function getStatsForHash(string $hash): array {
 }
 
 function writeStatsForHash(string $hash, array $stats): void {
-    $file = getDirForHash($hash) . "/stats.msgpack.gz";
+    $file = getDirForHash(CURRENT_DATA_DIR, $hash) . "/stats.msgpack.gz";
     file_put_contents($file, gzencode(msgpack_pack($stats), 9));
 }
 
@@ -208,4 +222,27 @@ class StdDevManager {
         $this->initStatsData($configNum);
         return $this->statsData[$configNum][$config][$file][$stat] ?? null;
     }
+}
+
+// From oldest to newest
+function getMainCommits(): iterable {
+    foreach (array_reverse(DATA_DIRS) as $dataDir) {
+        $commitsFile = $dataDir . '/commits.json';
+        $commits = json_decode(file_get_contents($commitsFile), true);
+        yield from $commits['origin/main'];
+    }
+}
+
+// FIXME: Implement this in a way that does not require loading all commits.json files into memory.
+function getAllCommits(): array {
+    $allCommits = [];
+    foreach (array_reverse(DATA_DIRS) as $dataDir) {
+        $commitsFile = $dataDir . '/commits.json';
+        $branchCommits = json_decode(file_get_contents($commitsFile), true);
+        foreach ($branchCommits as $branch => $commits) {
+            $existing = $allCommits[$branch] ?? [];
+            $allCommits[$branch] = array_merge($existing, $commits);
+        }
+    }
+    return $allCommits;
 }

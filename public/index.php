@@ -1,7 +1,6 @@
 <?php
 
 require __DIR__ . '/../src/web_common.php';
-$commitsFile = DATA_DIR . '/commits.json';
 $defaultNumCommits = 1000;
 
 $config = upgradeConfigName($_GET['config'] ?? 'NewPM-O3');
@@ -42,7 +41,7 @@ if ($minInterestingness > 0.0) {
 echo "</form>\n";
 echo "<hr />\n";
 
-$commitData = json_decode(file_get_contents($commitsFile), true);
+$commitData = getAllCommits();
 $stddevs = new StdDevManager();
 
 echo "<form action=\"compare_selected.php\">\n";

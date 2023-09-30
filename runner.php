@@ -73,7 +73,7 @@ while (true) {
     $hash = $workItem->hash;
     $configs = $workItem->configs;
     $reason = $workItem->reason;
-    $hashDir = getDirForHash($hash);
+    $hashDir = getDirForHash(CURRENT_DATA_DIR, $hash);
     logInfo("Building $hash. Reason: $reason");
 
     $repo->checkout($hash);
@@ -103,7 +103,7 @@ function testHash(
         $buildTime = microtime(true) - $startTime;
     } catch (CommandException $e) {
         echo $e->getMessage(), "\n";
-        file_put_contents(getDirForHash($hash) . '/error', $e->getDebugOutput());
+        file_put_contents(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error', $e->getDebugOutput());
         return;
     }
 
@@ -128,7 +128,8 @@ function testHash(
             } catch (CommandException $e) {
                 echo $e->getMessage(), "\n";
                 file_put_contents(
-                    getDirForHash($hash) . '/error', $e->getDebugOutput(), FILE_APPEND);
+                    getDirForHash(CURRENT_DATA_DIR, $hash) . '/error',
+                    $e->getDebugOutput(), FILE_APPEND);
                 // Skip this config, but test others.
                 continue 2;
             }
@@ -264,11 +265,11 @@ function getBranchCommits(
 }
 
 function haveData(string $hash): bool {
-    return file_exists(getDirForHash($hash) . '/summary.json');
+    return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/summary.json');
 }
 
 function haveError(string $hash): bool {
-    return file_exists(getDirForHash($hash) . '/error');
+    return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error');
 }
 
 function getMissingConfigs(string $hash): array {

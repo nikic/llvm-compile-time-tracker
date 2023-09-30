@@ -16,8 +16,8 @@ if (!isCommitHash($commit)) {
     return;
 }
 
-$errorFile = getDirForHash($commit) . '/error';
-if (!file_exists($errorFile)) {
+$errorFile = getPathForHash($commit, '/error');
+if ($errorFile === null) {
     echo "No error for commit " . formatHash($commit) . ".";
     return;
 }

@@ -1,9 +1,7 @@
 <?php
 
 require __DIR__ . '/../src/web_common.php';
-$commitsFile = DATA_DIR . '/commits.json';
-$branchCommits = json_decode(file_get_contents($commitsFile), true);
-$commits = $branchCommits['origin/main'];
+$commits = getMainCommits();
 
 ob_start("ob_gzhandler");
 

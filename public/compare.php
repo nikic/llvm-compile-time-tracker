@@ -10,11 +10,8 @@ $stat = $_GET['stat'] ?? DEFAULT_METRIC;
 
 if ($from === '' && $to !== '') {
     // If the start commit is missing, try to find the parent of the end commit.
-    $commitsFile = DATA_DIR . '/commits.json';
-    $commitData = json_decode(file_get_contents($commitsFile), true);
-    $commits = $commitData['origin/main'];
     $lastCommit = null;
-    foreach ($commits as $commit) {
+    foreach (getMainCommits() as $commit) {
         if ($commit['hash'] === $to) {
             $url = makeUrl("http://{$_SERVER['HTTP_HOST']}/compare.php", [
                 'from' => $lastCommit['hash'],
@@ -68,10 +65,10 @@ if (!$toSummary) {
     return;
 }
 
-if (hasError($from)) {
+if (hasBuildError($from)) {
     reportError($from, " in some configurations");
 }
-if (hasError($to)) {
+if (hasBuildError($to)) {
     reportError($to, " in some configurations");
 }
 
@@ -176,11 +173,6 @@ function getLinkStats(array $statsList): array {
     }
 
     throw new Exception('No link stats found');
-}
-
-function hasError(string $hash): bool {
-    $errorFile = getDirForHash($hash) . '/error';
-    return file_exists($errorFile);
 }
 
 function reportError(string $hash, string $suffix = ''): void {
