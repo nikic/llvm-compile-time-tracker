@@ -261,7 +261,14 @@ function getBranchCommits(
         return getParsedLog($repo, $branch, $firstCommit);
     }
     $mergeBase = trim($repo->run('merge-base', [$branch, 'origin/main']));
-    return getParsedLog($repo, $branch, $mergeBase);
+    $commits = getParsedLog($repo, $branch, $mergeBase);
+    // Ignore branches to which a large number of new commits was pushed,
+    // this was likely a mistake. Only add the last commit to indicate that
+    // the branch has been processed at all.
+    if (count($commits) > count($prevCommits) + 100) {
+        return [end($commits)];
+    }
+    return $commits;
 }
 
 function haveData(string $hash): bool {
