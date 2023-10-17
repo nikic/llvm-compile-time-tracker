@@ -1,14 +1,16 @@
 <?php
 
 require __DIR__ . '/src/common.php';
+require __DIR__ . '/src/build_log.php';
 
-$configNum = 3;
-$from = 'd8ba9e505ac3a57211fade270532519adde374c2';
+$configNum = 4;
+$from = '7d367bc92bad9211b5d990b999710f7b25fbd907';
 $to = null;
 
-$commitsFile = DATA_DIR . '/commits.json';
+$commitsFile = CURRENT_DATA_DIR . '/commits.json';
 $summaryStddevFile = __DIR__ . '/stddev_' . $configNum . '.json';
 $statsStddevFile = __DIR__ . '/stats_stddev_' . $configNum . '.msgpack';
+$percentStddevFile = __DIR__ . '/stddev_percent_' . $configNum . '.json';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $mainCommits = $branchCommits['origin/main'];
 
@@ -35,7 +37,8 @@ $i = 0;
 foreach ($commits as $hash) {
     $summary = getSummaryForHash($hash);
     $stats = getStatsForHash($hash);
-    if (!$summary || !$stats) {
+    $log = readBuildLog($hash);
+    if (!$summary || !$stats || !$log) {
         continue;
     }
 
@@ -45,6 +48,14 @@ foreach ($commits as $hash) {
                 $summaryData[$config][$bench][$stat][] = $value;
             }
         }
+    }
+
+    foreach ($summary->stage1Stats as $stat => $value) {
+        $summaryData['build']['stage1-clang'][$stat][] = $value;
+    }
+
+    foreach ($summary->stage2Stats as $stat => $value) {
+        $summaryData['build']['stage2-clang'][$stat][] = $value;
     }
 
     foreach ($stats as $config => $configData) {
@@ -57,6 +68,15 @@ foreach ($commits as $hash) {
         }
     }
 
+    foreach ($log as $file => $entry) {
+        foreach (BUILD_LOG_METRICS as $stat) {
+            $value = $entry->getStat($stat);
+            if ($value !== null) {
+                $statsData['stage2-clang'][$file][$stat][] = $value;
+            }
+        }
+    }
+
     if (++$i % 1000 == 0) {
         echo "Read data for $i commits...\n";
     }
@@ -65,10 +85,13 @@ foreach ($commits as $hash) {
 echo "Read data for $i commits.\n";
 echo "Computing stddevs...\n";
 $summaryStddevs = [];
+$percentStddevs = [];
 foreach ($summaryData as $config => $configData) {
     foreach ($configData as $bench => $benchData) {
         foreach ($benchData as $stat => $statData) {
-            $summaryStddevs[$config][$bench][$stat] = stddev($statData);
+            $stddev = stddev($statData);
+            $summaryStddevs[$config][$bench][$stat] = $stddev;
+            $percentStddevs[$config][$bench][$stat] = $stddev / avg($statData) * 100.0;
         }
     }
 }
@@ -82,8 +105,10 @@ foreach ($statsData as $config => $configData) {
     }
 }
 
+
 file_put_contents($summaryStddevFile, json_encode($summaryStddevs, JSON_PRETTY_PRINT));
 file_put_contents($statsStddevFile, msgpack_pack($statsStddevs));
+file_put_contents($percentStddevFile, json_encode($percentStddevs, JSON_PRETTY_PRINT));
 
 function diffs(array $values): array {
     $lastValue = null;
@@ -132,11 +157,11 @@ function stddev(array $values): float {
     return abs($stddev / sqrt(2));
 }
 
-/*function avg(array $values): float {
+function avg(array $values): float {
     return array_sum($values) / count($values);
 }
 
-function stddev(array $values): float {
+/*function stddev(array $values): float {
     $avg = avg($values);
     $sqSum = 0.0;
     foreach ($values as $value) {

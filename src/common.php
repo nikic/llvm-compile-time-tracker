@@ -6,10 +6,12 @@ const DATA_DIRS = [
     __DIR__ . '/../data-0',
 ];
 const DEFAULT_CONFIGS = [
-    'NewPM-O3',
-    'NewPM-ReleaseThinLTO',
-    'NewPM-ReleaseLTO-g',
-    'NewPM-O0-g',
+    'stage1-O3',
+    'stage1-ReleaseThinLTO',
+    'stage1-ReleaseLTO-g',
+    'stage1-O0-g',
+    'stage2-O3',
+    'stage2-O0-g',
 ];
 const CONFIGS = [
     ...DEFAULT_CONFIGS,
@@ -23,6 +25,10 @@ const CONFIG_RENAMES = [
     'ReleaseThinLTO' => 'LegacyPM-ReleaseThinLTO',
     'ReleaseLTO-g' => 'LegacyPM-ReleaseLTO-g',
     'O0-g' => 'LegacyPM-O0-g',
+    'NewPM-O3' => 'stage1-O3',
+    'NewPM-ReleaseThinLTO' => 'stage1-ReleaseThinLTO',
+    'NewPM-ReleaseLTO-g' => 'stage1-ReleaseLTO-g',
+    'NewPM-O0-g' => 'stage1-O0-g',
 ];
 const REAL_BENCHES = [
     'kimwitu++',
@@ -182,15 +188,6 @@ function getSummary(string $hash, string $config): ?array {
 function getStats(string $hash, string $config): ?array {
     $stats = getStatsForHash($hash);
     return $stats[$config] ?? null;
-}
-
-function getClangSizeSummary(string $hash): ?array {
-    $summary = getSummaryForHash($hash);
-    if ($summary === null) {
-        return null;
-    }
-
-    return $summary->clang_size;
 }
 
 class StdDevManager {

@@ -3,7 +3,7 @@
 require __DIR__ . '/../src/web_common.php';
 $defaultNumCommits = 1000;
 
-$config = upgradeConfigName($_GET['config'] ?? 'NewPM-O3');
+$config = upgradeConfigName($_GET['config'] ?? 'stage1-O3');
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
 $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;

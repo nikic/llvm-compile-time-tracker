@@ -3,6 +3,21 @@
 require __DIR__ . '/common.php';
 
 const DEFAULT_METRIC = 'instructions:u';
+const DEFAULT_METRICS = [
+    "instructions",
+    "instructions:u",
+    "max-rss",
+    "task-clock",
+    "cycles",
+    "branches",
+    "branch-misses",
+    "wall-time",
+    "size-total",
+    "size-text",
+    "size-data",
+    "size-bss",
+    "size-file",
+];
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) {
@@ -11,7 +26,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 set_exception_handler(function(Throwable $e) {
-    echo h($e->getMessage());
+    echo h($e->getMessage() . ' on line ' . $e->getLine());
 });
 
 function formatPerc(float $value, float $interestingness): string {
@@ -44,9 +59,9 @@ function formatMetric(?float $value, string $metric): string {
         return '---';
     }
 
+    $metric = str_replace(':u', '', $metric);
     switch ($metric) {
     case 'instructions':
-    case 'instructions:u':
     case 'cycles':
     case 'branches':
     case 'branch-misses':
@@ -134,27 +149,17 @@ function printFooter() {
     echo "<!-- Generated in {$dt}s -->";
 }
 
-function printStatSelect(string $stat) {
-    $opt = function(string $name) use($stat) {
-        $selected = $name === $stat ? " selected" : "";
-        echo "<option$selected>$name</option>\n";
-    };
-    echo "<select name=\"stat\">\n";
-    // Not listed: context-switches, cpu-migrations, page-faults
-    $opt("instructions");
-    $opt("instructions:u");
-    $opt("max-rss");
-    $opt("task-clock");
-    $opt("cycles");
-    $opt("branches");
-    $opt("branch-misses");
-    $opt("wall-time");
-    $opt("size-total");
-    $opt("size-text");
-    $opt("size-data");
-    $opt("size-bss");
-    $opt("size-file");
+function printSelect(string $name, string $value, array $options) {
+    echo "<select name=\"$name\">\n";
+    foreach ($options as $option) {
+        $selected = $option === $value ? " selected" : "";
+        echo "<option$selected>$option</option>\n";
+    }
     echo "</select>\n";
+}
+
+function printStatSelect(string $stat, array $stats = DEFAULT_METRICS) {
+    return printSelect("stat", $stat, $stats);
 }
 
 function makeUrl(string $page, array $queryParams): string {
@@ -204,4 +209,15 @@ function getConfigsParam(string $name): ?array {
 
 function isCommitHash(string $value): bool {
     return (bool) preg_match('/^[0-9a-f]{40}$/', $value);
+}
+
+function reportError(string $hash): void {
+    $errorUrl = makeUrl("show_error.php", ["commit" => $hash]);
+    echo "<div class=\"warning\">Failed to build commit " . formatHash($hash)
+       . " in some configurations (<a href=\"" . h($errorUrl) . "\">Log</a>)</div>\n";
+}
+
+function getGitHubCompareUrl(string $fromHash, string $toHash): string {
+    return "https://github.com/llvm/llvm-project/compare/"
+         . urlencode($fromHash) . "..." . urlencode($toHash);
 }

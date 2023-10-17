@@ -25,22 +25,39 @@ function getData(
         $hash = $commit['hash'];
         $hasAtLeastOneConfig = false;
         $values = [];
-        if ($singleBench == 'clang') {
-            $summary = getClangSizeSummary($hash);
-            $value = $summary[$stat] ?? null;
-            $hasAtLeastOneConfig = $value !== null;
-            $values[$singleBench]['build'] = $value;
-        } else {
-            $fullSummary = getSummaryForHash($hash);
-            foreach ($configs as $config) {
-                $summary = $fullSummary->data[$config] ?? [];
-                foreach ($benches as $bench) {
-                    $value = $summary[$bench][$stat] ?? null;
-                    $hasAtLeastOneConfig = $value !== null;
-                    $values[$bench][$config] = $value;
+        $fullSummary = getSummaryForHash($hash);
+        if ($fullSummary === null) {
+            continue;
+        }
+
+        foreach ($configs as $config) {
+            $summary = $fullSummary->data[$config] ?? [];
+            foreach ($benches as $bench) {
+                if ($bench == 'clang') {
+                    continue;
                 }
+                $value = $summary[$bench][$stat] ?? null;
+                if ($value !== null) {
+                    $hasAtLeastOneConfig = true;
+                }
+                $values[$bench][$config] = $value;
             }
         }
+        if (\in_array('clang', $benches)) {
+            if (str_starts_with($stat, 'size-')) {
+                $value = $fullSummary->stage1Stats[$stat] ?? null;
+                if ($value !== null) {
+                    $hasAtLeastOneConfig = true;
+                }
+                $values['clang']['stage1'] = $value;
+            }
+            $value = $fullSummary->stage2Stats[$stat] ?? null;
+            if ($value !== null) {
+                $hasAtLeastOneConfig = true;
+            }
+            $values['clang']['stage2'] = $value;
+        }
+
         if ($hasAtLeastOneConfig) {
             $hashes[] = $hash;
             $dates[] = $commit['commit_date'];
@@ -64,11 +81,14 @@ function transformData(array &$data, callable $fn): void {
 }
 
 function makeRelative(array $values): array {
+    $first = null;
     $newValues = [];
-    $first = $values[0];
     foreach ($values as $value) {
         if ($value === null) {
             $newValues[] = null;
+        } else if ($first === null) {
+            $first = $value;
+            $newValues[] = 0.0;
         } else {
             $newValues[] = ($value - $first) / $first * 100;
         }
@@ -156,6 +176,7 @@ echo "<style>
 
 if ($bench == 'all') {
     $benches = BENCHES;
+    $benches[] = 'clang';
 } else {
     if (!in_array($bench, BENCHES) && $bench != 'clang') {
         die("Unknown benchmark " . h($bench));
@@ -178,7 +199,7 @@ if ($relative) {
 
 $numValues = count($hashes);
 foreach ($data as $bench => $benchValues) {
-    $csv = "Date," . implode(",", $configs) . "\n";
+    $csv = "Date," . implode(",", array_keys($benchValues)) . "\n";
     for ($i = 0; $i < $numValues; ++$i) {
         $csv .= $dates[$i];
         foreach ($benchValues as $config => $values) {
