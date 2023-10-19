@@ -24,16 +24,17 @@ const RUNNER_CONFIGS = [
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
-$configNum = 3;
+$configNum = 4;
 $runs = 1;
-$llvmTimeout = 120 * 60; // 120 minutes
+$llvmTimeout = 60 * 60; // 60 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 
-$firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
+$firstCommit = '500a6c95ff63d0b1d68afe7b64fad4a569748aea';
+//$firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
 $branchPatterns = [
-    '~^[^/]+/perf/.*~',
+    //'~^[^/]+/perf/.*~',
     '~^origin/main$~',
-    '~^origin/release/1[1-9].x$~',
+    //'~^origin/release/1[1-9].x$~',
 ];
 
 $gitWrapper = new GitWrapper();
@@ -97,23 +98,23 @@ function testHash(
         int $configNum, int $runs,
         int $llvmTimeout, int $benchTimeout,
         string $ctmarkDir) {
-    try {
-        $startTime = microtime(true);
-        runBuildCommand('./build_llvm_project.sh', $llvmTimeout);
-        $buildTime = microtime(true) - $startTime;
-    } catch (CommandException $e) {
-        echo $e->getMessage(), "\n";
-        file_put_contents(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error', $e->getDebugOutput());
-        return;
+    $stage1Stats = buildStage($hash, 1, $llvmTimeout);
+    if (null === $stage1Stats) {
+        return null;
     }
 
-    // Gather statistics on the size of the clang binary.
-    $sizeContents = shell_exec("size llvm-project-build/bin/clang");
-    $clangStats = parseSizeStats($sizeContents);
-    $clangStats['wall-time'] = $buildTime;
+    $stage2Stats = buildStage($hash, 2, $llvmTimeout);
+    if (null === $stage2Stats) {
+        return null;
+    }
+
+    $stage2Dir = __DIR__ . '/llvm-project-build-stage2';
+    $ninjaLog = parseNinjaLog($stage2Dir . '/.ninja_log', $stage2Dir);
+    $lastEndTime = $ninjaLog[array_key_last($ninjaLog)][1];
+    $stage2Stats['wall-time-ninja'] = $lastEndTime / 1000.0;
 
     $stats = [];
-    $summary = new Summary($configNum, $clangStats, []);
+    $summary = new Summary($configNum, $stage1Stats, $stage2Stats, []);
     foreach ($configs as $config) {
         $rawDatas = [];
         for ($run = 1; $run <= $runs; $run++) {
@@ -126,10 +127,7 @@ function testHash(
                 }
                 runBuildCommand("./build_llvm_test_suite.sh $realConfig", $benchTimeout);
             } catch (CommandException $e) {
-                echo $e->getMessage(), "\n";
-                file_put_contents(
-                    getDirForHash(CURRENT_DATA_DIR, $hash) . '/error',
-                    $e->getDebugOutput(), FILE_APPEND);
+                writeError($hash, $e);
                 // Skip this config, but test others.
                 continue 2;
             }
@@ -143,6 +141,34 @@ function testHash(
 
     writeSummaryForHash($hash, $summary);
     writeStatsForHash($hash, $stats);
+    writeReducedNinjaLog($hash, $ninjaLog);
+}
+
+function buildStage(string $hash, int $stage, int $llvmTimeout): ?array {
+    try {
+        logInfo("Building stage$stage clang");
+        $startTime = microtime(true);
+        runBuildCommand("./build_llvm_project_stage$stage.sh", $llvmTimeout);
+        $buildTime = microtime(true) - $startTime;
+    } catch (CommandException $e) {
+        writeError($hash, $e);
+        return null;
+    }
+
+    // Gather statistics on the size of the clang binary.
+    $sizeContents = shell_exec("size llvm-project-build-stage$stage/bin/clang");
+    $stats = parseSizeStats($sizeContents);
+    $stats['wall-time'] = $buildTime;
+    return $stats;
+}
+
+function writeReducedNinjaLog(string $hash, array $log): void {
+    $result = '';
+    foreach ($log as [$start, $end, $file]) {
+        $result .= "$start\t$end\t$file\n";
+    }
+    $file = getDirForHash(CURRENT_DATA_DIR, $hash) . "/stage2log.gz";
+    file_put_contents($file, gzencode($result, 9));
 }
 
 function logWithLevel(string $level, string $str) {
@@ -277,6 +303,13 @@ function haveData(string $hash): bool {
 
 function haveError(string $hash): bool {
     return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error');
+}
+
+function writeError(string $hash, Exception $e): void {
+    echo $e->getMessage(), "\n";
+    file_put_contents(
+        getDirForHash(CURRENT_DATA_DIR, $hash) . '/error',
+        $e->getDebugOutput(), FILE_APPEND);
 }
 
 function getMissingConfigs(string $hash): array {

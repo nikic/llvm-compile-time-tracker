@@ -1,0 +1,14 @@
+cmake -GNinja -H./llvm-project/llvm -B./llvm-project-build-stage2 \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_C_COMPILER=$PWD/llvm-project-build-stage1/bin/clang \
+    -DCMAKE_CXX_COMPILER=$PWD/llvm-project-build-stage1/bin/clang++ \
+    -DLLVM_ENABLE_PROJECTS="clang" \
+    -DLLVM_TARGETS_TO_BUILD="X86" \
+    -DLLVM_BUILD_TOOLS=false \
+    -DLLVM_INCLUDE_TESTS=false \
+    -DLLVM_INCLUDE_BENCHMARKS=false \
+    -DLLVM_APPEND_VC_REV=false \
+    -DLLVM_USE_LINKER=gold \
+    -DLLVM_BINUTILS_INCDIR=/usr/include \
+    -DCLANG_ENABLE_ARCMT=false \
+    -DCLANG_ENABLE_STATIC_ANALYZER=false

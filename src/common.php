@@ -102,12 +102,16 @@ function upgradeConfigNameKeys(array $data): array {
 
 class Summary {
     public int $configNum;
-    public array $clang_size;
+    public array $stage1Stats;
+    public array $stage2Stats;
     public array $data;
 
-    public function __construct(int $configNum, array $clang_size, array $data) {
+    public function __construct(
+        int $configNum, array $stage1Stats, array $stage2Stats, array $data
+    ) {
         $this->configNum = $configNum;
-        $this->clang_size = $clang_size;
+        $this->stage1Stats = $stage1Stats;
+        $this->stage2Stats = $stage2Stats;
         $this->data = $data;
     }
 
@@ -115,6 +119,7 @@ class Summary {
         return new Summary(
             $data['config'],
             $data['clang_size'],
+            $data['stage2'] ?? [],
             upgradeConfigNameKeys($data['data'])
         );
     }
@@ -122,7 +127,8 @@ class Summary {
     public function toArray(): array {
         return [
             'config' => $this->configNum,
-            'clang_size' => $this->clang_size,
+            'clang_size' => $this->stage1Stats,
+            'stage2' => $this->stage2Stats,
             'data' => $this->data,
         ];
     }

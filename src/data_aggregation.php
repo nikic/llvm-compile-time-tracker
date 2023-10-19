@@ -139,3 +139,26 @@ function computeSizeStatsForObject(string $objectName): array {
 
     return $stats + parseSizeStats(implode("\n", $output));
 }
+
+function parseNinjaLog(string $path, string $sanitizePrefix): array {
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $result = [];
+    foreach ($lines as $line) {
+        if ($line[0] === '#') {
+            continue;
+        }
+
+        $parts = explode("\t", $line);
+        if (count($parts) < 4) {
+            // Malformed line.
+            continue;
+        }
+
+        [$start, $end, , $file] = $parts;
+        if (str_starts_with($file, $sanitizePrefix)) {
+            $file = 'build' . substr($file, strlen($sanitizePrefix));
+        }
+        $result[] = [(int) $start, (int) $end, $file];
+    }
+    return $result;
+}

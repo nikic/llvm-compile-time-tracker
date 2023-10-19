@@ -1,6 +1,7 @@
 llvm-project/
 llvm-test-suite/
-llvm-project-build/
+llvm-project-build-stage1/
+llvm-project-build-stage2/
 llvm-test-suite-build/
 data/
 vendor/
