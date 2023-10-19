@@ -14,19 +14,21 @@ require __DIR__ . '/src/data_aggregation.php';
 
 // Decouple runner from viewer configs.
 const RUNNER_CONFIGS = [
-    'NewPM-O3',
-    'NewPM-ReleaseThinLTO',
-    'NewPM-ReleaseLTO-g',
-    'NewPM-O0-g',
+    'stage1-O3',
+    'stage1-ReleaseThinLTO',
+    'stage1-ReleaseLTO-g',
+    'stage1-O0-g',
+    'stage2-O3',
+    'stage2-O0-g',
 ];
 
 // Time to sleep if there were no new commits
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
-$ctmarkDir = __DIR__ . '/llvm-test-suite-build/CTMark';
-$configNum = 3;
+$ctmarkDir = '/tmp/llvm-test-suite-build/CTMark';
+$configNum = 4;
 $runs = 1;
-$llvmTimeout = 120 * 60; // 120 minutes
+$llvmTimeout = 60 * 60; // 60 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 
 $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
@@ -97,39 +99,31 @@ function testHash(
         int $configNum, int $runs,
         int $llvmTimeout, int $benchTimeout,
         string $ctmarkDir) {
-    try {
-        $startTime = microtime(true);
-        runBuildCommand('./build_llvm_project.sh', $llvmTimeout);
-        $buildTime = microtime(true) - $startTime;
-    } catch (CommandException $e) {
-        echo $e->getMessage(), "\n";
-        file_put_contents(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error', $e->getDebugOutput());
-        return;
+    $stage1Stats = buildStage($hash, 1, $llvmTimeout);
+    if (null === $stage1Stats) {
+        return null;
     }
 
-    // Gather statistics on the size of the clang binary.
-    $sizeContents = shell_exec("size llvm-project-build/bin/clang");
-    $clangStats = parseSizeStats($sizeContents);
-    $clangStats['wall-time'] = $buildTime;
+    $stage2Stats = buildStage($hash, 2, $llvmTimeout);
+    if (null === $stage2Stats) {
+        return null;
+    }
+
+    [$stage2Stats, $ninjaLog] = parseStage2Stats($stage2Stats, '/tmp/llvm-project-build-stage2');
 
     $stats = [];
-    $summary = new Summary($configNum, $clangStats, []);
+    $summary = new Summary($configNum, $stage1Stats, $stage2Stats, []);
     foreach ($configs as $config) {
         $rawDatas = [];
         for ($run = 1; $run <= $runs; $run++) {
             logInfo("Building $config configuration (run $run)");
             try {
-                if (strpos($config, 'NewPM-') === 0) {
-                    $realConfig = substr($config, strlen('NewPM-'));
-                } else {
-                    throw new Exception('Missing config prefix');
-                }
-                runBuildCommand("./build_llvm_test_suite.sh $realConfig", $benchTimeout);
+                [$stage, $realConfig] = explode('-', $config, 2);
+                // Use our own timeit.sh script.
+                copy(__DIR__ . '/timeit.sh', __DIR__ . '/llvm-test-suite/tools/timeit.sh');
+                runBuildCommand("./build_llvm_test_suite.sh $realConfig $stage", $benchTimeout);
             } catch (CommandException $e) {
-                echo $e->getMessage(), "\n";
-                file_put_contents(
-                    getDirForHash(CURRENT_DATA_DIR, $hash) . '/error',
-                    $e->getDebugOutput(), FILE_APPEND);
+                writeError($hash, $e);
                 // Skip this config, but test others.
                 continue 2;
             }
@@ -143,6 +137,33 @@ function testHash(
 
     writeSummaryForHash($hash, $summary);
     writeStatsForHash($hash, $stats);
+    writeReducedNinjaLog($hash, $ninjaLog);
+}
+
+function buildStage(string $hash, int $stage, int $llvmTimeout): ?array {
+    try {
+        logInfo("Building stage$stage clang");
+        $startTime = microtime(true);
+        runBuildCommand("./build_llvm_project_stage$stage.sh", $llvmTimeout);
+        $buildTime = microtime(true) - $startTime;
+    } catch (CommandException $e) {
+        writeError($hash, $e);
+        return null;
+    }
+
+    // Gather statistics on the size of the clang binary.
+    $stats = computeSizeStatsForObject("/tmp/llvm-project-build-stage$stage/bin/clang");
+    $stats['wall-time'] = $buildTime;
+    return $stats;
+}
+
+function writeReducedNinjaLog(string $hash, array $log): void {
+    $result = '';
+    foreach ($log as $elems) {
+        $result .= implode("\t", $elems) . "\n";
+    }
+    $file = getDirForHash(CURRENT_DATA_DIR, $hash) . "/stage2log.gz";
+    file_put_contents($file, gzencode($result, 9));
 }
 
 function logWithLevel(string $level, string $str) {
@@ -197,7 +218,7 @@ function runCommand(string $command, ?int $timeout = null): void {
 
 function runBuildCommand(string $command, int $timeout): void {
     try {
-        runCommand($command, $timeout);
+        runCommand('sudo -u lctt-runner ' . $command, $timeout);
     } catch (ProcessTimedOutException $e) {
         // Kill ninja, which should kill any hanging clang/ld processes.
         try {
@@ -277,6 +298,13 @@ function haveData(string $hash): bool {
 
 function haveError(string $hash): bool {
     return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error');
+}
+
+function writeError(string $hash, Exception $e): void {
+    echo $e->getMessage(), "\n";
+    file_put_contents(
+        getDirForHash(CURRENT_DATA_DIR, $hash) . '/error',
+        $e->getDebugOutput(), FILE_APPEND);
 }
 
 function getMissingConfigs(string $hash): array {
@@ -396,26 +424,32 @@ function getMissingRanges(array $commits): array {
     return $missingRanges;
 }
 
-function isInteresting(
+function getInterestingness(
     array $summary1, array $summary2, string $config, StdDevManager $stddevs
-): bool {
+): ?float {
     $sigma = 5;
-    foreach (['instructions', 'max-rss'] as $stat) {
+    $maxInterestingness = null;
+    foreach (['instructions:u'] as $stat) {
         foreach ($summary1 as $bench => $stats1) {
             $stats2 = $summary2[$bench];
             $value1 = $stats1[$stat];
             $value2 = $stats2[$stat];
             $diff = abs($value1 - $value2);
-            $stddev = $stddevs->getBenchStdDev(/* TODO */ 2, $config, $bench, $stat);
-            if ($stddev !== null && $diff >= $sigma * $stddev) {
-                return true;
+            $stddev = $stddevs->getBenchStdDev(/* TODO */ 4, $config, $bench, $stat);
+            if ($stddev !== null && $stddev !== 0.0) {
+                $interestingness = $diff / $stddev;
+                if ($interestingness > $sigma &&
+                    ($maxInterestingness === null || $interestingness > $maxInterestingness)) {
+                    $maxInterestingness = $interestingness;
+                }
             }
         }
     }
-    return false;
+    return $maxInterestingness;
 }
 
-function getInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?WorkItem {
+function getMostInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?WorkItem {
+    $mostInterestingRange = null;
     foreach ($missingRanges as $missingRange) {
         foreach (RUNNER_CONFIGS as $config) {
             $summary1 = getSummary($missingRange->hash1, $config);
@@ -424,11 +458,17 @@ function getInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?
                 continue;
             }
 
-            if (isInteresting($summary1, $summary2, $config, $stddevs)) {
-                return $missingRange->getBisectWorkItem(
-                    "Bisecting interesting range for config $config");
+            $interestingness = getInterestingness($summary1, $summary2, $config, $stddevs);
+            if ($interestingness != null) {
+                if ($mostInterestingRange === null || $interestingness > $mostInterestingRange[2]) {
+                    $mostInterestingRange = [$missingRange, $config, $interestingness];
+                }
             }
         }
+    }
+    if ($mostInterestingRange !== null) {
+        return $mostInterestingRange[0]->getBisectWorkItem(
+            "Bisecting interesting range for config " . $mostInterestingRange[1]);
     }
     return null;
 }
@@ -480,10 +520,15 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
     // Don't try to build too old commits.
     $commits = getRecentCommits($commits);
 
+    /*$firstHash = $commits[0]['hash'];
+    if ($configs = getMissingConfigs($firstHash)) {
+        return new WorkItem($firstHash, $configs, 'First commit');
+    }*/
+
     $missingRanges = getMissingRanges($commits);
     // Bisect ranges where a signficant change occurred,
     // to pin-point the exact revision.
-    if ($workItem = getInterestingWorkItem($missingRanges, $stddevs)) {
+    if ($workItem = getMostInterestingWorkItem($missingRanges, $stddevs)) {
         return $workItem;
     }
     // Build new commit.

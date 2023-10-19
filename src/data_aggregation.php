@@ -139,3 +139,56 @@ function computeSizeStatsForObject(string $objectName): array {
 
     return $stats + parseSizeStats(implode("\n", $output));
 }
+
+function parseNinjaLog(string $path, string $sanitizePrefix): array {
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $result = [];
+    foreach ($lines as $line) {
+        if ($line[0] === '#') {
+            continue;
+        }
+
+        $parts = explode("\t", $line);
+        if (count($parts) < 4) {
+            // Malformed line.
+            continue;
+        }
+
+        [$start, $end, , $file] = $parts;
+        if (str_starts_with($file, $sanitizePrefix . '/')) {
+            $file = substr($file, strlen($sanitizePrefix . '/'));
+        }
+        $result[] = [(int) $start, (int) $end, $file];
+    }
+    return $result;
+}
+
+function parseStage2Stats(array $stats, string $dir): array {
+    $ninjaLog = parseNinjaLog($dir . '/.ninja_log', $dir);
+    $stats['wall-time-full'] = $stats['wall-time'];
+    unset($stats['wall-time']);
+    $stats += parseTimeStats(file_get_contents($dir . '/build.time'));
+    $stats += parsePerfStats(file_get_contents($dir . '/build.time.perfstats'));
+    $totalWallTime = 0;
+    foreach ($ninjaLog as [$start, $end]) {
+        $totalWallTime += $end - $start;
+    }
+    $stats['wall-time-sum'] = $totalWallTime / 1000.0;
+
+    $newNinjaLog = [];
+    foreach ($ninjaLog as [$start, $end, $name]) {
+        $file = $dir . '/' . $name;
+        $size = filesize($file);
+
+        $perfStatsFile = $file . '.time.perfstats';
+        $instructions = 0;
+        if (file_exists($perfStatsFile)) {
+            $perfStats = parsePerfStats(file_get_contents($perfStatsFile));
+            $instructions = $perfStats['instructions:u'] ?? 0;
+        }
+
+        $newNinjaLog[] = [$start, $end, $name, $size, $instructions];
+    }
+
+    return [$stats, $newNinjaLog];
+}
