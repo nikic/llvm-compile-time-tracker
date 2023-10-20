@@ -271,6 +271,10 @@ function filterCommits(array $commits, ?string $startHash, int $numCommits): arr
         $startIndex = count($commits) - 1;
     }
 
+    if ($startIndex < $numCommits) {
+        return [$commits, null];
+    }
+
     $endIndex = $startIndex - $numCommits + 1;
     $filteredCommits = array_slice($commits, $endIndex, $numCommits);
     $nextStartHash = $commits[$endIndex - 1]['hash'] ?? null;
