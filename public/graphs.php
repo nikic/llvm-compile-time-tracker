@@ -1,10 +1,108 @@
 <?php
 
 require __DIR__ . '/../src/web_common.php';
-$commits = getMainCommits();
+
+function getData(
+        iterable $commits, array $configs, array $benches, string $stat,
+        int $interval, ?DateTime $startDate): array {
+    $singleBench = count($benches) === 1 ? $benches[0] : null;
+    $hashes = [];
+    $dates = [];
+    $data = [];
+    $i = 0;
+    foreach ($commits as $commit) {
+        if ($startDate) {
+            $commitDate = new DateTime($commit['commit_date']);
+            if ($commitDate < $startDate) {
+                continue;
+            }
+        }
+
+        if (++$i < $interval) {
+            continue;
+        }
+
+        $hash = $commit['hash'];
+        $hasAtLeastOneConfig = false;
+        $values = [];
+        if ($singleBench == 'clang') {
+            $summary = getClangSizeSummary($hash);
+            $value = $summary[$stat] ?? null;
+            $hasAtLeastOneConfig = $value !== null;
+            $values[$singleBench]['build'] = $value;
+        } else {
+            $fullSummary = getSummaryForHash($hash);
+            foreach ($configs as $config) {
+                $summary = $fullSummary->data[$config] ?? [];
+                foreach ($benches as $bench) {
+                    $value = $summary[$bench][$stat] ?? null;
+                    $hasAtLeastOneConfig = $value !== null;
+                    $values[$bench][$config] = $value;
+                }
+            }
+        }
+        if ($hasAtLeastOneConfig) {
+            $hashes[] = $hash;
+            $dates[] = $commit['commit_date'];
+            foreach ($values as $bench => $benchValues) {
+                foreach ($benchValues as $config => $value) {
+                    $data[$bench][$config][] = $value;
+                }
+            }
+            $i = 0;
+        }
+    }
+    return [$hashes, $dates, $data];
+}
+
+function transformData(array &$data, callable $fn): void {
+    foreach ($data as $bench => &$benchValues) {
+        foreach ($benchValues as $config => &$values) {
+            $values = $fn($values);
+        }
+    }
+}
+
+function makeRelative(array $values): array {
+    $newValues = [];
+    $first = $values[0];
+    foreach ($values as $value) {
+        if ($value === null) {
+            $newValues[] = null;
+        } else {
+            $newValues[] = ($value - $first) / $first * 100;
+        }
+    }
+    return $newValues;
+}
+
+function smooth(array $values, int $window): array {
+    $newValues = [];
+    foreach ($values as $i => $value) {
+        if ($value === null) {
+            $newValues[] = null;
+        } else {
+            // TODO: Can be done more efficiently, esp. if we stick to simple average.
+            $sum = 0.0;
+            $count = 0;
+            for ($j = -$window; $j <= $window; $j++) {
+                //$w = $window - abs($j) + 1;
+                if (isset($values[$i+$j])) {
+                    $sum += $values[$i+$j];
+                    $count++;
+                    //$sum += $w * $values[$i+$j];
+                    //$count += $w;
+                }
+            }
+            $newValues[] = $sum / $count;
+        }
+    }
+    return $newValues;
+}
 
 ob_start("ob_gzhandler");
 
+$commits = getMainCommits();
 $stat = getStringParam('stat') ?? DEFAULT_METRIC;
 $bench = getStringParam('bench') ?? 'all';
 $relative = isset($_GET['relative']);
@@ -12,6 +110,7 @@ $startDateStr = getStringParam('startDate') ?? '';
 $interval = getIntParam('interval') ?? 1;
 $configs = getConfigsParam('configs') ?? DEFAULT_CONFIGS;
 $width = getIntParam('width') ?? 480;
+$smoothWindow = getIntParam('smoothWindow') ?? 0;
 
 if (empty($_SERVER['QUERY_STRING'])) {
     // By default, show relative metrics for last month.
@@ -64,79 +163,31 @@ if ($bench == 'all') {
     $benches = [$bench];
 }
 
-$hashes = [];
-$data = [];
-$firstData = [];
-foreach ($benches as $bench) {
-    $csv[$bench] = "Date," . implode(",", $configs) . "\n";
-}
-$i = 0;
-foreach ($commits as $commit) {
-    if ($startDate) {
-        $commitDate = new DateTime($commit['commit_date']);
-        if ($commitDate < $startDate) {
-            continue;
-        }
-    }
-
-    if (++$i < $interval) {
-        continue;
-    }
-
-    $hasAtLeastOneConfig = false;
-    $hash = $commit['hash'];
-    $lines = [];
-    foreach ($benches as $bench) {
-        $lines[$bench] = $commit['commit_date'];
-    }
-    if ($bench == 'clang') {
-        $summary = getClangSizeSummary($hash);
-        $value = $summary[$stat] ?? null;
-        if ($value !== null) {
-            if ($relative) {
-                if (!isset($firstData[$bench])) {
-                    $firstData[$bench] = $value;
-                }
-                $firstValue = $firstData[$bench];
-                $value = ($value - $firstValue) / $firstValue * 100;
-            }
-            $hasAtLeastOneConfig = true;
-        }
-        $lines[$bench] .= ',' . $value;
-    } else {
-        $fullSummary = getSummaryForHash($hash);
-        foreach ($configs as $config) {
-            $summary = $fullSummary->data[$config] ?? [];
-            foreach ($benches as $bench) {
-                if (isset($summary[$bench][$stat])) {
-                    $value = $summary[$bench][$stat];
-                    if ($relative) {
-                        if (!isset($firstData[$bench][$config])) {
-                            $firstData[$bench][$config] = $value;
-                        }
-                        $firstValue = $firstData[$bench][$config];
-                        $value = ($value - $firstValue) / $firstValue * 100;
-                    }
-
-                    $lines[$bench] .= ',' . $value;
-                    $hasAtLeastOneConfig = true;
-                } else {
-                    $lines[$bench] .= ',';
-                }
-            }
-        }
-    }
-    if ($hasAtLeastOneConfig) {
-        $hashes[] = $hash;
-        foreach ($benches as $bench) {
-            $csv[$bench] .= $lines[$bench] . "\n";
-        }
-        $i = 0;
-    }
+if ($smoothWindow < 0 || $smoothWindow > 100) {
+    echo "<div class=\"warning\">Invalid smoothing window</div>\n";
+    return;
 }
 
-foreach ($benches as $bench) {
-    $encodedCsv = json_encode($csv[$bench]);
+[$hashes, $dates, $data] = getData($commits, $configs, $benches, $stat, $interval, $startDate);
+if ($smoothWindow != 0) {
+    transformData($data, fn($values) => smooth($values, $smoothWindow));
+}
+if ($relative) {
+    transformData($data, 'makeRelative');
+}
+
+$numValues = count($hashes);
+foreach ($data as $bench => $benchValues) {
+    $csv = "Date," . implode(",", $configs) . "\n";
+    for ($i = 0; $i < $numValues; ++$i) {
+        $csv .= $dates[$i];
+        foreach ($benchValues as $config => $values) {
+            $csv .= ',' . $values[$i];
+        }
+        $csv .= "\n";
+    }
+
+    $encodedCsv = json_encode($csv);
     $encodedStat = json_encode($stat);
     echo <<<HTML
 <div style="float: left; margin: 1em;">
