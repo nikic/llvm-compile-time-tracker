@@ -150,6 +150,14 @@ class Summary {
         }
         return array_column_with_keys($data, $stat);
     }
+
+    public function getGeomeanStats(string $stat): ?array {
+        $result = [];
+        foreach ($this->data as $config => $configStats) {
+            $result[$config] = $configStats['geomean'][$stat] ?? null;
+        }
+        return $result;
+    }
 }
 
 function getSummaryForHash(string $hash): ?Summary {

@@ -3,7 +3,7 @@
 require __DIR__ . '/../src/web_common.php';
 $defaultNumCommits = 1000;
 
-$config = upgradeConfigName($_GET['config'] ?? 'stage1-O3');
+$config = upgradeConfigName($_GET['config'] ?? 'Overview');
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
 $sortBy = $_GET['sortBy'] ?? 'date';
 $filterRemote = $_GET['remote'] ?? null;
@@ -98,7 +98,9 @@ foreach ($remotes as $remote => $branchCommits) {
         list($commits, $nextStartHash) = filterCommits($commits, $startHash, $numCommits);
         $commits = filterByInterestingness($commits, $config, $stat, $stddevs, $minInterestingness);
 
-        $titles = array_merge(['', '', 'Commit', ...BENCHES_GEOMEAN_LAST]);
+        $benches = $config === 'Overview'
+            ? [...DEFAULT_CONFIGS, 'stage2-clang'] : BENCHES_GEOMEAN_LAST;
+        $titles = ['', '', 'Commit', ...$benches];
         $rows = [];
         $lastMetrics = null;
         $lastHash = null;
@@ -110,7 +112,15 @@ foreach ($remotes as $remote => $branchCommits) {
             }
             $hash = $commit['hash'];
             $summary = getSummaryForHash($hash);
-            $metrics = $summary !== null ? $summary->getConfigStat($config, $stat) : null;
+            $metrics = null;
+            if ($summary !== null) {
+                if ($config === 'Overview') {
+                    $metrics = $summary->getGeomeanStats($stat);
+                    $metrics['stage2-clang'] = $summary->stage2Stats[$stat] ?? null;
+                } else {
+                    $metrics = $summary->getConfigStat($config, $stat);
+                }
+            }
             $row = [];
             if ($metrics && $lastHash) {
                 $row[] = "<a href=\"compare.php?from=$lastHash&amp;to=$hash&amp;stat=" . h($stat) . "\">C</a>";
@@ -125,11 +135,23 @@ foreach ($remotes as $remote => $branchCommits) {
             $row[] = formatCommit($commit);
 
             if ($metrics) {
-                foreach (BENCHES_GEOMEAN_LAST as $bench) {
-                    $value = $metrics[$bench];
-                    $stddev = $lastConfigNum === $summary->configNum
-                        ? $stddevs->getBenchStdDev($summary->configNum, $config, $bench, $stat)
-                        : null;
+                foreach ($benches as $bench) {
+                    $value = $metrics[$bench] ?? null;
+                    $stddev = null;
+                    if ($lastConfigNum === $summary->configNum) {
+                        if ($config === 'Overview') {
+                            if ($bench === 'stage2-clang') {
+                                $stddev = $stddevs->getBenchStdDev(
+                                    $summary->configNum, 'build', $bench, $stat);
+                            } else {
+                                $stddev = $stddevs->getBenchStdDev(
+                                    $summary->configNum, $bench, 'geomean', $stat);
+                            }
+                        } else {
+                            $stddev = $stddevs->getBenchStdDev(
+                                $summary->configNum, $config, $bench, $stat);
+                        }
+                    }
                     $prevValue = $lastMetrics[$bench] ?? null;
                     $row[] = formatMetricDiff($value, $prevValue, $stat, $stddev);
                 }
@@ -197,12 +219,7 @@ function formatCommit(array $commit): string {
 }
 
 function printConfigSelect(string $name) {
-    echo "<select name=\"config\">\n";
-    foreach (DEFAULT_CONFIGS as $config) {
-        $selected = $name === $config ? " selected" : "";
-        echo "<option$selected>$config</option>\n";
-    }
-    echo "</select>\n";
+    printSelect("config", $name, ['Overview', ...DEFAULT_CONFIGS]);
 }
 
 function groupByRemote(array $branchCommits): array {
