@@ -28,7 +28,7 @@ $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = '/tmp/llvm-test-suite-build/CTMark';
 $configNum = 4;
 $runs = 1;
-$llvmTimeout = 60 * 60; // 60 minutes
+$llvmTimeout = 20 * 60; // 20 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 
 $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
