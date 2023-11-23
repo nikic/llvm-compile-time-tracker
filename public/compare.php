@@ -7,6 +7,7 @@ $from = $_GET['from'] ?? null;
 $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
+$linkStats = isset($_GET['linkStats']);
 
 if ($from === '' && $to !== '') {
     // If the start commit is missing, try to find the parent of the end commit.
@@ -123,36 +124,38 @@ foreach (CONFIGS as $config) {
     echo "</table>\n";
 }
 
-foreach (['ReleaseThinLTO', 'ReleaseLTO-g'] as $config) {
-    $fromStats = getStats($from, $config);
-    $toStats = getStats($to, $config);
-    if (!$fromStats || !$toStats) {
-        continue;
-    }
+if ($linkStats) {
+    foreach (['stage1-ReleaseThinLTO', 'stage1-ReleaseLTO-g'] as $config) {
+        $fromStats = getStats($from, $config);
+        $toStats = getStats($to, $config);
+        if (!$fromStats || !$toStats) {
+            continue;
+        }
 
-    $fromSummaryData = addGeomean(array_map('getLinkStats', $fromStats));
-    $toSummaryData = addGeomean(array_map('getLinkStats', $toStats));
+        $fromSummaryData = addGeomean(array_map('getLinkStats', $fromStats));
+        $toSummaryData = addGeomean(array_map('getLinkStats', $toStats));
 
-    echo "<h4>$config (link only):</h4>\n";
-    echo "<table>\n";
-    echo "<tr>\n";
-    echo "<th>Benchmark</th>";
-    echo "<th>Old</th>";
-    echo "<th>New</th>";
-    echo "</tr>\n";
-    foreach (BENCHES_GEOMEAN_LAST as $bench) {
-        $fromAggMetric = $fromSummaryData[$bench][$stat];
-        $toAggMetric = $toSummaryData[$bench][$stat];
-        $stddev = $fromSummary->configNum === $toSummary->configNum
-            ? $stddevs->getFileStdDev($fromSummary->configNum, $config, $fromSummaryData[$bench]['file'], $stat)
-            : null;
+        echo "<h4>$config (link only):</h4>\n";
+        echo "<table>\n";
         echo "<tr>\n";
-        echo "<td style=\"text-align: left\">$bench</td>\n";
-        echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
-        echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
+        echo "<th>Benchmark</th>";
+        echo "<th>Old</th>";
+        echo "<th>New</th>";
         echo "</tr>\n";
+        foreach (BENCHES_GEOMEAN_LAST as $bench) {
+            $fromAggMetric = $fromSummaryData[$bench][$stat];
+            $toAggMetric = $toSummaryData[$bench][$stat];
+            $stddev = $fromSummary->configNum === $toSummary->configNum
+                ? $stddevs->getFileStdDev($fromSummary->configNum, $config, $fromSummaryData[$bench]['file'], $stat)
+                : null;
+            echo "<tr>\n";
+            echo "<td style=\"text-align: left\">$bench</td>\n";
+            echo "<td>", formatMetric($fromAggMetric, $stat), "</td>\n";
+            echo "<td>", formatMetricDiff($toAggMetric, $fromAggMetric, $stat, $stddev), "</td>\n";
+            echo "</tr>\n";
+        }
+        echo "</table>\n";
     }
-    echo "</table>\n";
 }
 
 $fromStage2 = $fromSummary->stage2Stats;
