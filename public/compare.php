@@ -26,6 +26,20 @@ if ($from === '' && $to !== '') {
     }
 }
 
+// Check whether this is a multi-commit interval on main.
+$numCommits = null;
+foreach (getMainCommits() as $commit) {
+    if ($commit['hash'] == $from) {
+        $numCommits = 0;
+    }
+    if ($numCommits !== null) {
+        $numCommits++;
+        if ($commit['hash'] == $to) {
+            break;
+        }
+    }
+}
+
 printHeader();
 
 echo "<form>\n";
@@ -46,6 +60,17 @@ echo "<hr />\n";
 echo "Comparing " . formatHash($from) . " to " . formatHash($to)
    . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>)."
    . " <a href=\"" . h(makeUrl("compare.php", $swappedParams)) . "\">Swap commits</a>.\n";
+
+if ($numCommits !== null && $numCommits > 2) {
+    $url = makeUrl('index.php', [
+        'stat' => $stat,
+        'startHash' => $to,
+        'numCommits' => $numCommits,
+        'branch' => 'origin/main',
+    ]);
+    //echo "<br /><br />\n";
+    echo "<a href=\"" . h($url) . "\">Show per-commit comparison</a> for $numCommits commits.\n";
+}
 
 if ($stat === 'task-clock' || $stat === 'wall-time') {
     echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and not meaningful for comparisons between specific revisions.</div>";
