@@ -219,6 +219,11 @@ g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
     includeZero: true,
     connectSeparatedPoints: true,
     width: $width,
+    axes: {
+        x: {
+            axisLabelWidth: 67,
+        }
+    },
     clickCallback: function(e, x, points) {
         var idx = points[0].idx;
         if (idx == 0) {
