@@ -28,6 +28,7 @@ if ($from === '' && $to !== '') {
 
 // Check whether this is a multi-commit interval on main.
 $numCommits = null;
+$foundCommits = false;
 foreach (getMainCommits() as $commit) {
     if ($commit['hash'] == $from) {
         $numCommits = 0;
@@ -35,6 +36,7 @@ foreach (getMainCommits() as $commit) {
     if ($numCommits !== null) {
         $numCommits++;
         if ($commit['hash'] == $to) {
+            $foundCommits = true;
             break;
         }
     }
@@ -61,7 +63,7 @@ echo "Comparing " . formatHash($from) . " to " . formatHash($to)
    . " (<a href=\"" . h(getGitHubCompareUrl($from, $to)) . "\">commits in range</a>)."
    . " <a href=\"" . h(makeUrl("compare.php", $swappedParams)) . "\">Swap commits</a>.\n";
 
-if ($numCommits !== null && $numCommits > 2) {
+if ($foundCommits && $numCommits > 2) {
     $url = makeUrl('index.php', [
         'stat' => $stat,
         'startHash' => $to,
