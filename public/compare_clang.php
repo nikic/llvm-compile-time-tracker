@@ -36,12 +36,10 @@ if (!is_string($from) || !is_string($to)) {
 
 if (hasBuildError($from)) {
     reportError($from);
-    return;
 }
 
 if (hasBuildError($to)) {
     reportError($to);
-    return;
 }
 
 $fromData = readBuildLog($from);
