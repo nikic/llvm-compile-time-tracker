@@ -74,8 +74,8 @@ if ($foundCommits && $numCommits > 2) {
     echo "<a href=\"" . h($url) . "\">Show per-commit comparison</a> for $numCommits commits.\n";
 }
 
-if ($stat === 'task-clock' || $stat === 'wall-time') {
-    echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and not meaningful for comparisons between specific revisions.</div>";
+if ($stat === 'task-clock' || $stat === 'wall-time' || $stat === 'cycles') {
+    echo "<div class=\"warning\">Warning: The " . h($stat) . " metric is very noisy and likely not meaningful for comparisons between specific revisions.</div>";
 }
 
 $stddevs = new StdDevManager();
