@@ -11,7 +11,7 @@ TIME_OUT=$OUT
 PERF_OUT="$OUT.perfstats"
 LC_ALL=C \
     time -f "%M;%e" -o $TIME_OUT \
-    perf stat -x \; -o $PERF_OUT \
+    perf stat --all-user -x \; -o $PERF_OUT \
         -e instructions \
         -e instructions:u \
         -e cycles \
