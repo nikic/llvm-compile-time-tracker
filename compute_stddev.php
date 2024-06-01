@@ -31,6 +31,7 @@ foreach ($mainCommits as $commit) {
 }
 
 echo "Reading data...\n";
+$logger = new Logger;
 $summaryData = [];
 $statsData = [];
 $i = 0;
@@ -78,11 +79,11 @@ foreach ($commits as $hash) {
     }
 
     if (++$i % 1000 == 0) {
-        echo "Read data for $i commits...\n";
+        $logger->log("Read data for $i commits...");
     }
 }
 
-echo "Read data for $i commits.\n";
+$logger->log("Read data for $i commits.");
 echo "Computing stddevs...\n";
 $summaryStddevs = [];
 $percentStddevs = [];
@@ -170,3 +171,16 @@ function avg(array $values): float {
     }
     return sqrt($sqSum / (count($values) - 1));
 }*/
+
+class Logger {
+    private int $startTime;
+    public function __construct() {
+        $this->startTime = time();
+    }
+    public function log(string $message): void {
+        $dt = time() - $this->startTime;
+        $s = $dt % 60;
+        $m = intdiv($dt, 60);
+        printf("[%d:%02d] %s\n", intdiv($dt, 60), $dt % 60, $message);
+    }
+}
