@@ -425,17 +425,39 @@ function getMissingRanges(array $commits): array {
 }
 
 function getInterestingness(
-    array $summary1, array $summary2, string $config, StdDevManager $stddevs
+    Summary $summary1, Summary $summary2, string $config, StdDevManager $stddevs
 ): ?float {
     $sigma = 5;
+    $stat = 'instructions:u';
+    $configNum = $summary2->configNum;
+    if ($config === 'stage2-clang') {
+        $value1 = $summary1->stage2Stats[$stat];
+        $value2 = $summary2->stage2Stats[$stat];
+        $diff = abs($value1 - $value2);
+        $stddev = $stddevs->getBenchStdDev($configNum, 'build', 'stage2-clang', $stat);
+        if ($stddev !== null && $stddev !== 0.0) {
+            $interestingness = $diff / $stddev;
+            if ($interestingness > $sigma) {
+                return $interestingness;
+            }
+        }
+        return null;
+    }
+
+    $data1 = $summary1->getConfig($config);
+    $data2 = $summary2->getConfig($config);
+    if (!$data1 || !$data2) {
+        return null;
+    }
+
     $maxInterestingness = null;
     foreach (['instructions:u'] as $stat) {
-        foreach ($summary1 as $bench => $stats1) {
-            $stats2 = $summary2[$bench];
+        foreach ($data1 as $bench => $stats1) {
+            $stats2 = $data2[$bench];
             $value1 = $stats1[$stat];
             $value2 = $stats2[$stat];
             $diff = abs($value1 - $value2);
-            $stddev = $stddevs->getBenchStdDev(/* TODO */ 4, $config, $bench, $stat);
+            $stddev = $stddevs->getBenchStdDev($configNum, $config, $bench, $stat);
             if ($stddev !== null && $stddev !== 0.0) {
                 $interestingness = $diff / $stddev;
                 if ($interestingness > $sigma &&
@@ -451,13 +473,13 @@ function getInterestingness(
 function getMostInterestingWorkItem(array $missingRanges, StdDevManager $stddevs): ?WorkItem {
     $mostInterestingRange = null;
     foreach ($missingRanges as $missingRange) {
-        foreach (RUNNER_CONFIGS as $config) {
-            $summary1 = getSummary($missingRange->hash1, $config);
-            $summary2 = getSummary($missingRange->hash2, $config);
-            if (!$summary1 || !$summary2) {
-                continue;
-            }
+        $summary1 = getSummaryForHash($missingRange->hash1);
+        $summary2 = getSummaryForHash($missingRange->hash2);
+        if (!$summary1 || !$summary2) {
+            continue;
+        }
 
+        foreach ([...RUNNER_CONFIGS, 'stage2-clang'] as $config) {
             $interestingness = getInterestingness($summary1, $summary2, $config, $stddevs);
             if ($interestingness != null) {
                 if ($mostInterestingRange === null || $interestingness > $mostInterestingRange[2]) {
