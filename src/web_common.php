@@ -146,7 +146,8 @@ STYLE;
 
 function printFooter() {
     $dt = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-    echo "<!-- Generated in {$dt}s -->";
+    $mem = intdiv(memory_get_peak_usage(), 1024 * 1024);
+    echo "<!-- Generated in {$dt}s, {$mem}MiB -->";
 }
 
 function printSelect(string $name, string $value, array $options) {
