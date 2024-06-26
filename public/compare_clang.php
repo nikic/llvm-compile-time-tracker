@@ -114,3 +114,4 @@ foreach ($files as $file) {
     echo "</tr>\n";
 }
 echo "</table>\n";
+printFooter();
