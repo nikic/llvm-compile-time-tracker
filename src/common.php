@@ -204,7 +204,7 @@ class StdDevManager {
 
     private function initSummaryData(int $configNum): void {
         if (!isset($this->summaryData[$configNum])) {
-            $path = __DIR__ . "/../stddev_$configNum.json";
+            $path = __DIR__ . "/../stddev/summary_$configNum.json";
             $this->summaryData[$configNum] = file_exists($path)
                 ? upgradeConfigNameKeys(json_decode(file_get_contents($path), true))
                 : null;
@@ -213,7 +213,7 @@ class StdDevManager {
 
     private function initStatsData(int $configNum): void {
         if (!isset($this->statsData[$configNum])) {
-            $path = __DIR__ . "/../stats_stddev_$configNum.msgpack";
+            $path = __DIR__ . "/../stddev/stats_$configNum.msgpack";
             $this->statsData[$configNum] = file_exists($path)
                 ? upgradeConfigNameKeys(msgpack_unpack(file_get_contents($path)))
                 : null;

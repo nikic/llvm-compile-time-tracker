@@ -8,9 +8,9 @@ $from = '7d367bc92bad9211b5d990b999710f7b25fbd907';
 $to = null;
 
 $commitsFile = CURRENT_DATA_DIR . '/commits.json';
-$summaryStddevFile = __DIR__ . '/stddev_' . $configNum . '.json';
-$statsStddevFile = __DIR__ . '/stats_stddev_' . $configNum . '.msgpack';
-$percentStddevFile = __DIR__ . '/stddev_percent_' . $configNum . '.json';
+$summaryStddevFile = __DIR__ . '/stddev/summary_' . $configNum . '.json';
+$statsStddevFile = __DIR__ . '/stddev/stats_' . $configNum . '.msgpack';
+$percentStddevFile = __DIR__ . '/stddev/percent_' . $configNum . '.json';
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
 $mainCommits = $branchCommits['origin/main'];
 
