@@ -27,7 +27,10 @@ $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = '/tmp/llvm-test-suite-build/CTMark';
 $configNum = 5;
-$runs = 1;
+$runs = [
+    'stage1-O0-g' => 2,
+    'stage2-O0-g' => 2,
+];
 $llvmTimeout = 20 * 60; // 20 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 
@@ -96,7 +99,7 @@ while (true) {
 
 function testHash(
         string $hash, array $configs,
-        int $configNum, int $runs,
+        int $configNum, array $runs,
         int $llvmTimeout, int $benchTimeout,
         string $ctmarkDir) {
     $stage1Stats = buildStage($hash, 1, $llvmTimeout);
@@ -115,7 +118,8 @@ function testHash(
     $summary = new Summary($configNum, $stage1Stats, $stage2Stats, []);
     foreach ($configs as $config) {
         $rawDatas = [];
-        for ($run = 1; $run <= $runs; $run++) {
+        $numRuns = $runs[$config] ?? 1;
+        for ($run = 1; $run <= $numRuns; $run++) {
             logInfo("Building $config configuration (run $run)");
             try {
                 [$stage, $realConfig] = explode('-', $config, 2);
