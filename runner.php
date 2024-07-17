@@ -201,8 +201,8 @@ class CommandException extends Exception {
 
     public function getDebugOutput(): string {
         return "MESSAGE: " . $this->getMessage()
-             . "\n\nSTDOUT:\n" . getLastLines($this->stdout, 128)
-             . "\n\nSTDERR:\n" . getLastLines($this->stderr, 128);
+             . "\n\nSTDOUT:\n" . getLastLines($this->stdout, 200)
+             . "\n\nSTDERR:\n" . getLastLines($this->stderr, 200);
     }
 }
 
