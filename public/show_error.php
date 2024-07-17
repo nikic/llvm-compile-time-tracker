@@ -23,4 +23,4 @@ if ($errorFile === null) {
 }
 
 echo "Error output for commit " . formatHash($commit) . ":<br />";
-echo "<pre>" . file_get_contents($errorFile) . "</pre>";
+echo "<pre>" . htmlspecialchars(file_get_contents($errorFile)) . "</pre>";
