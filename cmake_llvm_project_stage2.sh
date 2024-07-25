@@ -6,7 +6,12 @@ cmake -GNinja -H./llvm-project/llvm -B/tmp/llvm-project-build-stage2 \
     -DCMAKE_CXX_COMPILER_LAUNCHER=$PWD/timeit_launcher.sh \
     -DCMAKE_C_LINKER_LAUNCHER=$PWD/timeit_launcher.sh \
     -DCMAKE_CXX_LINKER_LAUNCHER=$PWD/timeit_launcher.sh \
-    -DLLVM_ENABLE_PROJECTS="clang" \
+    -DCMAKE_RANLIB=/tmp/llvm-project-build-stage1/bin/llvm-ranlib \
+    -DCMAKE_AR=/tmp/llvm-project-build-stage1/bin/llvm-ar \
+    -DCMAKE_EXE_LINKER_FLAGS="--ld-path=/tmp/llvm-project-build-stage1/bin/ld.lld" \
+    -DCMAKE_SHARED_LINKER_FLAGS="--ld-path=/tmp/llvm-project-build-stage1/bin/ld.lld" \
+    -DCMAKE_MODULE_LINKER_FLAGS="--ld-path=/tmp/llvm-project-build-stage1/bin/ld.lld" \
+    -DLLVM_ENABLE_PROJECTS="clang;lld" \
     -DLLVM_TARGETS_TO_BUILD="X86" \
     -DLLVM_BUILD_TOOLS=false \
     -DLLVM_INCLUDE_TESTS=false \
