@@ -320,15 +320,19 @@ function getMissingConfigs(string $hash): array {
 }
 
 class WorkItem {
-    public $hash;
-    public $configs;
-    public $reason;
+    public function __construct(
+        public string $hash,
+        public array $configs,
+        public string $reason,
+    ) {}
+}
 
-    public function __construct(string $hash, array $configs, string $reason) {
-        $this->hash = $hash;
-        $this->configs = $configs;
-        $this->reason = $reason;
-    }
+class WorkItemCandidate {
+    public function __construct(
+        public WorkItem $workItem,
+        public string $branch,
+        public DateTime $date,
+    ) {}
 }
 
 function getHeadWorkItem(array $commits): ?WorkItem {
@@ -340,12 +344,17 @@ function getHeadWorkItem(array $commits): ?WorkItem {
     return null;
 }
 
-function getNewestWorkItem(array $commits): ?WorkItem {
+function getNewestWorkItemCandidate(
+    string $branch, array $commits
+): ?WorkItemCandidate {
     // Process newer commits first.
     foreach (array_reverse($commits) as $commit) {
         $hash = $commit['hash'];
         if ($configs = getMissingConfigs($hash)) {
-            return new WorkItem($hash, $configs, "Newest commit");
+            return new WorkItemCandidate(
+                new WorkItem($hash, $configs, "Newest commit"),
+                $branch, new DateTime($commit['commit_date'])
+            );
         }
     }
     return null;
@@ -527,6 +536,7 @@ function getRecentCommits(array $commits): array {
 }
 
 function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
+    $candidates = [];
     foreach ($branchCommits as $branch => $commits) {
         // First process all non-main branches.
         if ($branch == 'origin/main') {
@@ -534,14 +544,31 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
         }
 
         // Build the newest missing commit.
-        $workItem = getNewestWorkItem($commits);
-        if ($workItem) {
-            return $workItem;
+        $candidate = getNewestWorkItemCandidate($branch, $commits);
+        if ($candidate) {
+            $candidates[] = $candidate;
         }
     }
 
+    if (!empty($candidates)) {
+        usort(
+            $candidates,
+            function(WorkItemCandidate $c1, WorkItemCandidate $c2): int {
+                // Prefer non-origin branches.
+                $isOrigin1 = str_starts_with($c1->branch, 'origin/');
+                $isOrigin2 = str_starts_with($c2->branch, 'origin/');
+                if ($isOrigin1 != $isOrigin2) {
+                    return $isOrigin1 ? 1 : -1;
+                }
+                // Prefer older commits.
+                return $c1->date <=> $c2->date;
+            });
+        return $candidates[0]->workItem;
+    }
+
     // Then build the main branch.
-    $commits = $branchCommits['origin/main'];
+    $branch = 'origin/main';
+    $commits = $branchCommits[$branch];
 
     // Don't try to build too old commits.
     $commits = getRecentCommits($commits);
@@ -566,8 +593,8 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
         return $workItem;
     }
     // Build the newest missing commit.
-    if ($workItem = getNewestWorkItem($commits)) {
-        return $workItem;
+    if ($candidate = getNewestWorkItemCandidate($branch, $commits)) {
+        return $candidate->workItem;
     }
     return null;
 }
