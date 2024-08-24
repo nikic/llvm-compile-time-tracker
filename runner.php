@@ -226,7 +226,7 @@ function runBuildCommand(string $command, int $timeout): void {
     } catch (ProcessTimedOutException $e) {
         // Kill ninja, which should kill any hanging clang/ld processes.
         try {
-            runCommand("killall ninja");
+            runCommand("killall ninja clang++");
         } catch (CommandException $_) {
             /* We don't care if there was nothing to kill. */
         }
