@@ -33,6 +33,7 @@ $runs = [
 ];
 $llvmTimeout = 20 * 60; // 20 minutes
 $benchTimeout = 5 * 60; // 5 minutes
+$fetchTimeout = 45; // 45 seconds
 
 $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
 $branchPatterns = [
@@ -50,13 +51,29 @@ $stddevs = new StdDevManager();
 // to be removed. For this reason, load the old data and overwrite the data, thus
 // not touching branches that have been removed upstream.
 $branchCommits = json_decode(file_get_contents($commitsFile), true);
+$remotes = [];
 while (true) {
-    logInfo("Fetching branches");
-    try {
-        $repo->fetchAll(['prune' => true]);
-    } catch (GitException $e) {
-        // Log the failure, but carry on, we have plenty of old commits to build!
-        logError($e->getMessage());
+    logInfo("Fetching remotes");
+    foreach (explode("\n", rtrim($repo->remote())) as $remote) {
+        $remotes[$remote] ??= new RemoteInfo();
+    }
+    updateLastCommitDates($remotes, $branchCommits);
+    $now = new DateTime();
+    uasort($remotes, function(RemoteInfo $r1, RemoteInfo $r2) use ($now) {
+        return $r1->getScore($now) <=> $r2->getScore($now);
+    });
+    $fetchStart = time();
+    foreach ($remotes as $remote => $info) {
+        logInfo("Fetching $remote with score {$info->getScore($now)}");
+        try {
+            $repo->fetch($remote, ['prune' => true]);
+            $info->lastFetch = $now;
+        } catch (GitException $e) {
+            logError($e->getMessage());
+        }
+        if (time() - $fetchStart > $fetchTimeout) {
+            break;
+        }
     }
 
     // Redoing all this work might get inefficient at some point...
@@ -597,4 +614,42 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
         return $candidate->workItem;
     }
     return null;
+}
+
+class RemoteInfo {
+    public ?DateTime $lastCommit = null;
+    public ?DateTime $lastFetch = null;
+
+    public function getScore(DateTime $now): float {
+        $score = 0.0;
+        if ($this->lastCommit === null) {
+            $score += 10.0;
+        } else {
+            $dt = $now->getTimestamp() - $this->lastCommit->getTimestamp();
+            $score += max(min(log($dt / (60*60)), 10), 0);
+        }
+        if ($this->lastFetch === null) {
+            $score -= 10.0;
+        } else {
+            $dt = $now->getTimestamp() - $this->lastFetch->getTimestamp();
+            $score -= max(min($dt / (60*60), 10), 0);
+        }
+        return $score;
+    }
+}
+
+function updateLastCommitDates(array $remotes, array $branchCommits) {
+    foreach ($branchCommits as $branch => $commits) {
+        $remote = strstr($branch, "/", before_needle: true);
+        if ($remote === false || empty($commits) || !isset($remotes[$remote])) {
+            continue;
+        }
+        $newestCommit = $commits[count($commits) - 1];
+        $date = new DateTime($newestCommit['commit_date']);
+        if ($remotes[$remote]->lastCommit === null ||
+            $remotes[$remote]->lastCommit < $date
+        ) {
+            $remotes[$remote]->lastCommit = $date;
+        }
+    }
 }
