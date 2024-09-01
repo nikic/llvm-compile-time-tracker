@@ -42,20 +42,22 @@ if (hasBuildError($to)) {
     reportError($to);
 }
 
+$fromSummary = getSummaryForHash($from);
 $fromData = readBuildLog($from);
-if ($fromData === null) {
+if ($fromSummary === null || $fromData === null) {
     echo "<div class=\"warning\">No data for commit " . formatHash($from) . ".</div>\n";
     return;
 }
 
+$toSummary = getSummaryForHash($to);
 $toData = readBuildLog($to);
-if ($toData === null) {
+if ($toSummary === null || $toData === null) {
     echo "<div class=\"warning\">No data for commit " . formatHash($to) . ".</div>\n";
     return;
 }
 
 $stddevs = new StdDevManager();
-$configNum = 4;
+$configNum = $fromSummary->configNum === $toSummary->configNum ? $fromSummary->configNum : null;
 
 $files = array_unique(array_merge(array_keys($fromData), array_keys($toData)));
 sort($files);
@@ -89,6 +91,9 @@ if ($sortBy !== 'alphabetic') {
         if ($sortBy == 'relative-difference') {
             return fdiv($diff2, $from2) <=> fdiv($diff1, $from1);
         }
+        if ($configNum === null) {
+            return 0;
+        }
         $stddev1 = $stddevs->getFileStdDev($configNum, 'stage2-clang', $f1, $stat);
         $stddev2 = $stddevs->getFileStdDev($configNum, 'stage2-clang', $f2, $stat);
         return getInterestingness($diff2, $stddev2) <=> getInterestingness($diff1, $stddev1);
@@ -106,7 +111,8 @@ foreach ($files as $file) {
     $fromMetric = $fromEntry?->getStat($stat);
     $toEntry = $toData[$file] ?? null;
     $toMetric = $toEntry?->getStat($stat);
-    $stddev = $stddevs->getFileStdDev($configNum, 'stage2-clang', $file, $stat);
+    $stddev = $configNum !== null
+        ? $stddevs->getFileStdDev($configNum, 'stage2-clang', $file, $stat) : null;
     echo "<tr>\n";
     echo "<td style=\"text-align: left\">$file</td>\n";
     echo "<td>", formatMetric($fromMetric, $displayStat), "</td>\n";
