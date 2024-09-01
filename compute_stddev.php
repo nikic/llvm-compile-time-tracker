@@ -3,8 +3,8 @@
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/build_log.php';
 
-$configNum = 4;
-$from = '7d367bc92bad9211b5d990b999710f7b25fbd907';
+$configNum = 5;
+$from = 'd01237c45b7cdbf83d1249dd019178b2cafbb63c';
 $to = null;
 
 $commitsFile = CURRENT_DATA_DIR . '/commits.json';
@@ -41,6 +41,13 @@ foreach ($commits as $hash) {
     $log = readBuildLog($hash);
     if (!$summary || !$stats || !$log) {
         continue;
+    }
+
+    if ($summary->configNum != $configNum) {
+        continue;
+    }
+    if (empty($summaryData)) {
+        echo "First config $configNum hash: $hash\n";
     }
 
     foreach ($summary->data as $config => $configData) {
