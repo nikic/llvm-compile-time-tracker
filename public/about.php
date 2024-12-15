@@ -11,7 +11,7 @@ The raw data is available at <a href="https://github.com/nikic/llvm-compile-time
 
 <h3>Pre-Commit Measurements</h3>
 <p>
-If you are an LLVM contributor who regularly does compile-time sensitive work and would like to test the compile-time impact of your patches before they land, contact me at nikic@php.net with a link to your GitHub fork of llvm-project. Once your fork is added, any branches starting with `perf/` will get measured.
+If you are an LLVM contributor who regularly does compile-time sensitive work and would like to test the compile-time impact of your patches before they land, contact me at llvm@npopov.com with a link to your GitHub fork of llvm-project. Once your fork is added, any branches starting with `perf/` will get measured.
 </p>
 
 <h3>Reproducing</h3>
