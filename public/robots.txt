@@ -1,2 +1,3 @@
 User-agent: *
+Allow: /about.php
 Disallow: /
