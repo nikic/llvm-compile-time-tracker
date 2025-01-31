@@ -38,7 +38,7 @@ $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
-    '~^origin/release/1[1-9].x$~',
+    '~^origin/release/(?:1[1-9]|2\d).x$~',
 ];
 
 $gitWrapper = new GitWrapper();
