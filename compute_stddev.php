@@ -3,8 +3,10 @@
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/build_log.php';
 
+ini_set('memory_limit', '16G');
+
 $configNum = 5;
-$from = 'd01237c45b7cdbf83d1249dd019178b2cafbb63c';
+$from = 'ed19ef740bbef206fc8193f7ef29a8e9931d82d8';
 $to = null;
 
 $commitsFile = CURRENT_DATA_DIR . '/commits.json';
