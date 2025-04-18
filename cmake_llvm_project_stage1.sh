@@ -1,7 +1,7 @@
 cmake -GNinja -H./llvm-project/llvm -B/tmp/llvm-project-build-stage1 \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_ENABLE_PROJECTS="clang;lld" \
-    -DLLVM_TARGETS_TO_BUILD="X86" \
+    -DLLVM_TARGETS_TO_BUILD="X86;AArch64" \
     -DLLVM_BUILD_TOOLS=false \
     -DLLVM_INCLUDE_TESTS=false \
     -DLLVM_INCLUDE_BENCHMARKS=false \

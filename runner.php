@@ -18,6 +18,8 @@ const RUNNER_CONFIGS = [
     'stage1-ReleaseThinLTO',
     'stage1-ReleaseLTO-g',
     'stage1-O0-g',
+    'stage1-aarch64-O3',
+    'stage1-aarch64-O0-g',
     'stage2-O3',
     'stage2-O0-g',
 ];
@@ -26,7 +28,7 @@ const RUNNER_CONFIGS = [
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = '/tmp/llvm-test-suite-build/CTMark';
-$configNum = 5;
+$configNum = 6;
 $runs = [
     'stage1-O0-g' => 2,
     'stage2-O0-g' => 2,
@@ -36,6 +38,7 @@ $benchTimeout = 5 * 60; // 5 minutes
 $fetchTimeout = 45; // 45 seconds
 
 $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
+$buildAfterCommit = '366ff3a89880139a132fe2738f36b39c89f5333e';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
@@ -85,7 +88,7 @@ while (true) {
     }
 
     logInfo("Finding work item");
-    $workItem = getWorkItem($branchCommits, $stddevs);
+    $workItem = getWorkItem($branchCommits, $stddevs, $buildAfterCommit);
     if ($workItem === null) {
         // Wait before checking for a new commit.
         sleep($sleepInterval);
@@ -140,9 +143,14 @@ function testHash(
             logInfo("Building $config configuration (run $run)");
             try {
                 [$stage, $realConfig] = explode('-', $config, 2);
+                $arch = '';
+                if (str_starts_with($realConfig, 'aarch64-')) {
+                    $realConfig = str_replace('aarch64-', '', $realConfig);
+                    $arch = 'aarch64';
+                }
                 // Use our own timeit.sh script.
                 copy(__DIR__ . '/timeit.sh', __DIR__ . '/llvm-test-suite/tools/timeit.sh');
-                runBuildCommand("./build_llvm_test_suite.sh $realConfig $stage", $benchTimeout);
+                runBuildCommand("./build_llvm_test_suite.sh $realConfig $stage $arch", $benchTimeout);
             } catch (CommandException $e) {
                 writeError($hash, $e);
                 // Skip this config, but test others.
@@ -539,10 +547,15 @@ function getBisectWorkItem(array $missingRanges): ?WorkItem {
     return null;
 }
 
-function getRecentCommits(array $commits): array {
+function getRecentCommits(array $commits, ?string $buildAfterCommit): array {
     $recentCommits = [];
     $now = new DateTime();
     foreach ($commits as $commit) {
+        if ($commit['hash'] === $buildAfterCommit) {
+            $recentCommits = [];
+            continue;
+        }
+
         $date = new DateTime($commit['commit_date']);
         if ($date->diff($now)->days > 10) {
             continue;
@@ -552,7 +565,9 @@ function getRecentCommits(array $commits): array {
     return $recentCommits;
 }
 
-function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
+function getWorkItem(
+    array $branchCommits, StdDevManager $stddevs, ?string $buildAfterCommit
+): ?WorkItem {
     $candidates = [];
     foreach ($branchCommits as $branch => $commits) {
         // First process all non-main branches.
@@ -588,7 +603,10 @@ function getWorkItem(array $branchCommits, StdDevManager $stddevs): ?WorkItem {
     $commits = $branchCommits[$branch];
 
     // Don't try to build too old commits.
-    $commits = getRecentCommits($commits);
+    $commits = getRecentCommits($commits, $buildAfterCommit);
+    if (empty($commits)) {
+        return null;
+    }
 
     /*$firstHash = $commits[0]['hash'];
     if ($configs = getMissingConfigs($firstHash)) {
