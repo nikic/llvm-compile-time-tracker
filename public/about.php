@@ -36,3 +36,40 @@ Next, you will want to pick out a single file with a particularly large regressi
 <pre>
 valgrind --tool=callgrind $PATH_TO_CLANG -DNDEBUG  -O3   -w -Werror=date-time -fcommon -D__USE_LARGEFILE64 -D_FILE_OFFSET_BITS=64 -MD -MT MultiSource/Applications/JM/lencod/CMakeFiles/lencod.dir/rdopt_coding_state.c.o -MF MultiSource/Applications/JM/lencod/CMakeFiles/lencod.dir/rdopt_coding_state.c.o.d -o MultiSource/Applications/JM/lencod/CMakeFiles/lencod.dir/rdopt_coding_state.c.o   -c ../MultiSource/Applications/JM/lencod/rdopt_coding_state.c
 </pre>
+
+<h3>Configurations</h3>
+
+Compilers:
+
+<ul>
+    <li><strong>host</strong>: gcc 11.4</li>
+    <li><strong>stage1</strong>:
+        clang compiled using host compiler (release build)</li>
+    <li><strong>stage2</strong>:
+        clang compiled using stage1 compiler (release build with ThinLTO)</li>
+</ul>
+
+<p>
+Displayed statistics for clang generally refer to the stage2 build. The stage1 build uses ccache and as such does not produce stable timing results.
+</p>
+
+Tested configurations:
+
+<ul>
+    <li><strong>stage1-O3</strong>:
+        -O3, stage1 clang, native x86_64 target</li>
+    <li><strong>stage1-ReleaseThinLTO</strong>:
+        -O3 -flto=thin, stage1 clang, native x86_64 target</li>
+    <li><strong>stage1-ReleaseLTO-g</strong>:
+        -O3 -flto -g, stage1 clang, native x86_64 target</li>
+    <li><strong>stage1-O0-g</strong>:
+        -O0 -g, stage1 clang, native x86_64 target</li>
+    <li><strong>stage1-aarch64-O3</strong>:
+        -O3, stage1 clang, cross-compilation from x86_64 to aarch64</li>
+    <li><strong>stage1-aarch64-O0-g</strong>:
+        -O0 -g, stage1 clang, cross-compilation from x86_64 to aarch64</li>
+    <li><strong>stage2-O3</strong>:
+        -O3, stage2 clang, native x86_64 target</li>
+    <li><strong>stage2-O0-g</strong>:
+        -O0 -g, stage2 clang, native x86_64 target</li>
+</ul>
