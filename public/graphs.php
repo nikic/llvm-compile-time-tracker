@@ -165,14 +165,29 @@ $longTermUrl = makeUrl("graphs.php", [
 echo "<a href=\"" . $longTermUrl . "\">Long term view</a>\n";
 echo "</form>\n";
 echo "<hr />\n";
-
 echo "<script src=\"//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js\"></script>\n";
 echo "<link rel=\"stylesheet\" href=\"//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css\" />\n";
 echo "<style>
 .dygraph-legend {
   top: 15em !important;
 }
-</style>\n";
+</style>
+<script>
+graphs = [];
+function toggleVisibility(el) {
+    for (g of graphs) {
+        if (g.numColumns() > 2) {
+            g.setVisibility(parseInt(el.id), el.checked);
+        }
+    }
+}
+</script>\n";
+echo "<form>\n";
+foreach ($configs as $i => $config) {
+    echo "<label><input type=\"checkbox\" id=\"$i\" checked autocomplete=\"off\" onClick=\"toggleVisibility(this)\" /> ";
+    echo h($config) . "</label>\n";
+}
+echo "</form>\n";
 
 if ($bench == 'all') {
     $benches = BENCHES;
@@ -215,7 +230,7 @@ foreach ($data as $bench => $benchValues) {
 <h4>$bench:</h4>
 <div id="graph-$bench"></div>
 <script>
-g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
+graphs.push(new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
     includeZero: true,
     connectSeparatedPoints: true,
     width: $width,
@@ -238,7 +253,7 @@ g = new Dygraph(document.getElementById('graph-$bench'), $encodedCsv, {
             window.location.href = url;
         }
     },
-});
+}));
 </script>
 </div>
 HTML;
