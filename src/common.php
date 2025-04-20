@@ -10,6 +10,8 @@ const DEFAULT_CONFIGS = [
     'stage1-ReleaseThinLTO',
     'stage1-ReleaseLTO-g',
     'stage1-O0-g',
+    'stage1-aarch64-O3',
+    'stage1-aarch64-O0-g',
     'stage2-O3',
     'stage2-O0-g',
 ];
