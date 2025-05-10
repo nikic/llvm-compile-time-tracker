@@ -36,6 +36,7 @@ $runs = [
 $llvmTimeout = 20 * 60; // 20 minutes
 $benchTimeout = 5 * 60; // 5 minutes
 $fetchTimeout = 45; // 45 seconds
+$maxCommits = 30;
 
 $firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
 $buildAfterCommit = '366ff3a89880139a132fe2738f36b39c89f5333e';
@@ -84,7 +85,8 @@ while (true) {
     $branches = getRelevantBranches($repo, $branchPatterns);
     foreach ($branches as $branch) {
         $branchCommits[$branch] = getBranchCommits(
-            $repo, $branch, $firstCommit, $branchCommits[$branch] ?? []);
+            $repo, $branch, $firstCommit, $branchCommits[$branch] ?? [],
+            $maxCommits);
     }
 
     logInfo("Finding work item");
@@ -295,7 +297,8 @@ function getRelevantBranches(GitWorkingCopy $repo, array $branchPatterns): array
 }
 
 function getBranchCommits(
-    GitWorkingCopy $repo, string $branch, string $firstCommit, array $prevCommits
+    GitWorkingCopy $repo, string $branch, string $firstCommit,
+    array $prevCommits, int $maxCommits
 ): array {
     // Merge base calculations are expensive. If the HEAD commit of the branch did not change,
     // reuse the previous result.
@@ -315,7 +318,7 @@ function getBranchCommits(
     // Ignore branches to which a large number of new commits was pushed,
     // this was likely a mistake. Only add the last commit to indicate that
     // the branch has been processed at all.
-    if (count($commits) > count($prevCommits) + 100) {
+    if (count($commits) > count($prevCommits) + $maxCommits) {
         return [end($commits)];
     }
     return $commits;
