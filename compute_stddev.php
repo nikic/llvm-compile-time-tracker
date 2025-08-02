@@ -3,7 +3,7 @@
 require __DIR__ . '/src/common.php';
 require __DIR__ . '/src/build_log.php';
 
-ini_set('memory_limit', '16G');
+ini_set('memory_limit', '32G');
 
 $configNum = 6;
 $from = '90c845fb3babac387688dfa6d560d3ba8ed8e340';
