@@ -308,20 +308,37 @@ function filterByInterestingness(
 
     $newCommits = [];
     $skippedCommits = [];
-    $lastGeomean = null;
+    $lastGeomeans = [];
     foreach ($commits as $commit) {
         $hash = $commit['hash'];
         $summary = getSummaryForHash($hash);
         if ($summary === null) {
             continue;
         }
-        $data = $summary->getConfig($config);
-        if ($data === null) {
-            continue;
+        if ($config == 'Overview') {
+            $geomeans = $summary->getGeomeanStats($stat);
+            //$geomeans['stage2-clang'] = $summary->stage2Stats[$stat] ?? null;
+        } else {
+            $data = $summary->getConfig($config);
+            if ($data === null) {
+                continue;
+            }
+            $geomeans = [$config => $data['geomean'][$stat]];
         }
-        $geomean = $data['geomean'][$stat];
-        if ($lastGeomean !== null) {
-            $stddev = $stddevs->getBenchStdDev($summary->configNum, $config, 'geomean', $stat);
+        foreach ($lastGeomeans as $curConfig => $lastGeomean) {
+            $geomean = $geomeans[$curConfig] ?? null;
+            if ($geomean === null) {
+                continue;
+            }
+
+            if ($curConfig === 'stage2-clang') {
+                $stddev = $stddevs->getBenchStdDev(
+                    $summary->configNum, 'build', 'stage2-clang', $stat);
+            } else {
+                $stddev = $stddevs->getBenchStdDev(
+                    $summary->configNum, $curConfig, 'geomean', $stat);
+            }
+
             $diff = $geomean - $lastGeomean;
             $interestingness = getInterestingness($diff, $stddev);
             if ($diff !== 0.0 && $interestingness > $minInterestingness) {
@@ -335,12 +352,12 @@ function filterByInterestingness(
                 }
                 $skippedCommits = [];
                 $newCommits[] = $commit;
-                $lastGeomean = $geomean;
-                continue;
+                $lastGeomeans = $geomeans;
+                continue 2;
             }
         }
         $skippedCommits[] = $commit;
-        $lastGeomean = $geomean;
+        $lastGeomeans = $geomeans;
     }
     return $newCommits;
 }
