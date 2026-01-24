@@ -4,18 +4,19 @@ require __DIR__ . '/../src/web_common.php';
 
 function getData(
         iterable $commits, array $configs, array $benches, string $stat,
-        int $interval, ?DateTime $startDate): array {
+        int $interval, ?DateTime $startDate, ?DateTime $endDate): array {
     $singleBench = count($benches) === 1 ? $benches[0] : null;
     $hashes = [];
     $dates = [];
     $data = [];
     $i = 0;
     foreach ($commits as $commit) {
-        if ($startDate) {
-            $commitDate = new DateTime($commit['commit_date']);
-            if ($commitDate < $startDate) {
-                continue;
-            }
+        $commitDate = new DateTime($commit['commit_date']);
+        if ($startDate && $commitDate < $startDate) {
+            continue;
+        }
+        if ($endDate && $commitDate > $endDate) {
+            break;
         }
 
         if (++$i < $interval) {
@@ -127,6 +128,7 @@ $stat = getStringParam('stat') ?? DEFAULT_METRIC;
 $bench = getStringParam('bench') ?? 'all';
 $relative = isset($_GET['relative']);
 $startDateStr = getStringParam('startDate') ?? '';
+$endDateStr = getStringParam('endDate') ?? '';
 $interval = getIntParam('interval') ?? 1;
 $configs = getConfigsParam('configs') ?? DEFAULT_CONFIGS;
 $width = getIntParam('width') ?? 480;
@@ -139,6 +141,7 @@ if (empty($_SERVER['QUERY_STRING'])) {
 }
 
 $startDate = $startDateStr ? new DateTime($startDateStr) : null;
+$endDate = $endDateStr ? new DateTime($endDateStr) : null;
 
 printHeader();
 
@@ -204,7 +207,7 @@ if ($smoothWindow < 0 || $smoothWindow > 100) {
     return;
 }
 
-[$hashes, $dates, $data] = getData($commits, $configs, $benches, $stat, $interval, $startDate);
+[$hashes, $dates, $data] = getData($commits, $configs, $benches, $stat, $interval, $startDate, $endDate);
 if ($smoothWindow != 0) {
     transformData($data, fn($values) => smooth($values, $smoothWindow));
 }
