@@ -1,6 +1,7 @@
 llvm-project/
 llvm-test-suite/
 data/
+data-*/
 vendor/
 composer.lock
 *.swp
