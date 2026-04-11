@@ -325,11 +325,21 @@ function getBranchCommits(
 }
 
 function haveData(string $hash): bool {
-    return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/summary.json');
+    foreach (DATA_DIRS as $dataDir) {
+        if (file_exists(getDirForHash($dataDir, $hash) . '/summary.json')) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function haveError(string $hash): bool {
-    return file_exists(getDirForHash(CURRENT_DATA_DIR, $hash) . '/error');
+    foreach (DATA_DIRS as $dataDir) {
+        if (file_exists(getDirForHash($dataDir, $hash) . '/error')) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function writeError(string $hash, Exception $e): void {
