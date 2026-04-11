@@ -38,8 +38,8 @@ $benchTimeout = 5 * 60; // 5 minutes
 $fetchTimeout = 45; // 45 seconds
 $maxCommits = 30;
 
-$firstCommit = '36c1e568bb4f8e482e3f713c8cb9460c5cf19863';
-$buildAfterCommit = '366ff3a89880139a132fe2738f36b39c89f5333e';
+$firstCommit = '155b9b354c1d91661be9f6d0432a96e47cfc2700';
+$buildAfterCommit = '155b9b354c1d91661be9f6d0432a96e47cfc2700';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
