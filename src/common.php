@@ -3,6 +3,7 @@
 const CURRENT_DATA_DIR = __DIR__ . '/../data';
 const DATA_DIRS = [
     CURRENT_DATA_DIR,
+    __DIR__ . '/../data-1',
     __DIR__ . '/../data-0',
 ];
 const DEFAULT_CONFIGS = [
