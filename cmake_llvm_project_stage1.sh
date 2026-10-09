@@ -10,4 +10,5 @@ cmake -GNinja -H./llvm-project/llvm -B/tmp/llvm-project-build-stage1 \
     -DLLVM_USE_LINKER=gold \
     -DLLVM_BINUTILS_INCDIR=/usr/include \
     -DCLANG_ENABLE_ARCMT=false \
-    -DCLANG_ENABLE_STATIC_ANALYZER=false
+    -DCLANG_ENABLE_STATIC_ANALYZER=false \
+    -DCLANG_ENABLE_CIR=false
