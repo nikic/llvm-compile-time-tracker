@@ -28,7 +28,7 @@ const RUNNER_CONFIGS = [
 $sleepInterval = 5 * 60;
 $commitsFile = __DIR__ . '/data/commits.json';
 $ctmarkDir = '/tmp/llvm-test-suite-build/CTMark';
-$configNum = 6;
+$configNum = 7;
 $runs = [
     'stage1-O0-g' => 2,
     'stage2-O0-g' => 2,
@@ -39,7 +39,7 @@ $fetchTimeout = 45; // 45 seconds
 $maxCommits = 30;
 
 $firstCommit = '155b9b354c1d91661be9f6d0432a96e47cfc2700';
-$buildAfterCommit = '155b9b354c1d91661be9f6d0432a96e47cfc2700';
+$buildAfterCommit = '29eff20316c550d8e689a318c614e40186107820';
 $branchPatterns = [
     '~^[^/]+/perf/.*~',
     '~^origin/main$~',
