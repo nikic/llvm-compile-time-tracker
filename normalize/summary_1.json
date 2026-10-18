@@ -1,0 +1,406 @@
+{
+    "LegacyPM-O3": {
+        "kimwitu++": {
+            "task-clock": 2.5471,
+            "cycles": 2.0736,
+            "instructions": 0.9717,
+            "branches": 1.0195,
+            "branch-misses": 1.3923,
+            "max-rss": 0.9706,
+            "wall-time": 2.5926
+        },
+        "sqlite3": {
+            "task-clock": 2.5486,
+            "cycles": 2.0303,
+            "instructions": 1.0083,
+            "branches": 1.0622,
+            "branch-misses": 1.3186,
+            "max-rss": 0.9785,
+            "wall-time": 2.5582
+        },
+        "consumer-typeset": {
+            "task-clock": 2.4593,
+            "cycles": 1.9601,
+            "instructions": 1.0002,
+            "branches": 1.0462,
+            "branch-misses": 1.303,
+            "max-rss": 0.963,
+            "wall-time": 2.6226
+        },
+        "Bullet": {
+            "task-clock": 2.4631,
+            "cycles": 2.0432,
+            "instructions": 0.9914,
+            "branches": 1.0338,
+            "branch-misses": 1.302,
+            "max-rss": 0.9615,
+            "wall-time": 2.6071
+        },
+        "tramp3d-v4": {
+            "task-clock": 2.5646,
+            "cycles": 2.0802,
+            "instructions": 1.0276,
+            "branches": 1.0825,
+            "branch-misses": 1.4362,
+            "max-rss": 1.0022,
+            "wall-time": 2.5665
+        },
+        "mafft": {
+            "task-clock": 2.4273,
+            "cycles": 1.9435,
+            "instructions": 1.0037,
+            "branches": 1.0577,
+            "branch-misses": 1.3195,
+            "max-rss": 0.9637,
+            "wall-time": 2.5166
+        },
+        "ClamAV": {
+            "task-clock": 2.4608,
+            "cycles": 1.9783,
+            "instructions": 1.0053,
+            "branches": 1.053,
+            "branch-misses": 1.2882,
+            "max-rss": 0.9634,
+            "wall-time": 2.6877
+        },
+        "lencod": {
+            "task-clock": 2.4438,
+            "cycles": 1.9565,
+            "instructions": 1.0095,
+            "branches": 1.0643,
+            "branch-misses": 1.3108,
+            "max-rss": 0.9632,
+            "wall-time": 2.5501
+        },
+        "SPASS": {
+            "task-clock": 2.5106,
+            "cycles": 2.0162,
+            "instructions": 0.9952,
+            "branches": 1.0442,
+            "branch-misses": 1.3437,
+            "max-rss": 0.9636,
+            "wall-time": 2.6435
+        },
+        "7zip": {
+            "task-clock": 2.5151,
+            "cycles": 2.0705,
+            "instructions": 0.9924,
+            "branches": 1.0363,
+            "branch-misses": 1.3078,
+            "max-rss": 0.9626,
+            "wall-time": 2.6869
+        },
+        "geomean": {
+            "task-clock": 2.4936,
+            "cycles": 2.0146,
+            "instructions": 1.0004,
+            "branches": 1.0498,
+            "branch-misses": 1.3315,
+            "max-rss": 0.9692,
+            "wall-time": 2.6026
+        }
+    },
+    "LegacyPM-ReleaseThinLTO": {
+        "kimwitu++": {
+            "task-clock": 2.4869,
+            "cycles": 1.9965,
+            "instructions": 0.9785,
+            "branches": 1.0217,
+            "branch-misses": 1.3297,
+            "max-rss": 0.9289,
+            "wall-time": 2.7309
+        },
+        "sqlite3": {
+            "task-clock": 2.3811,
+            "cycles": 2.0032,
+            "instructions": 1.0109,
+            "branches": 1.0655,
+            "branch-misses": 1.3019,
+            "max-rss": 0.9838,
+            "wall-time": 2.7537
+        },
+        "consumer-typeset": {
+            "task-clock": 2.2834,
+            "cycles": 1.9172,
+            "instructions": 1.0027,
+            "branches": 1.0504,
+            "branch-misses": 1.2696,
+            "max-rss": 0.9586,
+            "wall-time": 2.7587
+        },
+        "Bullet": {
+            "task-clock": 2.5044,
+            "cycles": 2.0038,
+            "instructions": 0.9932,
+            "branches": 1.0348,
+            "branch-misses": 1.2952,
+            "max-rss": 0.9669,
+            "wall-time": 2.499
+        },
+        "tramp3d-v4": {
+            "task-clock": 2.581,
+            "cycles": 2.0653,
+            "instructions": 1.0239,
+            "branches": 1.0784,
+            "branch-misses": 1.3735,
+            "max-rss": 1.0095,
+            "wall-time": 2.6887
+        },
+        "mafft": {
+            "task-clock": 2.2512,
+            "cycles": 1.9086,
+            "instructions": 1.0067,
+            "branches": 1.0608,
+            "branch-misses": 1.2494,
+            "max-rss": 0.954,
+            "wall-time": 2.092
+        },
+        "ClamAV": {
+            "task-clock": 2.3558,
+            "cycles": 1.9639,
+            "instructions": 1.0089,
+            "branches": 1.06,
+            "branch-misses": 1.2663,
+            "max-rss": 0.9651,
+            "wall-time": 3.4392
+        },
+        "lencod": {
+            "task-clock": 2.3977,
+            "cycles": 1.9196,
+            "instructions": 1.0127,
+            "branches": 1.0705,
+            "branch-misses": 1.2606,
+            "max-rss": 0.9565,
+            "wall-time": 3.3895
+        },
+        "SPASS": {
+            "task-clock": 2.4281,
+            "cycles": 1.9616,
+            "instructions": 0.9995,
+            "branches": 1.0506,
+            "branch-misses": 1.2774,
+            "max-rss": 0.962,
+            "wall-time": 2.4565
+        },
+        "7zip": {
+            "task-clock": 2.5139,
+            "cycles": 2.0062,
+            "instructions": 0.9986,
+            "branches": 1.0464,
+            "branch-misses": 1.2586,
+            "max-rss": 0.9674,
+            "wall-time": 3.7686
+        },
+        "geomean": {
+            "task-clock": 2.4163,
+            "cycles": 1.974,
+            "instructions": 1.0035,
+            "branches": 1.0538,
+            "branch-misses": 1.2877,
+            "max-rss": 0.9651,
+            "wall-time": 2.817
+        }
+    },
+    "LegacyPM-ReleaseLTO-g": {
+        "kimwitu++": {
+            "task-clock": 2.3358,
+            "cycles": 1.9777,
+            "instructions": 0.977,
+            "branches": 1.0259,
+            "branch-misses": 1.3547,
+            "max-rss": 0.9801,
+            "wall-time": 2.3646
+        },
+        "sqlite3": {
+            "task-clock": 2.3005,
+            "cycles": 1.9353,
+            "instructions": 1.007,
+            "branches": 1.0605,
+            "branch-misses": 1.2774,
+            "max-rss": 0.9858,
+            "wall-time": 2.3046
+        },
+        "consumer-typeset": {
+            "task-clock": 2.3198,
+            "cycles": 1.9545,
+            "instructions": 1.0022,
+            "branches": 1.0491,
+            "branch-misses": 1.2914,
+            "max-rss": 0.9715,
+            "wall-time": 2.4267
+        },
+        "Bullet": {
+            "task-clock": 2.3763,
+            "cycles": 2.003,
+            "instructions": 0.9927,
+            "branches": 1.0354,
+            "branch-misses": 1.2775,
+            "max-rss": 0.9707,
+            "wall-time": 2.5343
+        },
+        "tramp3d-v4": {
+            "task-clock": 2.3387,
+            "cycles": 1.9737,
+            "instructions": 1.0279,
+            "branches": 1.0819,
+            "branch-misses": 1.3762,
+            "max-rss": 1.012,
+            "wall-time": 2.3493
+        },
+        "mafft": {
+            "task-clock": 1.93,
+            "cycles": 1.6109,
+            "instructions": 1.0082,
+            "branches": 1.0623,
+            "branch-misses": 1.223,
+            "max-rss": 0.975,
+            "wall-time": 2.014
+        },
+        "ClamAV": {
+            "task-clock": 2.3281,
+            "cycles": 1.9579,
+            "instructions": 1.0074,
+            "branches": 1.0581,
+            "branch-misses": 1.2765,
+            "max-rss": 0.9728,
+            "wall-time": 2.4569
+        },
+        "lencod": {
+            "task-clock": 2.2755,
+            "cycles": 1.9004,
+            "instructions": 1.0125,
+            "branches": 1.068,
+            "branch-misses": 1.2702,
+            "max-rss": 0.9748,
+            "wall-time": 2.3352
+        },
+        "SPASS": {
+            "task-clock": 2.3137,
+            "cycles": 1.9328,
+            "instructions": 0.9974,
+            "branches": 1.0481,
+            "branch-misses": 1.298,
+            "max-rss": 0.9751,
+            "wall-time": 2.3974
+        },
+        "7zip": {
+            "task-clock": 2.4392,
+            "cycles": 2.0428,
+            "instructions": 0.9962,
+            "branches": 1.0434,
+            "branch-misses": 1.2908,
+            "max-rss": 0.9708,
+            "wall-time": 2.5554
+        },
+        "geomean": {
+            "task-clock": 2.2918,
+            "cycles": 1.9253,
+            "instructions": 1.0028,
+            "branches": 1.0531,
+            "branch-misses": 1.2929,
+            "max-rss": 0.9788,
+            "wall-time": 2.3693
+        }
+    },
+    "LegacyPM-O0-g": {
+        "kimwitu++": {
+            "task-clock": 2.5355,
+            "cycles": 2.1416,
+            "instructions": 0.9757,
+            "branches": 1.0183,
+            "branch-misses": 1.3663,
+            "max-rss": 0.9772,
+            "wall-time": 2.6207
+        },
+        "sqlite3": {
+            "task-clock": 2.3001,
+            "cycles": 1.9912,
+            "instructions": 0.9798,
+            "branches": 1.0277,
+            "branch-misses": 1.3803,
+            "max-rss": 0.9881,
+            "wall-time": 2.3612
+        },
+        "consumer-typeset": {
+            "task-clock": 2.3157,
+            "cycles": 2.0062,
+            "instructions": 0.9889,
+            "branches": 1.0225,
+            "branch-misses": 1.2652,
+            "max-rss": 0.9734,
+            "wall-time": 2.8196
+        },
+        "Bullet": {
+            "task-clock": 2.5163,
+            "cycles": 2.1041,
+            "instructions": 0.9799,
+            "branches": 1.0125,
+            "branch-misses": 1.3041,
+            "max-rss": 0.9692,
+            "wall-time": 2.7839
+        },
+        "tramp3d-v4": {
+            "task-clock": 2.5099,
+            "cycles": 2.114,
+            "instructions": 0.9811,
+            "branches": 1.0298,
+            "branch-misses": 1.603,
+            "max-rss": 0.993,
+            "wall-time": 2.5245
+        },
+        "mafft": {
+            "task-clock": 2.3398,
+            "cycles": 2.0111,
+            "instructions": 0.9869,
+            "branches": 1.0183,
+            "branch-misses": 1.2767,
+            "max-rss": 0.9797,
+            "wall-time": 2.8682
+        },
+        "ClamAV": {
+            "task-clock": 2.3603,
+            "cycles": 2.0399,
+            "instructions": 0.9852,
+            "branches": 1.0117,
+            "branch-misses": 1.2337,
+            "max-rss": 0.9744,
+            "wall-time": 3.1409
+        },
+        "lencod": {
+            "task-clock": 2.4044,
+            "cycles": 2.0334,
+            "instructions": 0.9857,
+            "branches": 1.0198,
+            "branch-misses": 1.2507,
+            "max-rss": 0.9753,
+            "wall-time": 2.9615
+        },
+        "SPASS": {
+            "task-clock": 2.4812,
+            "cycles": 2.1476,
+            "instructions": 0.9825,
+            "branches": 1.0163,
+            "branch-misses": 1.3708,
+            "max-rss": 0.9773,
+            "wall-time": 2.8907
+        },
+        "7zip": {
+            "task-clock": 2.6342,
+            "cycles": 2.1838,
+            "instructions": 0.9743,
+            "branches": 1.003,
+            "branch-misses": 1.299,
+            "max-rss": 0.9725,
+            "wall-time": 2.9889
+        },
+        "geomean": {
+            "task-clock": 2.4375,
+            "cycles": 2.0763,
+            "instructions": 0.982,
+            "branches": 1.018,
+            "branch-misses": 1.3314,
+            "max-rss": 0.978,
+            "wall-time": 2.7869
+        }
+    }
+}

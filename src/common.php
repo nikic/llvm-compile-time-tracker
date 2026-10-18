@@ -238,6 +238,34 @@ class StdDevManager {
     }
 }
 
+class ConfigNormalizer {
+    private array $data;
+
+    public function __construct(private int $baseConfigNum) {}
+
+    public function normalize(
+        int $configNum, string $config, string $bench, string $stat, float $value
+    ): float {
+        if ($configNum <= $this->baseConfigNum) {
+            return $value;
+        }
+
+        if (!isset($this->data[$configNum])) {
+            $this->initData($configNum);
+        }
+
+        $factor = $this->data[$configNum][$config][$bench][$stat] ?? 1.0;
+        return $this->normalize($configNum - 1, $config, $bench, $stat, $value) * $factor;
+    }
+
+    private function initData(int $configNum): void {
+        $path = __DIR__ . "/../normalize/summary_$configNum.json";
+        $this->data[$configNum] = file_exists($path)
+            ? upgradeConfigNameKeys(json_decode(file_get_contents($path), true))
+            : null;
+    }
+}
+
 // From oldest to newest
 function getMainCommits(): iterable {
     foreach (array_reverse(DATA_DIRS) as $dataDir) {

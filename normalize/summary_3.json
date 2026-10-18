@@ -1,0 +1,450 @@
+{
+    "stage1-O3": {
+        "lencod": {
+            "instructions": 1.0269,
+            "instructions:u": 1.0305,
+            "cycles": 1.0394,
+            "task-clock": 1.0393,
+            "branches": 1.0405,
+            "branch-misses": 1.0185,
+            "max-rss": 1.0275,
+            "wall-time": 1.0145
+        },
+        "Bullet": {
+            "instructions": 0.9886,
+            "instructions:u": 0.9945,
+            "cycles": 1.0206,
+            "task-clock": 1.0204,
+            "branches": 0.9964,
+            "branch-misses": 1.0167,
+            "max-rss": 1.0172,
+            "wall-time": 0.8988
+        },
+        "mafft": {
+            "instructions": 1.0287,
+            "instructions:u": 1.0322,
+            "cycles": 1.0239,
+            "task-clock": 1.0238,
+            "branches": 1.042,
+            "branch-misses": 1.022,
+            "max-rss": 1.0286,
+            "wall-time": 1.0113
+        },
+        "tramp3d-v4": {
+            "instructions": 1.0321,
+            "instructions:u": 1.0337,
+            "cycles": 1.0197,
+            "task-clock": 1.0195,
+            "branches": 1.0437,
+            "branch-misses": 1.0276,
+            "max-rss": 0.9997,
+            "wall-time": 0.997
+        },
+        "ClamAV": {
+            "instructions": 1.0312,
+            "instructions:u": 1.037,
+            "cycles": 1.0522,
+            "task-clock": 1.0521,
+            "branches": 1.0463,
+            "branch-misses": 1.02,
+            "max-rss": 1.0293,
+            "wall-time": 1.0168
+        },
+        "kimwitu++": {
+            "instructions": 1.0351,
+            "instructions:u": 1.0387,
+            "cycles": 1.0321,
+            "task-clock": 1.0318,
+            "branches": 1.0425,
+            "branch-misses": 1.0387,
+            "max-rss": 1.0168,
+            "wall-time": 0.9681
+        },
+        "sqlite3": {
+            "instructions": 1.0395,
+            "instructions:u": 1.0419,
+            "cycles": 1.0397,
+            "task-clock": 1.0396,
+            "branches": 1.0525,
+            "branch-misses": 1.027,
+            "max-rss": 1.0229,
+            "wall-time": 1.0282
+        },
+        "SPASS": {
+            "instructions": 1.0254,
+            "instructions:u": 1.0302,
+            "cycles": 1.049,
+            "task-clock": 1.0489,
+            "branches": 1.0387,
+            "branch-misses": 1.0309,
+            "max-rss": 1.0286,
+            "wall-time": 1.0325
+        },
+        "7zip": {
+            "instructions": 0.9742,
+            "instructions:u": 0.9797,
+            "cycles": 0.991,
+            "task-clock": 0.9909,
+            "branches": 0.979,
+            "branch-misses": 1.0043,
+            "max-rss": 1.0132,
+            "wall-time": 0.9674
+        },
+        "consumer-typeset": {
+            "instructions": 1.0216,
+            "instructions:u": 1.0277,
+            "cycles": 1.0416,
+            "task-clock": 1.0415,
+            "branches": 1.0364,
+            "branch-misses": 1.0209,
+            "max-rss": 1.029,
+            "wall-time": 1.018
+        },
+        "geomean": {
+            "instructions": 1.0201,
+            "instructions:u": 1.0244,
+            "cycles": 1.0308,
+            "task-clock": 1.0306,
+            "branches": 1.0315,
+            "branch-misses": 1.0226,
+            "max-rss": 1.0212,
+            "wall-time": 0.9945
+        }
+    },
+    "stage1-ReleaseThinLTO": {
+        "lencod": {
+            "instructions": 1.0228,
+            "instructions:u": 1.0248,
+            "cycles": 1.0254,
+            "task-clock": 1.0252,
+            "branches": 1.0423,
+            "branch-misses": 1.0138,
+            "max-rss": 1.0308,
+            "wall-time": 0.8948
+        },
+        "Bullet": {
+            "instructions": 0.9867,
+            "instructions:u": 0.9925,
+            "cycles": 1.0102,
+            "task-clock": 1.0101,
+            "branches": 0.9959,
+            "branch-misses": 1.0142,
+            "max-rss": 1.0171,
+            "wall-time": 0.8607
+        },
+        "mafft": {
+            "instructions": 1.0284,
+            "instructions:u": 1.0325,
+            "cycles": 1.0455,
+            "task-clock": 1.0451,
+            "branches": 1.0434,
+            "branch-misses": 1.0172,
+            "max-rss": 1.0287,
+            "wall-time": 0.9532
+        },
+        "tramp3d-v4": {
+            "instructions": 1.0348,
+            "instructions:u": 1.0354,
+            "cycles": 1.032,
+            "task-clock": 1.0318,
+            "branches": 1.0493,
+            "branch-misses": 1.0192,
+            "max-rss": 0.9982,
+            "wall-time": 0.9908
+        },
+        "ClamAV": {
+            "instructions": 1.0333,
+            "instructions:u": 1.0388,
+            "cycles": 1.0324,
+            "task-clock": 1.0322,
+            "branches": 1.0512,
+            "branch-misses": 1.0138,
+            "max-rss": 1.0331,
+            "wall-time": 0.9057
+        },
+        "kimwitu++": {
+            "instructions": 1.0443,
+            "instructions:u": 1.0476,
+            "cycles": 1.0342,
+            "task-clock": 1.034,
+            "branches": 1.0586,
+            "branch-misses": 1.0432,
+            "max-rss": 1.014,
+            "wall-time": 0.9175
+        },
+        "sqlite3": {
+            "instructions": 1.042,
+            "instructions:u": 1.0428,
+            "cycles": 1.0354,
+            "task-clock": 1.0351,
+            "branches": 1.0567,
+            "branch-misses": 1.0211,
+            "max-rss": 1.0177,
+            "wall-time": 0.9262
+        },
+        "SPASS": {
+            "instructions": 1.0299,
+            "instructions:u": 1.0333,
+            "cycles": 1.0297,
+            "task-clock": 1.0296,
+            "branches": 1.0465,
+            "branch-misses": 1.0232,
+            "max-rss": 1.0283,
+            "wall-time": 0.8852
+        },
+        "7zip": {
+            "instructions": 0.9892,
+            "instructions:u": 0.9938,
+            "cycles": 0.9993,
+            "task-clock": 0.9991,
+            "branches": 0.9981,
+            "branch-misses": 1.0059,
+            "max-rss": 1.0116,
+            "wall-time": 0.9261
+        },
+        "consumer-typeset": {
+            "instructions": 1.0263,
+            "instructions:u": 1.0304,
+            "cycles": 1.0299,
+            "task-clock": 1.0295,
+            "branches": 1.0437,
+            "branch-misses": 1.0145,
+            "max-rss": 1.0311,
+            "wall-time": 0.8433
+        },
+        "geomean": {
+            "instructions": 1.0236,
+            "instructions:u": 1.027,
+            "cycles": 1.0273,
+            "task-clock": 1.0271,
+            "branches": 1.0383,
+            "branch-misses": 1.0186,
+            "max-rss": 1.021,
+            "wall-time": 0.9094
+        }
+    },
+    "stage1-ReleaseLTO-g": {
+        "lencod": {
+            "instructions": 1.0274,
+            "instructions:u": 1.0295,
+            "cycles": 1.0408,
+            "task-clock": 1.0408,
+            "branches": 1.0439,
+            "branch-misses": 1.0159,
+            "max-rss": 1.0281,
+            "wall-time": 1.0349
+        },
+        "Bullet": {
+            "instructions": 0.9924,
+            "instructions:u": 0.9977,
+            "cycles": 1.0266,
+            "task-clock": 1.0265,
+            "branches": 1.0009,
+            "branch-misses": 1.0207,
+            "max-rss": 1.0172,
+            "wall-time": 1.0132
+        },
+        "mafft": {
+            "instructions": 1.0301,
+            "instructions:u": 1.0337,
+            "cycles": 1.0577,
+            "task-clock": 1.0577,
+            "branches": 1.044,
+            "branch-misses": 1.0182,
+            "max-rss": 1.0291,
+            "wall-time": 1.0438
+        },
+        "tramp3d-v4": {
+            "instructions": 1.0325,
+            "instructions:u": 1.0339,
+            "cycles": 1.0341,
+            "task-clock": 1.034,
+            "branches": 1.044,
+            "branch-misses": 1.0171,
+            "max-rss": 0.9886,
+            "wall-time": 1.0339
+        },
+        "ClamAV": {
+            "instructions": 1.0356,
+            "instructions:u": 1.0406,
+            "cycles": 1.0468,
+            "task-clock": 1.0467,
+            "branches": 1.051,
+            "branch-misses": 1.0197,
+            "max-rss": 1.0302,
+            "wall-time": 1.029
+        },
+        "kimwitu++": {
+            "instructions": 1.0426,
+            "instructions:u": 1.0461,
+            "cycles": 1.0577,
+            "task-clock": 1.0577,
+            "branches": 1.0533,
+            "branch-misses": 1.0427,
+            "max-rss": 1.0141,
+            "wall-time": 1.0501
+        },
+        "sqlite3": {
+            "instructions": 1.0429,
+            "instructions:u": 1.0441,
+            "cycles": 1.0315,
+            "task-clock": 1.0315,
+            "branches": 1.057,
+            "branch-misses": 1.0206,
+            "max-rss": 1.0087,
+            "wall-time": 1.0297
+        },
+        "SPASS": {
+            "instructions": 1.0314,
+            "instructions:u": 1.0348,
+            "cycles": 1.0538,
+            "task-clock": 1.0538,
+            "branches": 1.045,
+            "branch-misses": 1.0256,
+            "max-rss": 1.0262,
+            "wall-time": 1.0436
+        },
+        "7zip": {
+            "instructions": 0.9912,
+            "instructions:u": 0.996,
+            "cycles": 1.0101,
+            "task-clock": 1.0101,
+            "branches": 0.9989,
+            "branch-misses": 1.0056,
+            "max-rss": 1.0122,
+            "wall-time": 0.9967
+        },
+        "consumer-typeset": {
+            "instructions": 1.0304,
+            "instructions:u": 1.0347,
+            "cycles": 1.0454,
+            "task-clock": 1.0454,
+            "branches": 1.0462,
+            "branch-misses": 1.0208,
+            "max-rss": 1.0292,
+            "wall-time": 1.0324
+        },
+        "geomean": {
+            "instructions": 1.0255,
+            "instructions:u": 1.029,
+            "cycles": 1.0403,
+            "task-clock": 1.0403,
+            "branches": 1.0382,
+            "branch-misses": 1.0206,
+            "max-rss": 1.0183,
+            "wall-time": 1.0306
+        }
+    },
+    "stage1-O0-g": {
+        "lencod": {
+            "instructions": 0.98,
+            "instructions:u": 0.9943,
+            "cycles": 1.0351,
+            "task-clock": 1.035,
+            "branches": 0.9919,
+            "branch-misses": 1.0024,
+            "max-rss": 1.0234,
+            "wall-time": 0.9875
+        },
+        "Bullet": {
+            "instructions": 0.9563,
+            "instructions:u": 0.9635,
+            "cycles": 1.0126,
+            "task-clock": 1.0126,
+            "branches": 0.9598,
+            "branch-misses": 1.0125,
+            "max-rss": 1.011,
+            "wall-time": 0.9863
+        },
+        "mafft": {
+            "instructions": 0.9657,
+            "instructions:u": 0.9783,
+            "cycles": 1.0303,
+            "task-clock": 1.03,
+            "branches": 0.9773,
+            "branch-misses": 1.0001,
+            "max-rss": 1.0236,
+            "wall-time": 0.9817
+        },
+        "tramp3d-v4": {
+            "instructions": 1.0164,
+            "instructions:u": 1.0182,
+            "cycles": 1.0207,
+            "task-clock": 1.0206,
+            "branches": 1.024,
+            "branch-misses": 1.034,
+            "max-rss": 0.9935,
+            "wall-time": 1.0219
+        },
+        "ClamAV": {
+            "instructions": 0.9799,
+            "instructions:u": 1.0015,
+            "cycles": 1.0378,
+            "task-clock": 1.0376,
+            "branches": 0.9924,
+            "branch-misses": 1.0056,
+            "max-rss": 1.0278,
+            "wall-time": 0.9179
+        },
+        "kimwitu++": {
+            "instructions": 1.0049,
+            "instructions:u": 1.0099,
+            "cycles": 1.0227,
+            "task-clock": 1.0228,
+            "branches": 1.0083,
+            "branch-misses": 1.0263,
+            "max-rss": 1.011,
+            "wall-time": 1.0091
+        },
+        "sqlite3": {
+            "instructions": 1.0074,
+            "instructions:u": 1.0131,
+            "cycles": 1.026,
+            "task-clock": 1.026,
+            "branches": 1.0217,
+            "branch-misses": 1.025,
+            "max-rss": 1.0152,
+            "wall-time": 1.0088
+        },
+        "SPASS": {
+            "instructions": 0.9786,
+            "instructions:u": 0.9904,
+            "cycles": 1.0378,
+            "task-clock": 1.0378,
+            "branches": 0.9891,
+            "branch-misses": 1.0215,
+            "max-rss": 1.0255,
+            "wall-time": 0.9922
+        },
+        "7zip": {
+            "instructions": 0.9357,
+            "instructions:u": 0.942,
+            "cycles": 0.9756,
+            "task-clock": 0.9756,
+            "branches": 0.9349,
+            "branch-misses": 0.9791,
+            "max-rss": 1.0079,
+            "wall-time": 0.9521
+        },
+        "consumer-typeset": {
+            "instructions": 0.9908,
+            "instructions:u": 1.0045,
+            "cycles": 1.0403,
+            "task-clock": 1.0403,
+            "branches": 1.0003,
+            "branch-misses": 1.0121,
+            "max-rss": 1.0255,
+            "wall-time": 0.9902
+        },
+        "geomean": {
+            "instructions": 0.9813,
+            "instructions:u": 0.9913,
+            "cycles": 1.0237,
+            "task-clock": 1.0237,
+            "branches": 0.9896,
+            "branch-misses": 1.0117,
+            "max-rss": 1.0164,
+            "wall-time": 0.9844
+        }
+    }
+}

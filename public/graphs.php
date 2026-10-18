@@ -4,12 +4,13 @@ require __DIR__ . '/../src/web_common.php';
 
 function getData(
         iterable $commits, array $configs, array $benches, string $stat,
-        int $interval, ?DateTime $startDate, ?DateTime $endDate): array {
+        int $interval, ?DateTime $startDate, ?DateTime $endDate, bool $normalize): array {
     $singleBench = count($benches) === 1 ? $benches[0] : null;
     $hashes = [];
     $dates = [];
     $data = [];
     $i = 0;
+    $normalizer = null;
     foreach ($commits as $commit) {
         $commitDate = new DateTime($commit['commit_date']);
         if ($startDate && $commitDate < $startDate) {
@@ -31,6 +32,11 @@ function getData(
             continue;
         }
 
+        $configNum = $fullSummary->configNum;
+        if ($normalizer === null && $normalize) {
+            $normalizer = new ConfigNormalizer($configNum);
+        }
+
         foreach ($configs as $config) {
             $summary = $fullSummary->data[$config] ?? [];
             foreach ($benches as $bench) {
@@ -40,6 +46,9 @@ function getData(
                 $value = $summary[$bench][$stat] ?? null;
                 if ($value !== null) {
                     $hasAtLeastOneConfig = true;
+                    if ($normalizer) {
+                        $value = $normalizer->normalize($configNum, $config, $bench, $stat, $value);
+                    }
                 }
                 $values[$bench][$config] = $value;
             }
@@ -55,6 +64,10 @@ function getData(
             $value = $fullSummary->stage2Stats[$stat] ?? null;
             if ($value !== null) {
                 $hasAtLeastOneConfig = true;
+                if ($normalizer) {
+                    $value = $normalizer->normalize(
+                        $configNum, 'build', 'stage2-clang', $stat, $value);
+                }
             }
             $values['clang']['stage2'] = $value;
         }
@@ -133,6 +146,7 @@ $interval = getIntParam('interval') ?? 1;
 $configs = getConfigsParam('configs') ?? DEFAULT_CONFIGS;
 $width = getIntParam('width') ?? 480;
 $smoothWindow = getIntParam('smoothWindow') ?? 0;
+$normalize = (bool)(getIntParam('normalize') ?? 1);
 
 if (empty($_SERVER['QUERY_STRING'])) {
     // By default, show relative metrics for last month.
@@ -207,7 +221,7 @@ if ($smoothWindow < 0 || $smoothWindow > 100) {
     return;
 }
 
-[$hashes, $dates, $data] = getData($commits, $configs, $benches, $stat, $interval, $startDate, $endDate);
+[$hashes, $dates, $data] = getData($commits, $configs, $benches, $stat, $interval, $startDate, $endDate, $normalize);
 if ($smoothWindow != 0) {
     transformData($data, fn($values) => smooth($values, $smoothWindow));
 }
