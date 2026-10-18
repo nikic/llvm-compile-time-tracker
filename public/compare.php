@@ -8,6 +8,7 @@ $to = $_GET['to'] ?? null;
 $details = isset($_GET['details']);
 $stat = $_GET['stat'] ?? DEFAULT_METRIC;
 $linkStats = isset($_GET['linkStats']);
+$normalize = (bool)(getIntParam('normalize') ?? 1);
 
 if ($from === '' && $to !== '') {
     // If the start commit is missing, try to find the parent of the end commit.
@@ -100,8 +101,20 @@ if (hasBuildError($to)) {
     reportError($to);
 }
 
+$normalizer = null;
+$normalizedToConfigNum = $toSummary->configNum;
 if ($fromSummary->configNum != $toSummary->configNum) {
-    echo "<div class=\"warning\">The server configuration changed between the selected commits. Differences may be spurious.</div>\n";
+    // Normalization for details currently not supported.
+    if ($normalize && !$details) {
+        $normalizer = new ConfigNormalizer($fromSummary->configNum);
+        // If values are normalized, use the stddev data of the config we're normalizing to.
+        $normalizedToConfigNum = $fromSummary->configNum;
+        $noNormalizationUrl = makeUrl('compare.php', [
+            'from' => $from, 'to' => $to, 'stat' => $stat, 'normalize' => '0']);
+        echo "<div class=\"warning\">The server configuration changed between the selected commits. Results were normalized on a best-effort basis and may be inaccurate. <a href=\"$noNormalizationUrl\">Disable normalization.</a></div>\n";
+    } else {
+        echo "<div class=\"warning\">The server configuration changed between the selected commits. Differences are likely spurious.</div>\n";
+    }
 }
 
 foreach (CONFIGS as $config) {
@@ -121,7 +134,11 @@ foreach (CONFIGS as $config) {
     foreach (BENCHES_GEOMEAN_LAST as $bench) {
         $fromAggMetric = $fromSummaryData[$bench][$stat] ?? null;
         $toAggMetric = $toSummaryData[$bench][$stat] ?? null;
-        $stddev = $fromSummary->configNum === $toSummary->configNum
+        if ($normalizer !== null && $toAggMetric !== null) {
+            $toAggMetric = $normalizer->normalize(
+                $toSummary->configNum, $config, $bench, $stat, $toAggMetric);
+        }
+        $stddev = $fromSummary->configNum === $normalizedToConfigNum
             ? $stddevs->getBenchStdDev($fromSummary->configNum, $config, $bench, $stat)
             : null;
         echo "<tr>\n";
@@ -213,7 +230,11 @@ if (!empty($fromStage2) || !empty($toStage2)) {
         echo "</td>\n";
         $fromMetric = $fromStage2[$stat] ?? null;
         $toMetric = $toStage2[$stat] ?? null;
-        $stddev = $fromSummary->configNum === $toSummary->configNum
+        if ($normalizer !== null && $toMetric !== null) {
+            $toMetric = $normalizer->normalize(
+                $toSummary->configNum, 'build', 'stage2-clang', $stat, $toMetric);
+        }
+        $stddev = $fromSummary->configNum === $normalizedToConfigNum
             ? $stddevs->getBenchStdDev($fromSummary->configNum, 'build', 'stage2-clang', $stat)
             : null;
         echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
@@ -228,7 +249,11 @@ if (!empty($fromStage2) || !empty($toStage2)) {
         echo "<td style=\"text-align: left\">$stat (stage1)</td>\n";
         $fromMetric = $fromStage1[$stat] ?? null;
         $toMetric = $toStage1[$stat] ?? null;
-        $stddev = $fromSummary->configNum === $toSummary->configNum
+        if ($normalizer !== null && $toMetric !== null) {
+            $toMetric = $normalizer->normalize(
+                $toSummary->configNum, 'build', 'stage1-clang', $stat, $toMetric);
+        }
+        $stddev = $fromSummary->configNum === $normalizedToConfigNum
             ? $stddevs->getBenchStdDev($fromSummary->configNum, 'build', 'stage1-clang', $stat)
             : null;
         echo "<td>", formatMetric($fromMetric, $stat), "</td>\n";
