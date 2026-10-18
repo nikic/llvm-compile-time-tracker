@@ -5,8 +5,8 @@ require __DIR__ . '/src/build_log.php';
 
 ini_set('memory_limit', '32G');
 
-$configNum = 6;
-$from = '36f9d5a41f0eff44e65f09240c7ca454c47b35cd';
+$configNum = 7;
+$from = 'bbaed097358e46b0aa31a03a38eba3239fdcfd13';
 $to = null;
 
 $commitsFile = CURRENT_DATA_DIR . '/commits.json';
