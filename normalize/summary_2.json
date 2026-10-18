@@ -8,7 +8,12 @@
             "branches": 0.9999,
             "branch-misses": 1.0006,
             "max-rss": 0.9989,
-            "wall-time": 1.0012
+            "wall-time": 1.0012,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "Bullet": {
             "instructions": 1,
@@ -18,7 +23,12 @@
             "branches": 1,
             "branch-misses": 1.0007,
             "max-rss": 0.9999,
-            "wall-time": 0.9989
+            "wall-time": 0.9989,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 0.9999,
@@ -28,7 +38,12 @@
             "branches": 0.9998,
             "branch-misses": 0.9989,
             "max-rss": 0.9987,
-            "wall-time": 1.001
+            "wall-time": 1.001,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9995,
@@ -38,7 +53,12 @@
             "branches": 0.9995,
             "branch-misses": 1.0002,
             "max-rss": 1.0006,
-            "wall-time": 1.0007
+            "wall-time": 1.0007,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 0.9999,
@@ -48,7 +68,12 @@
             "branches": 0.9998,
             "branch-misses": 0.9997,
             "max-rss": 1.0001,
-            "wall-time": 0.999
+            "wall-time": 0.999,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.9998,
@@ -58,7 +83,12 @@
             "branches": 0.9997,
             "branch-misses": 1.0019,
             "max-rss": 0.9981,
-            "wall-time": 1.0004
+            "wall-time": 1.0004,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 1.0004,
@@ -68,7 +98,12 @@
             "branches": 1.0006,
             "branch-misses": 1.0036,
             "max-rss": 1.0006,
-            "wall-time": 1.0043
+            "wall-time": 1.0043,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "SPASS": {
             "instructions": 1.0002,
@@ -78,7 +113,12 @@
             "branches": 1.0002,
             "branch-misses": 1.0004,
             "max-rss": 1,
-            "wall-time": 0.9988
+            "wall-time": 0.9988,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 1,
@@ -88,7 +128,12 @@
             "branches": 1,
             "branch-misses": 1,
             "max-rss": 1.0003,
-            "wall-time": 1.002
+            "wall-time": 1.002,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0009,
@@ -98,7 +143,12 @@
             "branches": 1.0007,
             "branch-misses": 1.0001,
             "max-rss": 1.0006,
-            "wall-time": 1.0035
+            "wall-time": 1.0035,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "geomean": {
             "instructions": 1.0001,
@@ -108,7 +158,12 @@
             "branches": 1,
             "branch-misses": 1.0006,
             "max-rss": 0.9998,
-            "wall-time": 1.001
+            "wall-time": 1.001,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         }
     },
     "LegacyPM-ReleaseThinLTO": {
@@ -120,7 +175,12 @@
             "branches": 0.9997,
             "branch-misses": 0.9989,
             "max-rss": 1.0006,
-            "wall-time": 1.0035
+            "wall-time": 1.0035,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "Bullet": {
             "instructions": 1,
@@ -130,7 +190,12 @@
             "branches": 1.0001,
             "branch-misses": 0.9998,
             "max-rss": 0.9996,
-            "wall-time": 0.9919
+            "wall-time": 0.9919,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 1.0002,
@@ -140,7 +205,12 @@
             "branches": 1.0003,
             "branch-misses": 0.9997,
             "max-rss": 1.0005,
-            "wall-time": 1.0108
+            "wall-time": 1.0108,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9998,
@@ -150,7 +220,12 @@
             "branches": 0.9999,
             "branch-misses": 1.0019,
             "max-rss": 1.0003,
-            "wall-time": 0.9868
+            "wall-time": 0.9868,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 0.9999,
@@ -160,7 +235,12 @@
             "branches": 0.9998,
             "branch-misses": 1.0014,
             "max-rss": 1.0003,
-            "wall-time": 0.9946
+            "wall-time": 0.9946,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 1.0004,
@@ -170,7 +250,12 @@
             "branches": 1.0004,
             "branch-misses": 1.0017,
             "max-rss": 1.0002,
-            "wall-time": 1.0122
+            "wall-time": 1.0122,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 0.9998,
@@ -180,7 +265,12 @@
             "branches": 0.9998,
             "branch-misses": 0.9993,
             "max-rss": 0.9999,
-            "wall-time": 1.0065
+            "wall-time": 1.0065,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "SPASS": {
             "instructions": 0.9999,
@@ -190,7 +280,12 @@
             "branches": 0.9999,
             "branch-misses": 0.9991,
             "max-rss": 1.0012,
-            "wall-time": 1.0087
+            "wall-time": 1.0087,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.9999,
@@ -200,7 +295,12 @@
             "branches": 0.9999,
             "branch-misses": 0.9997,
             "max-rss": 0.9991,
-            "wall-time": 1.0017
+            "wall-time": 1.0017,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 0.9999,
@@ -210,7 +310,12 @@
             "branches": 0.9999,
             "branch-misses": 0.9996,
             "max-rss": 0.9986,
-            "wall-time": 0.9934
+            "wall-time": 0.9934,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "geomean": {
             "instructions": 1,
@@ -220,7 +325,12 @@
             "branches": 1,
             "branch-misses": 1.0001,
             "max-rss": 1,
-            "wall-time": 1.001
+            "wall-time": 1.001,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         }
     },
     "LegacyPM-ReleaseLTO-g": {
@@ -232,7 +342,12 @@
             "branches": 1,
             "branch-misses": 1.0014,
             "max-rss": 0.9988,
-            "wall-time": 0.997
+            "wall-time": 0.997,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "Bullet": {
             "instructions": 0.9994,
@@ -242,7 +357,12 @@
             "branches": 0.9993,
             "branch-misses": 0.9993,
             "max-rss": 0.9993,
-            "wall-time": 1.0037
+            "wall-time": 1.0037,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 0.9998,
@@ -252,7 +372,12 @@
             "branches": 0.9998,
             "branch-misses": 0.9997,
             "max-rss": 0.9992,
-            "wall-time": 0.9961
+            "wall-time": 0.9961,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9998,
@@ -262,7 +387,12 @@
             "branches": 0.9999,
             "branch-misses": 0.9995,
             "max-rss": 0.9994,
-            "wall-time": 1.0035
+            "wall-time": 1.0035,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 0.9996,
@@ -272,7 +402,12 @@
             "branches": 0.9995,
             "branch-misses": 0.998,
             "max-rss": 1.0002,
-            "wall-time": 1.0178
+            "wall-time": 1.0178,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.999,
@@ -282,7 +417,12 @@
             "branches": 0.9988,
             "branch-misses": 0.9981,
             "max-rss": 1.0012,
-            "wall-time": 1.0029
+            "wall-time": 1.0029,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 0.9996,
@@ -292,7 +432,12 @@
             "branches": 0.9993,
             "branch-misses": 1.0004,
             "max-rss": 1.0012,
-            "wall-time": 1.0099
+            "wall-time": 1.0099,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "SPASS": {
             "instructions": 0.9995,
@@ -302,7 +447,12 @@
             "branches": 0.9995,
             "branch-misses": 0.9999,
             "max-rss": 1.0009,
-            "wall-time": 0.9897
+            "wall-time": 0.9897,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 1.0003,
@@ -312,7 +462,12 @@
             "branches": 1.0003,
             "branch-misses": 1.001,
             "max-rss": 0.9997,
-            "wall-time": 0.9993
+            "wall-time": 0.9993,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0004,
@@ -322,7 +477,12 @@
             "branches": 1.0003,
             "branch-misses": 1.0019,
             "max-rss": 1.0006,
-            "wall-time": 0.988
+            "wall-time": 0.988,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "geomean": {
             "instructions": 0.9997,
@@ -332,7 +492,12 @@
             "branches": 0.9997,
             "branch-misses": 0.9999,
             "max-rss": 1.0001,
-            "wall-time": 1.0008
+            "wall-time": 1.0008,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         }
     },
     "LegacyPM-O0-g": {
@@ -344,7 +509,12 @@
             "branches": 1.0001,
             "branch-misses": 1.0012,
             "max-rss": 0.9985,
-            "wall-time": 1.0032
+            "wall-time": 1.0032,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "Bullet": {
             "instructions": 1,
@@ -354,7 +524,12 @@
             "branches": 1,
             "branch-misses": 0.9995,
             "max-rss": 0.9999,
-            "wall-time": 0.9936
+            "wall-time": 0.9936,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 1.0004,
@@ -364,7 +539,12 @@
             "branches": 1.0003,
             "branch-misses": 0.999,
             "max-rss": 1.0018,
-            "wall-time": 0.9844
+            "wall-time": 0.9844,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 1.0016,
@@ -374,7 +554,12 @@
             "branches": 1.0021,
             "branch-misses": 1.0043,
             "max-rss": 0.9987,
-            "wall-time": 1.0052
+            "wall-time": 1.0052,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 0.9997,
@@ -384,7 +569,12 @@
             "branches": 0.9997,
             "branch-misses": 1.0001,
             "max-rss": 0.9991,
-            "wall-time": 1.004
+            "wall-time": 1.004,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.9988,
@@ -394,7 +584,12 @@
             "branches": 0.9987,
             "branch-misses": 0.9969,
             "max-rss": 0.998,
-            "wall-time": 1
+            "wall-time": 1,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 1,
@@ -404,7 +599,12 @@
             "branches": 1.0001,
             "branch-misses": 1.0069,
             "max-rss": 1.0014,
-            "wall-time": 1.0086
+            "wall-time": 1.0086,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "SPASS": {
             "instructions": 0.9994,
@@ -414,7 +614,12 @@
             "branches": 0.9993,
             "branch-misses": 0.9998,
             "max-rss": 1.0002,
-            "wall-time": 1.0108
+            "wall-time": 1.0108,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.9996,
@@ -424,7 +629,12 @@
             "branches": 0.9995,
             "branch-misses": 1.0005,
             "max-rss": 1.0004,
-            "wall-time": 0.9997
+            "wall-time": 0.9997,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0002,
@@ -434,7 +644,12 @@
             "branches": 1.0001,
             "branch-misses": 0.9995,
             "max-rss": 1.0029,
-            "wall-time": 1.0121
+            "wall-time": 1.0121,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "geomean": {
             "instructions": 1,
@@ -444,7 +659,12 @@
             "branches": 1,
             "branch-misses": 1.0008,
             "max-rss": 1.0001,
-            "wall-time": 1.0021
+            "wall-time": 1.0021,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         }
     },
     "stage1-O3": {
@@ -456,7 +676,12 @@
             "branches": 1,
             "branch-misses": 1.0016,
             "max-rss": 1.0004,
-            "wall-time": 1.0017
+            "wall-time": 1.0017,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "Bullet": {
             "instructions": 1,
@@ -466,7 +691,12 @@
             "branches": 1,
             "branch-misses": 1,
             "max-rss": 0.9999,
-            "wall-time": 0.9998
+            "wall-time": 0.9998,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 1.0002,
@@ -476,7 +706,12 @@
             "branches": 1.0003,
             "branch-misses": 0.9998,
             "max-rss": 1.0016,
-            "wall-time": 1.0005
+            "wall-time": 1.0005,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9995,
@@ -486,7 +721,12 @@
             "branches": 0.9992,
             "branch-misses": 1.0007,
             "max-rss": 1.0001,
-            "wall-time": 0.9994
+            "wall-time": 0.9994,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 1.0001,
@@ -496,7 +736,12 @@
             "branches": 1.0002,
             "branch-misses": 1.0019,
             "max-rss": 1.0005,
-            "wall-time": 0.9997
+            "wall-time": 0.9997,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.9983,
@@ -506,7 +751,12 @@
             "branches": 0.9985,
             "branch-misses": 1.0009,
             "max-rss": 1.0005,
-            "wall-time": 1.0007
+            "wall-time": 1.0007,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 0.9997,
@@ -516,7 +766,12 @@
             "branches": 0.9996,
             "branch-misses": 0.9969,
             "max-rss": 1.0025,
-            "wall-time": 1.0013
+            "wall-time": 1.0013,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "SPASS": {
             "instructions": 1,
@@ -526,7 +781,12 @@
             "branches": 1,
             "branch-misses": 1.0002,
             "max-rss": 0.9998,
-            "wall-time": 0.9992
+            "wall-time": 0.9992,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 1,
@@ -536,7 +796,12 @@
             "branches": 1,
             "branch-misses": 1.0003,
             "max-rss": 0.9998,
-            "wall-time": 0.9973
+            "wall-time": 0.9973,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1,
@@ -546,7 +811,12 @@
             "branches": 1,
             "branch-misses": 0.998,
             "max-rss": 1.0002,
-            "wall-time": 1.0015
+            "wall-time": 1.0015,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "geomean": {
             "instructions": 0.9998,
@@ -556,7 +826,20 @@
             "branches": 0.9998,
             "branch-misses": 1,
             "max-rss": 1.0005,
-            "wall-time": 1.0001
+            "wall-time": 1.0001,
+            "size-file": 1,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
+        }
+    },
+    "build": {
+        "stage1-clang": {
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         }
     }
 }

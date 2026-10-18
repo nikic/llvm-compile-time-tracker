@@ -8,7 +8,12 @@
             "branches": 0.9455,
             "branch-misses": 0.9685,
             "max-rss": 0.9985,
-            "wall-time": 0.9485
+            "wall-time": 0.9485,
+            "size-file": 1,
+            "size-text": 1.0003,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "7zip": {
             "instructions": 0.958,
@@ -18,7 +23,12 @@
             "branches": 0.9249,
             "branch-misses": 0.9318,
             "max-rss": 0.9868,
-            "wall-time": 0.921
+            "wall-time": 0.921,
+            "size-file": 1,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "ClamAV": {
             "instructions": 1.047,
@@ -28,7 +38,12 @@
             "branches": 1.0209,
             "branch-misses": 0.9895,
             "max-rss": 1.0252,
-            "wall-time": 1.0046
+            "wall-time": 1.0046,
+            "size-file": 1,
+            "size-text": 1.0001,
+            "size-data": 0.9999,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "lencod": {
             "instructions": 1.0454,
@@ -38,7 +53,12 @@
             "branches": 1.0159,
             "branch-misses": 0.9954,
             "max-rss": 1.0266,
-            "wall-time": 1.01
+            "wall-time": 1.01,
+            "size-file": 1,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1.0009,
+            "size-total": 1.0003
         },
         "mafft": {
             "instructions": 1.0441,
@@ -48,7 +68,12 @@
             "branches": 1.0183,
             "branch-misses": 0.9937,
             "max-rss": 1.024,
-            "wall-time": 1.0049
+            "wall-time": 1.0049,
+            "size-file": 1.0001,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0417,
@@ -58,7 +83,12 @@
             "branches": 1.0174,
             "branch-misses": 0.9881,
             "max-rss": 1.0258,
-            "wall-time": 1.0102
+            "wall-time": 1.0102,
+            "size-file": 1.0001,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "sqlite3": {
             "instructions": 1.037,
@@ -68,7 +98,12 @@
             "branches": 1.0147,
             "branch-misses": 1.0019,
             "max-rss": 1.0351,
-            "wall-time": 1.0302
+            "wall-time": 1.0302,
+            "size-file": 1,
+            "size-text": 0.9998,
+            "size-data": 0.9982,
+            "size-bss": 1,
+            "size-total": 0.9998
         },
         "kimwitu++": {
             "instructions": 1.0051,
@@ -78,7 +113,12 @@
             "branches": 0.9745,
             "branch-misses": 0.9617,
             "max-rss": 1.0169,
-            "wall-time": 0.9661
+            "wall-time": 0.9661,
+            "size-file": 1.0003,
+            "size-text": 0.9981,
+            "size-data": 1.0007,
+            "size-bss": 1,
+            "size-total": 0.9983
         },
         "SPASS": {
             "instructions": 1.0453,
@@ -88,7 +128,12 @@
             "branches": 1.0216,
             "branch-misses": 0.9943,
             "max-rss": 1.0238,
-            "wall-time": 1.0176
+            "wall-time": 1.0176,
+            "size-file": 1,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "tramp3d-v4": {
             "instructions": 1.0182,
@@ -98,7 +143,12 @@
             "branches": 0.9832,
             "branch-misses": 0.9702,
             "max-rss": 1.0085,
-            "wall-time": 1.005
+            "wall-time": 1.005,
+            "size-file": 1.025,
+            "size-text": 1.0365,
+            "size-data": 1.0032,
+            "size-bss": 1.0111,
+            "size-total": 1.0362
         },
         "geomean": {
             "instructions": 1.0213,
@@ -108,7 +158,12 @@
             "branches": 0.9931,
             "branch-misses": 0.9793,
             "max-rss": 1.017,
-            "wall-time": 0.9912
+            "wall-time": 0.9912,
+            "size-file": 1.0025,
+            "size-text": 1.0035,
+            "size-data": 1.0002,
+            "size-bss": 1.0012,
+            "size-total": 1.0034
         }
     },
     "stage1-ReleaseThinLTO": {
@@ -120,7 +175,12 @@
             "branches": 0.9372,
             "branch-misses": 1.1086,
             "max-rss": 1.0039,
-            "wall-time": 1.2825
+            "wall-time": 1.2825,
+            "size-file": 1,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "7zip": {
             "instructions": 0.9739,
@@ -130,7 +190,12 @@
             "branches": 0.9406,
             "branch-misses": 0.9406,
             "max-rss": 0.99,
-            "wall-time": 0.8447
+            "wall-time": 0.8447,
+            "size-file": 1,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "ClamAV": {
             "instructions": 1.0458,
@@ -140,7 +205,12 @@
             "branches": 1.018,
             "branch-misses": 1.0082,
             "max-rss": 1.0358,
-            "wall-time": 1.0899
+            "wall-time": 1.0899,
+            "size-file": 1,
+            "size-text": 1.0001,
+            "size-data": 0.9999,
+            "size-bss": 1,
+            "size-total": 1
         },
         "lencod": {
             "instructions": 1.046,
@@ -150,7 +220,12 @@
             "branches": 1.0141,
             "branch-misses": 0.9784,
             "max-rss": 1.0342,
-            "wall-time": 0.7625
+            "wall-time": 0.7625,
+            "size-file": 1,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "mafft": {
             "instructions": 1.0441,
@@ -160,7 +235,12 @@
             "branches": 1.0149,
             "branch-misses": 1.0202,
             "max-rss": 1.032,
-            "wall-time": 1.2574
+            "wall-time": 1.2574,
+            "size-file": 1.0001,
+            "size-text": 1.0003,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0405,
@@ -170,7 +250,12 @@
             "branches": 1.0147,
             "branch-misses": 1.0072,
             "max-rss": 1.0332,
-            "wall-time": 1.1536
+            "wall-time": 1.1536,
+            "size-file": 1.0001,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "sqlite3": {
             "instructions": 1.0388,
@@ -180,7 +265,12 @@
             "branches": 1.0136,
             "branch-misses": 0.994,
             "max-rss": 0.982,
-            "wall-time": 0.7065
+            "wall-time": 0.7065,
+            "size-file": 1,
+            "size-text": 0.9999,
+            "size-data": 0.9985,
+            "size-bss": 1,
+            "size-total": 0.9998
         },
         "kimwitu++": {
             "instructions": 1.0041,
@@ -190,7 +280,12 @@
             "branches": 0.9727,
             "branch-misses": 1.0233,
             "max-rss": 1.0159,
-            "wall-time": 0.8169
+            "wall-time": 0.8169,
+            "size-file": 0.9969,
+            "size-text": 0.9993,
+            "size-data": 1.0007,
+            "size-bss": 1,
+            "size-total": 0.9994
         },
         "SPASS": {
             "instructions": 1.0456,
@@ -200,7 +295,12 @@
             "branches": 1.0195,
             "branch-misses": 1.0287,
             "max-rss": 1.0324,
-            "wall-time": 1.1117
+            "wall-time": 1.1117,
+            "size-file": 0.9943,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9303,
@@ -210,7 +310,12 @@
             "branches": 0.8959,
             "branch-misses": 0.9636,
             "max-rss": 1.0018,
-            "wall-time": 0.8806
+            "wall-time": 0.8806,
+            "size-file": 1.0243,
+            "size-text": 1.0232,
+            "size-data": 1.0034,
+            "size-bss": 1,
+            "size-total": 1.023
         },
         "geomean": {
             "instructions": 1.0132,
@@ -220,7 +325,12 @@
             "branches": 0.9832,
             "branch-misses": 1.0064,
             "max-rss": 1.0159,
-            "wall-time": 0.97
+            "wall-time": 0.97,
+            "size-file": 1.0015,
+            "size-text": 1.0023,
+            "size-data": 1.0002,
+            "size-bss": 1,
+            "size-total": 1.0023
         }
     },
     "stage1-ReleaseLTO-g": {
@@ -232,7 +342,12 @@
             "branches": 0.9474,
             "branch-misses": 0.9696,
             "max-rss": 0.9998,
-            "wall-time": 0.9645
+            "wall-time": 0.9645,
+            "size-file": 0.9943,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.9715,
@@ -242,7 +357,12 @@
             "branches": 0.9399,
             "branch-misses": 0.9498,
             "max-rss": 0.9884,
-            "wall-time": 0.9516
+            "wall-time": 0.9516,
+            "size-file": 0.9857,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 1.0443,
@@ -252,7 +372,12 @@
             "branches": 1.0193,
             "branch-misses": 0.999,
             "max-rss": 1.0337,
-            "wall-time": 1.0433
+            "wall-time": 1.0433,
+            "size-file": 0.9997,
+            "size-text": 0.9999,
+            "size-data": 0.9999,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "lencod": {
             "instructions": 1.0448,
@@ -262,7 +387,12 @@
             "branches": 1.0144,
             "branch-misses": 1.0096,
             "max-rss": 1.0277,
-            "wall-time": 1.0426
+            "wall-time": 1.0426,
+            "size-file": 0.9991,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "mafft": {
             "instructions": 1.0443,
@@ -272,7 +402,12 @@
             "branches": 1.0159,
             "branch-misses": 0.9987,
             "max-rss": 1.0313,
-            "wall-time": 1.0252
+            "wall-time": 1.0252,
+            "size-file": 0.9996,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.039,
@@ -282,7 +417,12 @@
             "branches": 1.0157,
             "branch-misses": 1.0012,
             "max-rss": 1.0349,
-            "wall-time": 1.02
+            "wall-time": 1.02,
+            "size-file": 0.9987,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 1.0388,
@@ -292,7 +432,12 @@
             "branches": 1.0149,
             "branch-misses": 1.0063,
             "max-rss": 1.0137,
-            "wall-time": 1.0083
+            "wall-time": 1.0083,
+            "size-file": 0.9999,
+            "size-text": 0.9998,
+            "size-data": 0.9985,
+            "size-bss": 1,
+            "size-total": 0.9998
         },
         "kimwitu++": {
             "instructions": 1.0106,
@@ -302,7 +447,12 @@
             "branches": 0.9808,
             "branch-misses": 0.973,
             "max-rss": 1.0143,
-            "wall-time": 0.9809
+            "wall-time": 0.9809,
+            "size-file": 0.9937,
+            "size-text": 0.9983,
+            "size-data": 1.0007,
+            "size-bss": 1,
+            "size-total": 0.9985
         },
         "SPASS": {
             "instructions": 1.0421,
@@ -312,7 +462,12 @@
             "branches": 1.019,
             "branch-misses": 1.0019,
             "max-rss": 1.0318,
-            "wall-time": 1.0319
+            "wall-time": 1.0319,
+            "size-file": 0.9999,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "tramp3d-v4": {
             "instructions": 1.0034,
@@ -322,7 +477,12 @@
             "branches": 0.9696,
             "branch-misses": 0.9725,
             "max-rss": 0.9793,
-            "wall-time": 0.9784
+            "wall-time": 0.9784,
+            "size-file": 0.9937,
+            "size-text": 1.0385,
+            "size-data": 1.0034,
+            "size-bss": 1,
+            "size-total": 1.0382
         },
         "geomean": {
             "instructions": 1.0214,
@@ -332,7 +492,12 @@
             "branches": 0.9932,
             "branch-misses": 0.988,
             "max-rss": 1.0153,
-            "wall-time": 1.0042
+            "wall-time": 1.0042,
+            "size-file": 0.9964,
+            "size-text": 1.0036,
+            "size-data": 1.0002,
+            "size-bss": 1,
+            "size-total": 1.0036
         }
     },
     "stage1-O0-g": {
@@ -344,7 +509,12 @@
             "branches": 0.9008,
             "branch-misses": 0.9202,
             "max-rss": 0.9981,
-            "wall-time": 0.9023
+            "wall-time": 0.9023,
+            "size-file": 0.9972,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.923,
@@ -354,7 +524,12 @@
             "branches": 0.8878,
             "branch-misses": 0.8758,
             "max-rss": 0.9893,
-            "wall-time": 0.8881
+            "wall-time": 0.8881,
+            "size-file": 0.9593,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 1.0596,
@@ -364,7 +539,12 @@
             "branches": 1.0298,
             "branch-misses": 0.9432,
             "max-rss": 1.0338,
-            "wall-time": 0.9581
+            "wall-time": 0.9581,
+            "size-file": 0.9993,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "lencod": {
             "instructions": 1.049,
@@ -374,7 +554,12 @@
             "branches": 1.0181,
             "branch-misses": 0.9568,
             "max-rss": 1.035,
-            "wall-time": 0.9968
+            "wall-time": 0.9968,
+            "size-file": 0.9989,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1.0009,
+            "size-total": 1.0002
         },
         "mafft": {
             "instructions": 1.048,
@@ -384,7 +569,12 @@
             "branches": 1.0181,
             "branch-misses": 0.9339,
             "max-rss": 1.0369,
-            "wall-time": 0.9699
+            "wall-time": 0.9699,
+            "size-file": 0.9998,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0446,
@@ -394,7 +584,12 @@
             "branches": 1.0209,
             "branch-misses": 0.9478,
             "max-rss": 1.031,
-            "wall-time": 1.0068
+            "wall-time": 1.0068,
+            "size-file": 0.9987,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "sqlite3": {
             "instructions": 1.0375,
@@ -404,7 +599,12 @@
             "branches": 1.0119,
             "branch-misses": 0.9983,
             "max-rss": 1.0306,
-            "wall-time": 0.9808
+            "wall-time": 0.9808,
+            "size-file": 0.9999,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.9733,
@@ -414,7 +614,12 @@
             "branches": 0.9351,
             "branch-misses": 0.9049,
             "max-rss": 1.0047,
-            "wall-time": 0.9129
+            "wall-time": 0.9129,
+            "size-file": 0.9754,
+            "size-text": 0.9903,
+            "size-data": 1.0026,
+            "size-bss": 1.0013,
+            "size-total": 0.991
         },
         "SPASS": {
             "instructions": 1.0484,
@@ -424,7 +629,12 @@
             "branches": 1.0177,
             "branch-misses": 0.9582,
             "max-rss": 1.0325,
-            "wall-time": 0.989
+            "wall-time": 0.989,
+            "size-file": 0.9997,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 1.0198,
@@ -434,7 +644,12 @@
             "branches": 0.982,
             "branch-misses": 0.9656,
             "max-rss": 1.0198,
-            "wall-time": 0.9602
+            "wall-time": 0.9602,
+            "size-file": 0.9967,
+            "size-text": 1.0005,
+            "size-data": 1.0112,
+            "size-bss": 1,
+            "size-total": 1.0006
         },
         "geomean": {
             "instructions": 1.0125,
@@ -444,7 +659,12 @@
             "branches": 0.9808,
             "branch-misses": 0.9399,
             "max-rss": 1.021,
-            "wall-time": 0.9557
+            "wall-time": 0.9557,
+            "size-file": 0.9924,
+            "size-text": 0.9991,
+            "size-data": 1.0014,
+            "size-bss": 1.0002,
+            "size-total": 0.9992
         }
     },
     "stage1-aarch64-O3": {
@@ -456,7 +676,12 @@
             "branches": 0.9669,
             "branch-misses": 0.9726,
             "max-rss": 0.9998,
-            "wall-time": 0.9558
+            "wall-time": 0.9558,
+            "size-file": 0.9673,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "7zip": {
             "instructions": 0.9752,
@@ -466,7 +691,12 @@
             "branches": 0.9428,
             "branch-misses": 0.9402,
             "max-rss": 0.9916,
-            "wall-time": 0.9358
+            "wall-time": 0.9358,
+            "size-file": 0.9785,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "ClamAV": {
             "instructions": 1.0552,
@@ -476,7 +706,12 @@
             "branches": 1.0281,
             "branch-misses": 0.991,
             "max-rss": 1.0247,
-            "wall-time": 1.012
+            "wall-time": 1.012,
+            "size-file": 0.9451,
+            "size-text": 0.9999,
+            "size-data": 0.9999,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "lencod": {
             "instructions": 1.0476,
@@ -486,7 +721,12 @@
             "branches": 1.0184,
             "branch-misses": 1.0017,
             "max-rss": 1.0243,
-            "wall-time": 1.009
+            "wall-time": 1.009,
+            "size-file": 0.956,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1.0006,
+            "size-total": 1.0002
         },
         "mafft": {
             "instructions": 1.0422,
@@ -496,7 +736,12 @@
             "branches": 1.0131,
             "branch-misses": 0.9999,
             "max-rss": 1.0251,
-            "wall-time": 1.0048
+            "wall-time": 1.0048,
+            "size-file": 0.8984,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0488,
@@ -506,7 +751,12 @@
             "branches": 1.0254,
             "branch-misses": 0.9913,
             "max-rss": 1.0239,
-            "wall-time": 1.0217
+            "wall-time": 1.0217,
+            "size-file": 0.9925,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 1.048,
@@ -516,7 +766,12 @@
             "branches": 1.0242,
             "branch-misses": 1.0008,
             "max-rss": 1.0191,
-            "wall-time": 1.0158
+            "wall-time": 1.0158,
+            "size-file": 0.9736,
+            "size-text": 0.9966,
+            "size-data": 0.9982,
+            "size-bss": 1,
+            "size-total": 0.9966
         },
         "kimwitu++": {
             "instructions": 1.0073,
@@ -526,7 +781,12 @@
             "branches": 0.9783,
             "branch-misses": 0.952,
             "max-rss": 1.0152,
-            "wall-time": 0.958
+            "wall-time": 0.958,
+            "size-file": 0.9729,
+            "size-text": 0.9902,
+            "size-data": 1.0007,
+            "size-bss": 1.0007,
+            "size-total": 0.9911
         },
         "SPASS": {
             "instructions": 1.049,
@@ -536,7 +796,12 @@
             "branches": 1.0268,
             "branch-misses": 0.9965,
             "max-rss": 1.0229,
-            "wall-time": 1.0173
+            "wall-time": 1.0173,
+            "size-file": 0.9547,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "tramp3d-v4": {
             "instructions": 0.9706,
@@ -546,7 +811,12 @@
             "branches": 0.9393,
             "branch-misses": 0.9136,
             "max-rss": 0.987,
-            "wall-time": 0.9453
+            "wall-time": 0.9453,
+            "size-file": 0.9773,
+            "size-text": 0.9854,
+            "size-data": 1.0032,
+            "size-bss": 1,
+            "size-total": 0.9855
         },
         "geomean": {
             "instructions": 1.0235,
@@ -556,7 +826,12 @@
             "branches": 0.9957,
             "branch-misses": 0.9755,
             "max-rss": 1.0133,
-            "wall-time": 0.987
+            "wall-time": 0.987,
+            "size-file": 0.9613,
+            "size-text": 0.9972,
+            "size-data": 1.0002,
+            "size-bss": 1.0001,
+            "size-total": 0.9973
         }
     },
     "stage1-aarch64-O0-g": {
@@ -568,7 +843,12 @@
             "branches": 0.9243,
             "branch-misses": 0.9266,
             "max-rss": 1.0044,
-            "wall-time": 0.9159
+            "wall-time": 0.9159,
+            "size-file": 0.9891,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.9416,
@@ -578,7 +858,12 @@
             "branches": 0.907,
             "branch-misses": 0.8889,
             "max-rss": 0.994,
-            "wall-time": 0.8993
+            "wall-time": 0.8993,
+            "size-file": 0.9538,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 1.0587,
@@ -588,7 +873,12 @@
             "branches": 1.0283,
             "branch-misses": 0.9549,
             "max-rss": 1.0322,
-            "wall-time": 0.9612
+            "wall-time": 0.9612,
+            "size-file": 0.9756,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "lencod": {
             "instructions": 1.0442,
@@ -598,7 +888,12 @@
             "branches": 1.0115,
             "branch-misses": 0.9653,
             "max-rss": 1.038,
-            "wall-time": 1.0113
+            "wall-time": 1.0113,
+            "size-file": 0.999,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1.0006,
+            "size-total": 1.0001
         },
         "mafft": {
             "instructions": 1.033,
@@ -608,7 +903,12 @@
             "branches": 1.0025,
             "branch-misses": 0.9585,
             "max-rss": 1.0351,
-            "wall-time": 0.9778
+            "wall-time": 0.9778,
+            "size-file": 0.9633,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0465,
@@ -618,7 +918,12 @@
             "branches": 1.0186,
             "branch-misses": 0.9602,
             "max-rss": 1.0343,
-            "wall-time": 1.0247
+            "wall-time": 1.0247,
+            "size-file": 0.9654,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "sqlite3": {
             "instructions": 1.0387,
@@ -628,7 +933,12 @@
             "branches": 1.008,
             "branch-misses": 0.9961,
             "max-rss": 1.0426,
-            "wall-time": 1
+            "wall-time": 1,
+            "size-file": 0.9962,
+            "size-text": 0.9969,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9969
         },
         "kimwitu++": {
             "instructions": 0.9778,
@@ -638,7 +948,12 @@
             "branches": 0.9385,
             "branch-misses": 0.9092,
             "max-rss": 1.0098,
-            "wall-time": 0.9337
+            "wall-time": 0.9337,
+            "size-file": 0.9688,
+            "size-text": 0.9916,
+            "size-data": 1.0027,
+            "size-bss": 1.0007,
+            "size-total": 0.9922
         },
         "SPASS": {
             "instructions": 1.0372,
@@ -648,7 +963,12 @@
             "branches": 1.0058,
             "branch-misses": 0.9681,
             "max-rss": 1.0351,
-            "wall-time": 0.9853
+            "wall-time": 0.9853,
+            "size-file": 0.976,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "tramp3d-v4": {
             "instructions": 1.0278,
@@ -658,7 +978,12 @@
             "branches": 0.9879,
             "branch-misses": 0.9848,
             "max-rss": 0.9836,
-            "wall-time": 0.9939
+            "wall-time": 0.9939,
+            "size-file": 0.9983,
+            "size-text": 1.0059,
+            "size-data": 1.0121,
+            "size-bss": 1,
+            "size-total": 1.0059
         },
         "geomean": {
             "instructions": 1.0155,
@@ -668,7 +993,12 @@
             "branches": 0.9824,
             "branch-misses": 0.9507,
             "max-rss": 1.0207,
-            "wall-time": 0.9695
+            "wall-time": 0.9695,
+            "size-file": 0.9784,
+            "size-text": 0.9994,
+            "size-data": 1.0015,
+            "size-bss": 1.0001,
+            "size-total": 0.9995
         }
     },
     "stage2-O3": {
@@ -680,7 +1010,12 @@
             "branches": 0.9483,
             "branch-misses": 0.977,
             "max-rss": 1.0053,
-            "wall-time": 0.9729
+            "wall-time": 0.9729,
+            "size-file": 1,
+            "size-text": 1.0003,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "7zip": {
             "instructions": 0.9311,
@@ -690,7 +1025,12 @@
             "branches": 0.9304,
             "branch-misses": 0.9444,
             "max-rss": 0.991,
-            "wall-time": 0.938
+            "wall-time": 0.938,
+            "size-file": 1,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "ClamAV": {
             "instructions": 1.0233,
@@ -700,7 +1040,12 @@
             "branches": 1.0226,
             "branch-misses": 1.0051,
             "max-rss": 1.0359,
-            "wall-time": 1.0067
+            "wall-time": 1.0067,
+            "size-file": 1,
+            "size-text": 1.0001,
+            "size-data": 0.9999,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "lencod": {
             "instructions": 1.0181,
@@ -710,7 +1055,12 @@
             "branches": 1.0185,
             "branch-misses": 1.0096,
             "max-rss": 1.037,
-            "wall-time": 1.011
+            "wall-time": 1.011,
+            "size-file": 1,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1.0009,
+            "size-total": 1.0003
         },
         "mafft": {
             "instructions": 1.0207,
@@ -720,7 +1070,12 @@
             "branches": 1.0209,
             "branch-misses": 1.0095,
             "max-rss": 1.0368,
-            "wall-time": 1.019
+            "wall-time": 1.019,
+            "size-file": 1.0001,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0188,
@@ -730,7 +1085,12 @@
             "branches": 1.0183,
             "branch-misses": 1.0037,
             "max-rss": 1.0334,
-            "wall-time": 1.0163
+            "wall-time": 1.0163,
+            "size-file": 1.0001,
+            "size-text": 1.0002,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0002
         },
         "sqlite3": {
             "instructions": 1.0149,
@@ -740,7 +1100,12 @@
             "branches": 1.015,
             "branch-misses": 1.0204,
             "max-rss": 1.0461,
-            "wall-time": 1.0178
+            "wall-time": 1.0178,
+            "size-file": 1,
+            "size-text": 0.9998,
+            "size-data": 0.9982,
+            "size-bss": 1,
+            "size-total": 0.9998
         },
         "kimwitu++": {
             "instructions": 0.9864,
@@ -750,7 +1115,12 @@
             "branches": 0.9836,
             "branch-misses": 0.967,
             "max-rss": 1.0212,
-            "wall-time": 0.9765
+            "wall-time": 0.9765,
+            "size-file": 1.0003,
+            "size-text": 0.9981,
+            "size-data": 1.0007,
+            "size-bss": 1,
+            "size-total": 0.9983
         },
         "SPASS": {
             "instructions": 1.0236,
@@ -760,7 +1130,12 @@
             "branches": 1.023,
             "branch-misses": 1.0077,
             "max-rss": 1.037,
-            "wall-time": 1.0251
+            "wall-time": 1.0251,
+            "size-file": 1,
+            "size-text": 0.9999,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 0.9999
         },
         "tramp3d-v4": {
             "instructions": 0.9966,
@@ -770,7 +1145,12 @@
             "branches": 0.9918,
             "branch-misses": 0.9748,
             "max-rss": 1.0047,
-            "wall-time": 0.9945
+            "wall-time": 0.9945,
+            "size-file": 1.025,
+            "size-text": 1.0365,
+            "size-data": 1.0032,
+            "size-bss": 1.0111,
+            "size-total": 1.0362
         },
         "geomean": {
             "instructions": 0.9976,
@@ -780,7 +1160,12 @@
             "branches": 0.9967,
             "branch-misses": 0.9916,
             "max-rss": 1.0247,
-            "wall-time": 0.9974
+            "wall-time": 0.9974,
+            "size-file": 1.0025,
+            "size-text": 1.0035,
+            "size-data": 1.0002,
+            "size-bss": 1.0012,
+            "size-total": 1.0034
         }
     },
     "stage2-O0-g": {
@@ -792,7 +1177,12 @@
             "branches": 0.9044,
             "branch-misses": 0.9307,
             "max-rss": 1.0059,
-            "wall-time": 0.9122
+            "wall-time": 0.9122,
+            "size-file": 0.9972,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "7zip": {
             "instructions": 0.8954,
@@ -802,7 +1192,12 @@
             "branches": 0.8948,
             "branch-misses": 0.8879,
             "max-rss": 0.9913,
-            "wall-time": 0.8987
+            "wall-time": 0.8987,
+            "size-file": 0.9593,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "ClamAV": {
             "instructions": 1.0368,
@@ -812,7 +1207,12 @@
             "branches": 1.0347,
             "branch-misses": 0.969,
             "max-rss": 1.0433,
-            "wall-time": 0.9813
+            "wall-time": 0.9813,
+            "size-file": 0.9993,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "lencod": {
             "instructions": 1.0236,
@@ -822,7 +1222,12 @@
             "branches": 1.0216,
             "branch-misses": 0.9746,
             "max-rss": 1.0471,
-            "wall-time": 1.0142
+            "wall-time": 1.0142,
+            "size-file": 0.9989,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1.0009,
+            "size-total": 1.0002
         },
         "mafft": {
             "instructions": 1.0224,
@@ -832,7 +1237,12 @@
             "branches": 1.0209,
             "branch-misses": 0.9781,
             "max-rss": 1.0428,
-            "wall-time": 0.9864
+            "wall-time": 0.9864,
+            "size-file": 0.9998,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "consumer-typeset": {
             "instructions": 1.0185,
@@ -842,7 +1252,12 @@
             "branches": 1.0171,
             "branch-misses": 0.9748,
             "max-rss": 1.0456,
-            "wall-time": 0.942
+            "wall-time": 0.942,
+            "size-file": 0.9987,
+            "size-text": 1.0001,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1.0001
         },
         "sqlite3": {
             "instructions": 1.0075,
@@ -852,7 +1267,12 @@
             "branches": 1.0075,
             "branch-misses": 1.0005,
             "max-rss": 1.0362,
-            "wall-time": 1
+            "wall-time": 1,
+            "size-file": 0.9999,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "kimwitu++": {
             "instructions": 0.9521,
@@ -862,7 +1282,12 @@
             "branches": 0.9508,
             "branch-misses": 0.9082,
             "max-rss": 1.0093,
-            "wall-time": 0.9322
+            "wall-time": 0.9322,
+            "size-file": 0.9754,
+            "size-text": 0.9903,
+            "size-data": 1.0026,
+            "size-bss": 1.0013,
+            "size-total": 0.991
         },
         "SPASS": {
             "instructions": 1.0203,
@@ -872,7 +1297,12 @@
             "branches": 1.0187,
             "branch-misses": 0.9813,
             "max-rss": 1.0491,
-            "wall-time": 1.003
+            "wall-time": 1.003,
+            "size-file": 0.9997,
+            "size-text": 1,
+            "size-data": 1,
+            "size-bss": 1,
+            "size-total": 1
         },
         "tramp3d-v4": {
             "instructions": 0.9974,
@@ -882,7 +1312,12 @@
             "branches": 0.9937,
             "branch-misses": 0.9807,
             "max-rss": 1.0096,
-            "wall-time": 0.9652
+            "wall-time": 0.9652,
+            "size-file": 0.9967,
+            "size-text": 1.0005,
+            "size-data": 1.0112,
+            "size-bss": 1,
+            "size-total": 1.0006
         },
         "geomean": {
             "instructions": 0.9865,
@@ -892,14 +1327,29 @@
             "branches": 0.9852,
             "branch-misses": 0.9579,
             "max-rss": 1.0278,
-            "wall-time": 0.9628
+            "wall-time": 0.9628,
+            "size-file": 0.9924,
+            "size-text": 0.9991,
+            "size-data": 1.0014,
+            "size-bss": 1.0002,
+            "size-total": 0.9992
         }
     },
     "build": {
         "stage1-clang": {
+            "size-file": 1.0089,
+            "size-text": 1.0114,
+            "size-data": 0.9858,
+            "size-bss": 1.0117,
+            "size-total": 1.0111,
             "wall-time": 0.0436
         },
         "stage2-clang": {
+            "size-file": 1.027,
+            "size-text": 1.0313,
+            "size-data": 1.0002,
+            "size-bss": 1.0021,
+            "size-total": 1.0307,
             "wall-time-full": 0.964,
             "max-rss": 0.98,
             "wall-time": 0.9628,

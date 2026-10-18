@@ -58,6 +58,10 @@ function getData(
                 $value = $fullSummary->stage1Stats[$stat] ?? null;
                 if ($value !== null) {
                     $hasAtLeastOneConfig = true;
+                    if ($normalizer) {
+                        $value = $normalizer->normalize(
+                            $configNum, 'build', 'stage1-clang', $stat, $value);
+                    }
                 }
                 $values['clang']['stage1'] = $value;
             }

@@ -30,11 +30,6 @@ foreach (getMainCommits() as $commit) {
 
     $normalizeData = [];
     $addStat = function($config, $bench, $stat, $lastValue, $newValue) use(&$normalizeData) {
-        if (str_starts_with($stat, 'size-')) {
-            // Don't normalize sizes.
-            return;
-        }
-
         if ($newValue === null) {
             return;
         }
