@@ -42,7 +42,7 @@ valgrind --tool=callgrind $PATH_TO_CLANG -DNDEBUG  -O3   -w -Werror=date-time -f
 Compilers:
 
 <ul>
-    <li><strong>host</strong>: gcc 11.4</li>
+    <li><strong>host</strong>: gcc 15.2</li>
     <li><strong>stage1</strong>:
         clang compiled using host compiler (release build)</li>
     <li><strong>stage2</strong>:
