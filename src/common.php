@@ -44,6 +44,7 @@ const REAL_BENCHES = [
     'lencod',
     'SPASS',
     '7zip',
+    'beman-execution',
 ];
 const BENCHES = [
     'geomean',
