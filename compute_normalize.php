@@ -1,27 +1,31 @@
 <?php
 
 require __DIR__ . '/src/common.php';
-require __DIR__ . '/src/build_log.php';
 
 $outDir = __DIR__ . '/normalize';
+
+$firstCommitToConfigNum = array_flip(getFirstCommits());
 
 $curConfigNum = 0;
 $lastCommit = null;
 $lastSummary = null;
 foreach (getMainCommits() as $commit) {
-    $summary = getSummaryForHash($commit['hash']);
+    // TODO: Directly use the first commit data
+    // Don't unnecessarily load summaries for all commits.
+    $hash = $commit['hash'];
+    $summary = getSummaryForHash($hash);
     if ($summary === null) {
-        continue;
-    }
-
-    if ($curConfigNum > $summary->configNum) {
-        // Degenerate case: Older config after newer.
         continue;
     }
 
     if ($curConfigNum == $summary->configNum) {
         $lastCommit = $commit;
         $lastSummary = $summary;
+        continue;
+    }
+
+    if (!isset($firstCommitToConfigNum[$hash])) {
+        // Config num changed, but not "first commit".
         continue;
     }
 
