@@ -110,6 +110,11 @@ $statsStddevs = [];
 foreach ($statsData as $config => $configData) {
     foreach ($configData as $file => $fileData) {
         foreach ($fileData as $stat => $statData) {
+            if (count($statData) <= 2) {
+                // Don't compute stddev from two data points or less.
+                continue;
+            }
+
             $statsStddevs[$config][$file][$stat] = stddev($statData);
         }
     }
