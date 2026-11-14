@@ -87,6 +87,24 @@ function hasBuildError(string $hash): bool {
     return getPathForHash($hash, '/error') !== null;
 }
 
+function getInterestingness(float $diff, ?float $stddev): float {
+    if ($stddev === null) {
+        return 0.0;
+    }
+
+    if ($stddev === 0.0) {
+        // Avoid division by zero. Could use fdiv() in PHP 8.
+        return INF;
+    }
+
+    // Correct by sqrt(2) because we want the stddev of differences.
+    return abs($diff) / $stddev / sqrt(2);
+}
+
+function makeUrl(string $page, array $queryParams): string {
+    return $page . '?' . http_build_query($queryParams);
+}
+
 function addGeomean(array $summary): array {
     $statValues = [];
     foreach ($summary as $bench => $stats) {

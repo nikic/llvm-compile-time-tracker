@@ -86,20 +86,6 @@ function formatMetric(?float $value, string $metric): string {
     }
 }
 
-function getInterestingness(float $diff, ?float $stddev): float {
-    if ($stddev === null) {
-        return 0.0;
-    }
-
-    if ($stddev === 0.0) {
-        // Avoid division by zero. Could use fdiv() in PHP 8.
-        return INF;
-    }
-
-    // Correct by sqrt(2) because we want the stddev of differences.
-    return abs($diff) / $stddev / sqrt(2);
-}
-
 function formatMetricDiff(
         ?float $newValue, ?float $oldValue, string $stat, ?float $stddev): string {
     if ($oldValue !== null && $newValue !== null) {
@@ -161,10 +147,6 @@ function printSelect(string $name, string $value, array $options) {
 
 function printStatSelect(string $stat, array $stats = DEFAULT_METRICS) {
     return printSelect("stat", $stat, $stats);
-}
-
-function makeUrl(string $page, array $queryParams): string {
-    return $page . '?' . http_build_query($queryParams);
 }
 
 function getStringParam(string $name): ?string {

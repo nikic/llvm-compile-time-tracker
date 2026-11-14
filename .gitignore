@@ -5,3 +5,5 @@ data-*/
 vendor/
 composer.lock
 *.swp
+pr_comments.json
+pr_comments.lock
