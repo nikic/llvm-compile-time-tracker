@@ -240,10 +240,10 @@ function formatComment(array $commits, array $statuses, StdDevManager $stddevs):
     }
 
     $rows = [];
-    $numSignificant = 0;
+    $haveSignificant = false;
     $addRow = function(
         string $label, string $config, string $bench, ?float $fromValue, ?float $toValue
-    ) use ($fromSummary, $toSummary, $normalizer, $stddevs, &$rows, &$numSignificant): void {
+    ) use ($fromSummary, $toSummary, $normalizer, $stddevs, &$rows, &$haveSignificant): void {
         if ($fromValue === null || $toValue === null) {
             return;
         }
@@ -257,7 +257,7 @@ function formatComment(array $commits, array $statuses, StdDevManager $stddevs):
         $diff = formatPercDiff($toValue, $fromValue);
         if (getInterestingness($toValue - $fromValue, $stddev) >= SIGNIFICANCE_THRESHOLD) {
             $diff = "**$diff**";
-            $numSignificant++;
+            $haveSignificant = true;
         }
         $rows[] = "| $label | $diff |";
     };
@@ -282,11 +282,10 @@ function formatComment(array $commits, array $statuses, StdDevManager $stddevs):
                . " Results were normalized on a best-effort basis and may be inaccurate.\n";
     }
     $body .= "\n| Config | " . STAT . " |\n|:--|--:|\n" . implode("\n", $rows) . "\n\n";
-    if ($numSignificant === 0) {
+    if (!$haveSignificant) {
         $body .= "No significant changes.";
     } else {
-        $body .= "Changes in bold are likely significant. $numSignificant of " . count($rows)
-               . " changed significantly.";
+        $body .= "Changes in bold are likely significant.";
     }
     return $body . "\n";
 }
