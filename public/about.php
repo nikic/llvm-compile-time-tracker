@@ -11,7 +11,10 @@ The raw data is available at <a href="https://github.com/nikic/llvm-compile-time
 
 <h3>Pre-Commit Measurements</h3>
 <p>
-If you are an LLVM contributor who regularly does compile-time sensitive work and would like to test the compile-time impact of your patches before they land, contact me at llvm@npopov.com with a link to your GitHub fork of llvm-project. Once your fork is added, any branches starting with `perf/` will get measured.
+If you have LLVM commit access, you can post a comment starting with /compile-time on a pull request to start a measurement.
+</p>
+<p>
+If you regularly do compile-time sensitive work, you can also request your llvm-project fork to be added to the compile-time tracker by contacting llvm@npopov.com. Once your fork is added, any branches starting with `perf/` will get measured. This allows you to test changes without opening a pull request, and allows you to test multiple commits on a branch.
 </p>
 
 <h3>Reproducing</h3>
