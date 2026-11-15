@@ -475,7 +475,7 @@ function getMissingRanges(array $commits): array {
     return $missingRanges;
 }
 
-function getInterestingness(
+function getMaxInterestingness(
     Summary $summary1, Summary $summary2, string $config, StdDevManager $stddevs
 ): ?float {
     $sigma = 5;
@@ -531,7 +531,7 @@ function getMostInterestingWorkItem(array $missingRanges, StdDevManager $stddevs
         }
 
         foreach ([...RUNNER_CONFIGS, 'stage2-clang'] as $config) {
-            $interestingness = getInterestingness($summary1, $summary2, $config, $stddevs);
+            $interestingness = getMaxInterestingness($summary1, $summary2, $config, $stddevs);
             if ($interestingness != null) {
                 if ($mostInterestingRange === null || $interestingness > $mostInterestingRange[2]) {
                     $mostInterestingRange = [$missingRange, $config, $interestingness];
