@@ -166,7 +166,11 @@ foreach ($remotes as $remote => $branchCommits) {
             $rows[] = $row;
         }
 
-        echo "<h4>", h($branch), ":</h4>\n";
+        echo "<h4>", h($branch);
+        if (preg_match('(^llvmbot/perf/pr-(\d+)$)', $branch, $matches)) {
+            echo " (<a href=\"https://github.com/llvm/llvm-project/pull/{$matches[1]}\">PR</a>)";
+        }
+        echo ":</h4>\n";
         echo "<table>\n";
         echo "<tr>\n";
         foreach ($titles as $title) {
