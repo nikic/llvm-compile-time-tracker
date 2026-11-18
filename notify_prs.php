@@ -92,6 +92,10 @@ foreach ($branchCommits as $branch => $commits) {
         continue;
     }
 
+    // For stacked PRs, there will be the merge base against main, the stacked PR base and
+    // the tested commit. We only care about the latter two.
+    $commits = array_slice($commits, -2);
+
     $statuses = [];
     foreach ($commits as $commit) {
         $statuses[$commit['hash']] = getCommitStatus($commit['hash']);
